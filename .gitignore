@@ -149,6 +149,8 @@ activemq-data/
 
 # Environments
 .env
+.env.*
+!.env.example
 .envrc
 .venv
 env/
@@ -202,6 +204,36 @@ cython_debug/
 # .vscode/
 # Temporary file for partial code execution
 tempCodeRunnerFile.py
+
+# JavaScript / frontend
+node_modules/
+.npm/
+.pnpm-store/
+.yarn/
+coverage/
+.vite/
+.nuxt/
+.next/
+frontend/dist/
+
+# Python project tools
+.pytest_cache/
+.ruff_cache/
+backend/.venv/
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local application data
+uploads/
+local-data/
+*.sqlite3
+
+# Local containers
+postgres_data/
 
 # Ruff stuff:
 .ruff_cache/

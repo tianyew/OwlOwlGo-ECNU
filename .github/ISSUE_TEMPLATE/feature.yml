@@ -1,0 +1,25 @@
+name: 功能需求
+description: 提交一个可验收的功能任务
+title: "[Feature] "
+labels: ["feature"]
+body:
+  - type: textarea
+    id: background
+    attributes:
+      label: 背景与目标
+    validations:
+      required: true
+  - type: textarea
+    id: deliverables
+    attributes:
+      label: 交付物
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 验收标准
+      placeholder: 使用可验证的 Given / When / Then 或检查清单
+    validations:
+      required: true
+
