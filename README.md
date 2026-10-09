@@ -10,6 +10,8 @@ OwlOwlGo 是面向大学生的 H5 英语学习应用。它不仅根据学习表�
 
 - [项目介绍](#项目介绍)
 - [工程问题定义](docs/requirements/problem_definition.md)
+- [软件功能规格](docs/requirements/functional_spec.md)
+- [非功能需求规格](docs/requirements/nonfunctional_spec.md)
 - [核心功能](#核心功能)
 - [使用流程](#使用流程)
 - [当前进度](#当前进度)
