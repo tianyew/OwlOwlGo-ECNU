@@ -276,11 +276,4 @@ classDiagram
 - 未通过机器校验和人工审核的 AI 候选内容不能进入正式题库，也不能被普通学习会话推荐。
 - 普通学习者只能访问自己的学习会话和报告，研究数据导出不包含密码、Token、邮箱等直接身份信息。
 
----
-
-## 参考链接
-
-- [多智能体 AI Agent 工业分析平台：软件功能规格说明书](https://github.com/bettermorn/AIAgent/blob/main/docs/AIAgentFunSpec.md)
-- [OwlOWLGo 工程问题定义：5W1H 与产品描述](problem_definition.md)
-- [OwlOWLGo 非功能需求规格说明书](nonfunctional_spec.md)
 
