@@ -676,7 +676,7 @@ Embedding 单价示例取 `text-embedding-v4` 北京地域每千输入 tokens 0.
 ### 14.1 项目与课程材料
 
 - 仓库代码基线：`df31445`，本报告第 2 节逐项链接至已检查文件。
-- ISWEP.pdf：用户提供的课程资料，原文件 `/Users/jiaxinguan/2026/ISWEP.pdf`，共 257 页；本报告主要采用第 56 页的交付要求及第 60–63 页的八方面选型问题。第 31–37 页的职责分离和依赖倒置为组件接口设计提供参考。
+- ISWEP.pdf
 - [问题定义](../requirements/problem_definition.md)与[项目计划](../mgmt/project-plan.md)：业务边界、访谈/可用性规模、五级策略、课程阶段与已有里程碑的来源；50 日活为本文估算假设。
 
 ### 14.2 外部技术资料
