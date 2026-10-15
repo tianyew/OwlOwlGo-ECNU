@@ -1,6 +1,6 @@
 # OwlOwlGo 汉语学习网页：AI Agent 技术方案调研报告
 
-> 版本：v1.2 · 调研日期：2026-10-15（Asia/Shanghai）
+> 版本：v1.2
 >
 > 状态：**技术建议稿，待团队评审与 PoC 验证**
 >
@@ -29,12 +29,6 @@ OwlOwlGo 建议采用 **Vue 3 H5 + FastAPI 模块化单体 + PostgreSQL + 国产
 
 适用边界：本报告在第 3 节保留并整合[既有系统设计](#system-design)，遵循已采纳的 [ADR-0001](../adr/0001-chinese-web-architecture.md)。P0 继续以审核内容、模板和文本流程为基线；模型、记忆与 RAG 是可关闭的后续增强与隔离 PoC，不提前变成当前 Demo 或 P0 的启动依赖。语音评分、书写识别和支付仍不纳入本轮实施。
 
-### 1.1 技术约束与调研范围
-
-我们结合当前业务需求与团队开发条件，确定以下技术方向：暂不引入专用的 Agent 编排框架，主要利用大模型原生的指令遵循、结构化输出和工具调用能力；选用国产大模型；工具接口采用 OpenAI 兼容的 Function Calling 约定；使用 Docker 部署。上下文记忆框架则重点评估与国产模型、现有后端及数据库的兼容性，并结合接入成本和验证结果确定方案。
-
-我们参考 ISWEP.pdf 第 56 页的报告要求及第 60–63 页的八方面选型问题，围绕编排、模型、记忆、工具调用、RAG、部署、成本性能和安全合规展开调研，比较候选方案并说明选择依据。本报告统一维护在 `docs/software/architecture.md`，同时列出团队未来两周需要学习的新技术、自学任务、Milestone 与验收标准。原型和用户故事分别在对应的设计与需求文档中维护。
-
 ## 2. 仓库现状与需求约束
 
 ### 2.1 已读材料及代码证据
@@ -51,8 +45,6 @@ OwlOwlGo 建议采用 **Vue 3 H5 + FastAPI 模块化单体 + PostgreSQL + 国产
 | [前端依赖](../../code/frontend/package.json)、[路由](../../code/frontend/src/app/router/index.ts) | Vue 3、TypeScript、Vite、Pinia、Vue Router；路由表仍为空，但 App.vue 直接挂载拼音声调 Demo | 已有固定 8 题、即时反馈、计分和重测；仅前端内存状态，不等于后端学习闭环 |
 | [Compose](../../infrastructure/compose.yaml)、[Nginx](../../infrastructure/nginx/default.conf) | 已定义 frontend、backend、database、gateway；PostgreSQL 17；未配置 pgvector、健康检查、任务工作进程 | Docker 基础可沿用，仍需补齐运行与持久化配置 |
 | [CI](../../.github/workflows/ci.yml)、[AI 评测目录](../../tests/ai-evaluation/README.md) | CI 检查目录结构与 Python 语法，存在前端锁文件时执行 npm ci 与构建；当前已有 package-lock.json 和拼音 Demo 的 Vitest 测试，CI 未调用 npm test | 当前检查通过不等于功能、模型质量或可部署性通过 |
-
-后端尚无已接入的模型 SDK、记忆框架、向量检索、Redis 服务、认证实现或业务测试；前端已有拼音 Demo 的交互测试，不能再描述为完全没有业务交互或测试。`.env.example` 中的 `REDIS_URL` 只是预留配置，不能视为 Redis 已采用。正式需求已有功能规格、非功能规格和用户故事，需共同作为后续验收依据。
 
 ### 2.2 驱动架构的业务要求
 
