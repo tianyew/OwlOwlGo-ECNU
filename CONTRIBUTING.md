@@ -45,6 +45,10 @@ Issue 至少写明背景、目标、交付物、验收标准、负责人和截�
 
 - `README.md`：项目入口、快速了解和当前状态；
 - `docs/`：随代码版本对应的正式需求、设计、测试和发布文档；
+- `docs/requirements/`、`docs/algorithm/`、`docs/software/`：需求、算法调研与软件设计；
+- `docs/mgmt/`、`docs/retrospection/`：正式项目计划、风险管理与迭代复盘；
+- `code/backend/`、`code/frontend/`：前后端源码、依赖及各模块测试；
+- `tests/`：跨系统测试、API 契约与 AI 评测；
 - GitHub Wiki：会议纪要、FAQ、学习资料和过程讨论；
 - GitHub Issues/Projects：任务、缺陷、进度与验收状态。
 

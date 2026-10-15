@@ -14,14 +14,18 @@ jobs:
         run: |
           test -f README.md
           test -f CONTRIBUTING.md
-          test -f frontend/package.json
-          test -f backend/pyproject.toml
+          test -f code/frontend/package.json
+          test -f code/backend/pyproject.toml
+          test -f docs/mgmt/project-plan.md
+          for directory in docs/requirements docs/algorithm docs/software docs/mgmt docs/retrospection code/backend code/frontend tests; do
+            test -d "$directory"
+          done
 
   frontend:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: frontend
+        working-directory: code/frontend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,17 +33,20 @@ jobs:
           node-version: 22
           # npm cache requires a lockfile. Enable it after package-lock.json is committed.
       - name: Install dependencies when lockfile exists
-        if: ${{ hashFiles('frontend/package-lock.json') != '' }}
+        if: ${{ hashFiles('code/frontend/package-lock.json') != '' }}
         run: npm ci
+      - name: Build frontend
+        if: ${{ hashFiles('code/frontend/package-lock.json') != '' }}
+        run: npm run build
       - name: Check placeholder project
-        if: ${{ hashFiles('frontend/package-lock.json') == '' }}
+        if: ${{ hashFiles('code/frontend/package-lock.json') == '' }}
         run: echo "Frontend dependencies have not been locked yet."
 
   backend:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: backend
+        working-directory: code/backend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
