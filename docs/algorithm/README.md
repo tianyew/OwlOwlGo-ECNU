@@ -1,6 +1,6 @@
 # 算法与技术调研
 
-本目录用于保存学习者状态估计、任务推荐、干预策略及 AI 内容校验的技术文档。当前尚未形成独立算法调研成果，需求中的策略约束见[功能规格](../requirements/functional_spec.md)。
+本目录用于保存学习者状态估计、任务推荐、干预策略及 AI 内容校验的技术文档。现有 [AI Agent 技术方案调研报告](../software/architecture.md)覆盖八方面选型、上下文记忆与两周学习计划，按课程要求统一存放在 `docs/software/architecture.md`，状态为待验证建议稿；需求中的策略约束见[功能规格](../requirements/functional_spec.md)。
 
 后续文档按以下职责维护：
 
