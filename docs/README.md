@@ -10,6 +10,7 @@
 | 需求分析 | [功能规格](requirements/functional_spec.md) | 角色、功能树、业务规则、领域模型与验收标准 |
 | 需求分析 | [非功能需求](requirements/nonfunctional_spec.md) | 性能、可靠性、安全、隐私与 AI 质量 |
 | 算法设计 | [算法文档说明](algorithm/README.md) | 调研、策略与参数文档的维护要求 |
+| 算法设计 | [RockStartIT AI Tutor 论文调研](algorithm/research.md) | 课程知识库、教学控制、用户评价、研究局限与项目启示 |
 | 软件设计 | [系统架构与技术方案调研报告](software/architecture.md) | 架构与模块职责、核心技术选型、两周自学计划与 Milestone |
 | 软件设计 | [页面与功能设计](software/product-design.md) | 页面结构、用户旅程、功能优先级 |
 | 软件设计 | [数据模型](software/data-model.md) | 汉语内容、学习事件与复习关系 |

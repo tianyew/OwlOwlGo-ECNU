@@ -4,7 +4,7 @@
 
 后续文档按以下职责维护：
 
-- `research.md`：候选方法、论文与资料来源、方案比较及选型依据。
+- [论文调研与课堂汇报摘要](research.md)：目前整理 RockStartIT AI Tutor 的技术设计、用户评价、研究局限及对 OwlOwlGo 的启示，区分论文证据与小组建议；后续可继续补充候选方法、方案比较及选型依据。
 - 各策略说明：输入输出、规则或公式、参数含义、复杂度和验证方式。
 
 算法实现放在 `code/backend/app/domain/`，LLM 适配与校验实现放在 `code/backend/app/integrations/llm/`。形成重要设计选择时同步记录[架构决策](../adr/README.md)。
