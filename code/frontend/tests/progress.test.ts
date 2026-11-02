@@ -32,6 +32,15 @@ async function click(text: string) {
   const button = [...host.querySelectorAll('button')].find(b => b.textContent?.includes(text));
   expect(button).toBeDefined(); button!.click(); await settle();
 }
+async function completeUnit() {
+  const { getTopics } = await import('../src/shared/api/demo');
+  const unit = (await getTopics())[0].units[0];
+  const container = host.querySelector('.practice-quiz')!;
+  for (const [i, q] of unit.quiz.entries()) {
+    (container.querySelectorAll('fieldset')[i].querySelectorAll('input')[q.answer] as HTMLInputElement).click(); await settle();
+  }
+  await click('提交礼貌问路');
+}
 beforeEach(() => {
   vi.resetAllMocks();
   vi.mocked(learningApi.analyze).mockRejectedValue(new Error("学习建议暂不可用，请稍后重试。"));
@@ -86,7 +95,7 @@ describe('persistent learning', () => {
     (host.querySelector('input[value="travel"]') as HTMLInputElement).click(); await settle();
     await click('确认方向');
     expect(host.querySelector('#learning-analysis')).toBeNull();
-    await click('标记本单元完成'); await click('完成设置，进入首页');
+    await completeUnit(); await click('完成设置，进入首页');
     expect(host.textContent).not.toContain('逐题分析结果');
     await click('查看前测报告');
     expect(host.textContent).toContain('逐题分析结果');
@@ -132,7 +141,7 @@ describe('persistent learning', () => {
     expect(saved.state.onboarding_complete).toBe(true);
   });
   it('offers review after all units are complete and supports legacy saved plans', async () => {
-    saved.state = { content_version: 1, stage: 'plan', topic: 'travel', completed: {travel:[0,1,2]},
+    saved.state = { content_version: 1, stage: 'plan', topic: 'travel', completed: {travel:[0,1,2,3,4]},
       quiz: { stage: 'result', current: 7, selected: 1, submitted: true, answers: [0,2,0,1,3,1,2,1] } };
     await mount(false);
     expect(host.textContent).toContain('回顾学习内容');
@@ -160,9 +169,9 @@ describe('persistent learning', () => {
   it('persists unit completion, restores plan and displays analysis failure honestly', async () => {
     saved.state = { content_version: 1, stage: 'plan', topic: 'travel', completed: {},
       quiz: { stage: 'result', current: 7, selected: 1, submitted: true, answers: [0,2,0,1,3,1,2,1] } };
-    await mount(); await click('标记本单元完成');
+    await mount(); await completeUnit();
     expect(saved.state.completed.travel).toEqual([0]);
-    unmount(); await mount(); expect(host.textContent).toContain('1 / 3');
+    unmount(); await mount(); expect(host.textContent).toContain('1 / 5');
     vi.mocked(learningApi.analyze).mockRejectedValue(new Error('学习建议暂不可用，请稍后重试。'));
     await click('返回首页'); await click('查看前测报告');
     await click('重试分析'); expect(host.textContent).toContain('学习建议暂不可用');

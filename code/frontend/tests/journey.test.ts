@@ -31,9 +31,7 @@ describe('demo journey', () => {
       (host.querySelector(`input[value="${topic.id}"]`) as HTMLInputElement).click(); await settle();
       await click('确认方向');
       expect(host.querySelector('h1')?.textContent).toContain(topic.title);
-      expect(host.querySelectorAll('.unit-list details')).toHaveLength(3);
-      (host.querySelector('.unit-list summary') as HTMLElement).click(); await settle();
-      expect(host.querySelector('.unit-list details')?.hasAttribute('open')).toBe(true);
+      expect(host.querySelectorAll('.unit-page')).toHaveLength(1);
       expect(host.textContent).toContain(topic.units[0].example);
       expect(host.textContent).toContain('100 / 100');
       await click('修改学习方向');
@@ -44,6 +42,45 @@ describe('demo journey', () => {
     expect(host.querySelector('.diagnosis-summary')).toBeNull();
     await completeQuiz();
     expect(host.querySelector('input:checked')).toBeNull();
+  });
+  it('scores unit practice and post-test before opening the fixed report', async () => {
+    await completeQuiz();
+    (host.querySelector('input[value="travel"]') as HTMLInputElement).click(); await settle();
+    await click('确认方向');
+    const topic = (await getTopics())[0];
+    const unitQuiz = host.querySelector('.practice-quiz')!;
+    for (const [i, q] of topic.units[0].quiz.entries()) {
+      (unitQuiz.querySelectorAll('fieldset')[i].querySelectorAll('input')[q.answer] as HTMLInputElement).click();
+      await settle();
+    }
+    await click('提交礼貌问路');
+    expect(host.textContent).toContain('本方向已完成 1 / 5');
+    await click('下一单元');
+    expect(host.querySelectorAll('.unit-page')).toHaveLength(1);
+    expect(host.textContent).toContain(topic.units[1].example);
+    expect(host.textContent).not.toContain(topic.units[0].example);
+    await click('上一单元');
+    expect(host.querySelector('.quiz-result')?.textContent).toContain('100 分');
+    await click('开始后测');
+    expect(host.querySelector('h1')?.textContent).toContain('后测');
+    expect(host.querySelectorAll('.practice-question')).toHaveLength(1);
+    expect(host.textContent).toContain('第 1 / 10 题');
+    const { postQuestions } = await import('../src/shared/api/curriculum');
+    for (const [i, q] of postQuestions(topic).entries()) {
+      (host.querySelector('.practice-question')!.querySelectorAll('input')[q.answer] as HTMLInputElement).click(); await settle();
+      if (i < 9) await click('下一题');
+    }
+    await click('上一题');
+    expect(host.querySelector('.practice-question input:checked')).not.toBeNull();
+    await click('下一题');
+    await click('提交方向后测');
+    expect(host.querySelector('.quiz-result')?.textContent).toContain('100 分');
+    await click('查看诊断报告');
+    expect(host.querySelector('.report-score')?.textContent).toContain('100');
+    expect(host.textContent).toContain('固定示例');
+    await click('重新进行后测');
+    expect(host.querySelector('.quiz-result')).toBeNull();
+    expect(host.querySelectorAll('.practice-question input:checked')).toHaveLength(0);
   });
   it('validates submissions and returns appropriate low, middle and high score advice', async () => {
     const wrong = questions.map(q => (q.answer + 1) % q.options.length);

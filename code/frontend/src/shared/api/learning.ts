@@ -4,6 +4,8 @@ export interface QuizState {
   submitted: boolean; answers: number[];
 }
 export interface LearningState {
+  checks?: Record<string, { answers: number[]; submitted: boolean }>;
+  posttests?: Record<string, { answers: number[]; submitted: boolean }>;
   onboarding_complete?: boolean;
   content_version: 1; stage: 'assessment' | 'topics' | 'plan'; quiz: QuizState;
   topic: string | null; completed: Record<string, number[]>;

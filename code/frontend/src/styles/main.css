@@ -256,3 +256,62 @@ footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16
 @media (max-width:850px) { .home-welcome { gap: 26px; padding: 30px; }.setup-checklist { padding: 22px; }.home-cards { gap: 12px; }.home-cards article { padding: 22px; }.home-card-bottom { flex-wrap: wrap; } }
 @media (max-width:600px) { .home-dashboard { padding-top: 20px; }.home-heading { align-items: flex-start; margin-bottom: 26px; }.home-label { display: none; }.home-heading p:last-child { font-size: 12px; }.home-welcome { grid-template-columns: 1fr; padding: 28px 24px; gap: 30px; }.home-welcome h2 { font-size: 28px; }.home-note { flex-direction: column; gap: 12px; }.home-continue { grid-template-columns: 1fr; padding: 28px 24px; gap: 28px; }.home-continue h2 { font-size: 28px; }.home-progress { display: flex; align-items: center; justify-content: flex-start; gap: 20px; }.home-progress-ring { width: 100px; height: 100px; margin: 0; padding: 6px; }.home-progress-ring strong { font-size: 27px; }.home-progress-ring > span > small { font-size: 8px; }.home-progress > p { margin: 0; }.home-cards { grid-template-columns: 1fr; margin-bottom: 30px; }.home-unit { padding: 20px; gap: 12px; }.home-unit strong { font-size: 14px; }.home-unit small { font-size: 10px; }.home-unit-action { font-size: 11px; }.setup-finish { align-items: stretch; flex-direction: column; }.home-card-bottom { padding-top: 8px; } }
 .home-heading h1 { overflow-wrap: anywhere; }
+.pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 22px 0; }
+.pagination > span { color: var(--muted); font-size: 13px; text-align: center; }
+.unit-page { background: white; border-radius: 22px; overflow: hidden; }
+.unit-page-heading { display: flex; align-items: center; gap: 20px; padding: 25px 28px; }
+.unit-page-heading strong { font-size: 20px; }
+.unit-page-heading small { display: block; color: var(--muted); margin-top: 6px; }
+.unit-page-heading > span:last-child { margin-left: auto; color: var(--blue); font-size: 12px; white-space: nowrap; }
+.quiz-page-status { color: var(--blue); font-size: 13px; }
+.practice-quiz:focus { outline: none; }
+@media (max-width:600px) { .pagination .primary,.pagination .secondary { padding: 10px 12px; font-size: 12px; }.pagination > span { font-size: 11px; }.unit-page-heading { padding: 22px 20px; gap: 12px; flex-wrap: wrap; }.unit-page-heading strong { font-size: 17px; }.unit-page-heading small { font-size: 12px; } }
+.journey-steps { flex-wrap: wrap; border-radius: 20px; }
+.path-overview { display: flex; flex-wrap: wrap; gap: 12px; margin: 24px 0; }
+.path-overview span { background: #e8edf5; color: #385578; border-radius: 12px; padding: 10px 16px; font-size: 12px; }
+.lesson-note { padding: 22px; background: var(--blue-soft); border-radius: 16px; margin: 24px 0; }
+.lesson-note p { margin: 10px 0 0; }
+.lesson-dialogue { border-left: 3px solid #b6cee9; padding: 6px 20px; margin-bottom: 24px; }
+.lesson-dialogue p { margin: 8px 0; }
+.practice-tasks { padding-left: 20px; line-height: 2; }
+.practice-quiz { margin: 28px 0; padding: 24px; border: 1px solid #dde5ef; border-radius: 20px; background: #fcfdff; }
+.practice-quiz h3 { margin: 0; }
+.practice-question { display: block; border: 0; padding: 18px 0; margin: 12px 0; min-width: 0; }
+.practice-question legend { font-size: 14px; font-weight: 550; padding: 0; }
+.practice-option { display: flex; align-items: center; gap: 12px; padding: 13px 16px; margin: 8px 0; border: 1px solid var(--line); border-radius: 12px; background: white; cursor: pointer; font-size: 14px; }
+.practice-option.chosen { border-color: var(--blue); background: var(--blue-soft); }
+.practice-option.correct { background: #edf7ef; border-color: #87b998; }
+.practice-option.wrong { background: #fff2ec; border-color: #d8a18c; }
+.practice-feedback { font-size: 13px; line-height: 1.9; color: #42556b; margin: 14px 0 0; }
+.quiz-result { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; padding-top: 18px; border-top: 1px solid var(--line); }
+.quiz-result > strong { font-size: 26px; color: var(--blue); }
+.quiz-result > span { color: var(--muted); font-size: 13px; }
+.quiz-result button { margin-left: auto; }
+.posttest-entry { display: flex; align-items: center; gap: 28px; justify-content: space-between; padding: 32px; margin: 28px 0; border-radius: 24px; background: #e8f0fc; }
+.posttest-entry h2 { font-size: 25px; }
+.posttest-entry p { font-size: 13px; }
+.posttest-entry button { flex-shrink: 0; }
+.report-subtitle { color: var(--muted); margin: 16px 0 28px; }
+.report-hero { display: grid; grid-template-columns: 1fr 1.4fr; align-items: center; gap: 40px; padding: 40px; background: #e8f0fc; border-radius: 28px; }
+.report-score { display: block; font-size: 72px; line-height: 1.2; color: #0065c9; letter-spacing: -.04em; }
+.report-score small { font-size: 22px; color: var(--muted); }
+.report-hero p { font-size: 14px; margin-top: 16px; }
+.report-hero h2 { font-size: 28px; }
+.report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 28px; }
+.report-card { background: white; border-radius: 24px; padding: 32px; margin-bottom: 24px; }
+.report-card h2 { font-size: 23px; }
+.report-card p,.report-card li { font-size: 14px; color: #5a626e; line-height: 1.9; }
+.report-card ul { padding-left: 20px; }
+.report-dimension { margin-top: 24px; }
+.report-dimension > div:first-child { display: flex; justify-content: space-between; font-size: 13px; }
+.report-dimension p { margin: 8px 0 0; font-size: 12px; }
+.dimension-track { height: 8px; background: #edf0f6; border-radius: 8px; margin-top: 10px; overflow: hidden; }
+.dimension-track i { display: block; height: 100%; background: #6797d1; border-radius: inherit; }
+.report-week { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; list-style: none; padding: 0; }
+.report-week strong { color: var(--ink); }
+@media (max-width:600px) {
+  .practice-quiz { padding: 20px 14px; }.review-heading { flex-wrap: wrap; }.practice-option { font-size: 13px; }
+  .posttest-entry { flex-direction: column; align-items: stretch; padding: 24px; }
+  .report-hero,.report-grid,.report-week { grid-template-columns: 1fr; }.report-hero { padding: 28px; gap: 20px; }.report-card { padding: 24px; }.report-grid { gap: 0; }
+  .path-overview { gap: 8px; }.path-overview span { font-size: 11px; padding: 8px 10px; }
+}
