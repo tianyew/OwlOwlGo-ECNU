@@ -214,12 +214,12 @@ coverage/
 .vite/
 .nuxt/
 .next/
-frontend/dist/
+code/frontend/dist/
 
 # Python project tools
 .pytest_cache/
 .ruff_cache/
-backend/.venv/
+code/backend/.venv/
 
 # Editors and operating systems
 .idea/
@@ -248,3 +248,4 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+*.tsbuildinfo

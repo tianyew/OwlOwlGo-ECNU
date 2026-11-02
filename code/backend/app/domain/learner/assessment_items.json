@@ -1,0 +1,122 @@
+[
+  {
+    "id": "initial",
+    "category": "拼音基础",
+    "prompt": "“mā” 的声母是什么？",
+    "subtitle": "Which part is the initial consonant?",
+    "example": "mā · 妈",
+    "options": [
+      "m",
+      "a",
+      "ā",
+      "ma"
+    ],
+    "answer": 0,
+    "explanation": "m 是声母，a 是韵母，ā 上方的横线是一声的声调符号。"
+  },
+  {
+    "id": "final",
+    "category": "拼音基础",
+    "prompt": "“hǎo” 的韵母是什么？",
+    "subtitle": "Which part is the final?",
+    "example": "hǎo · 好",
+    "options": [
+      "h",
+      "o",
+      "ao",
+      "ha"
+    ],
+    "answer": 2,
+    "explanation": "h 是声母，ao 是复韵母；声调符号标在 a 上。"
+  },
+  {
+    "id": "first",
+    "category": "四声辨识",
+    "prompt": "“mā” 对应哪一种声调？",
+    "subtitle": "Match the tone mark with its tone contour.",
+    "example": "mā · 妈",
+    "options": [
+      "一声：高而平 →",
+      "二声：由低到高 ↗",
+      "三声：先降后升 ˇ",
+      "四声：由高到低 ↘"
+    ],
+    "answer": 0,
+    "explanation": "mā 是第一声，调值通常记作 55，发音高而平。"
+  },
+  {
+    "id": "second",
+    "category": "四声辨识",
+    "prompt": "“má” 对应哪一种声调？",
+    "subtitle": "Which tone rises?",
+    "example": "má · 麻",
+    "options": [
+      "一声：高而平 →",
+      "二声：由低到高 ↗",
+      "三声：先降后升 ˇ",
+      "四声：由高到低 ↘"
+    ],
+    "answer": 1,
+    "explanation": "má 是第二声，调值通常记作 35，从中音升到高音。"
+  },
+  {
+    "id": "third-fourth",
+    "category": "四声辨识",
+    "prompt": "“mǎ”和“mà”分别是第几声？",
+    "subtitle": "Identify the tones in order.",
+    "example": "mǎ 马 / mà 骂",
+    "options": [
+      "二声、四声",
+      "三声、二声",
+      "四声、三声",
+      "三声、四声"
+    ],
+    "answer": 3,
+    "explanation": "mǎ 是第三声，单念时通常先降后升（214）；mà 是第四声，高降（51）。第三声在语流中常不读完整曲折。"
+  },
+  {
+    "id": "third-sandhi",
+    "category": "基础变调",
+    "prompt": "“你好”连读时，第一个字“你”通常怎么读？",
+    "subtitle": "What happens when two third tones occur together?",
+    "example": "你好 · nǐ hǎo",
+    "options": [
+      "仍读完整三声",
+      "读作二声 ní",
+      "读作四声 nì",
+      "读作轻声 ni"
+    ],
+    "answer": 1,
+    "explanation": "两个三声相连，前一个通常变为二声，所以“你好”的实际读音接近 ní hǎo。规范拼音通常仍写 nǐ hǎo。"
+  },
+  {
+    "id": "yi-sandhi",
+    "category": "基础变调",
+    "prompt": "正常连读“一杯”时，“一”读什么声调？",
+    "subtitle": "How does 一 change before a first-tone syllable?",
+    "example": "一杯 · 杯 bēi",
+    "options": [
+      "一声 yī",
+      "二声 yí",
+      "四声 yì",
+      "轻声 yi"
+    ],
+    "answer": 2,
+    "explanation": "“一”在一、二、三声前通常变为四声，因此“一杯”读 yì bēi；在四声前通常变为二声，例如“一次”yí cì。这里讨论普通连读，不含逐字强调等情况。"
+  },
+  {
+    "id": "bu-sandhi",
+    "category": "基础变调",
+    "prompt": "正常连读“不是”时，“不”读什么声调？",
+    "subtitle": "How does 不 change before a fourth-tone syllable?",
+    "example": "不是 · 是 shì",
+    "options": [
+      "一声 bū",
+      "二声 bú",
+      "三声 bǔ",
+      "仍读四声 bù"
+    ],
+    "answer": 1,
+    "explanation": "“不”在四声前通常变为二声，所以“不是”读 bú shì；在其他声调前通常仍读四声。"
+  }
+]
