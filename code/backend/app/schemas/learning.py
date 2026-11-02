@@ -36,6 +36,20 @@ class Quiz(BaseModel):
         return self
 
 
+class PracticeAttempt(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    answers: list[Annotated[int, Field(strict=True, ge=-1, le=2)]] = Field(
+        default_factory=list, max_length=10
+    )
+    submitted: bool = False
+
+    @model_validator(mode="after")
+    def consistent(self):
+        if self.submitted and (not self.answers or -1 in self.answers):
+            raise ValueError("Complete all practice questions first")
+        return self
+
+
 class LearningState(BaseModel):
     model_config = ConfigDict(extra="forbid")
     onboarding_complete: bool = False
@@ -43,9 +57,11 @@ class LearningState(BaseModel):
     stage: Literal["assessment", "topics", "plan"] = "assessment"
     quiz: Quiz = Field(default_factory=Quiz)
     topic: Topic | None = None
-    completed: dict[Topic, list[Annotated[int, Field(strict=True, ge=0, le=2)]]] = Field(
+    completed: dict[Topic, list[Annotated[int, Field(strict=True, ge=0, le=4)]]] = Field(
         default_factory=dict
     )
+    checks: dict[str, PracticeAttempt] = Field(default_factory=dict, max_length=20)
+    posttests: dict[Topic, PracticeAttempt] = Field(default_factory=dict)
 
     @model_validator(mode="after")
     def consistent(self):
@@ -56,9 +72,23 @@ class LearningState(BaseModel):
         if self.stage == "plan" and self.topic is None:
             raise ValueError("Select a topic first")
         if any(
-            len(items) != len(set(items)) or len(items) > 3 for items in self.completed.values()
+            len(items) != len(set(items)) or len(items) > 5 for items in self.completed.values()
         ):
             raise ValueError("Invalid completed units")
+        for key, attempt in self.checks.items():
+            if key not in {
+                f"{topic}:{index}"
+                for topic in ("travel", "daily", "campus", "poetry")
+                for index in range(5)
+            } or len(attempt.answers) not in (0, 2):
+                raise ValueError("Invalid unit practice")
+            if attempt.submitted and len(attempt.answers) != 2:
+                raise ValueError("Incomplete unit practice")
+        for attempt in self.posttests.values():
+            if len(attempt.answers) not in (0, 10):
+                raise ValueError("Invalid post-test")
+            if attempt.submitted and len(attempt.answers) != 10:
+                raise ValueError("Incomplete post-test")
         return self
 
 

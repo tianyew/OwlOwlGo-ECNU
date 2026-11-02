@@ -15,7 +15,16 @@ const error = ref('');
 const journeyKey = ref(0);
 function message(reason: unknown) { return reason instanceof Error ? reason.message : '操作失败，请重试。'; }
 onMounted(async () => {
-  try { user.value = await authApi.me(); showForm.value = false; }
+  try {
+    user.value = await Promise.race([
+      authApi.me(),
+      new Promise<never>((_, reject) => window.setTimeout(
+        () => reject(new AuthError('登录状态检查超时。请启动后端，或先以游客身份体验。', 0)),
+        3000,
+      )),
+    ]);
+    showForm.value = false;
+  }
   catch (reason) { if (!(reason instanceof AuthError && reason.status === 401)) error.value = message(reason); }
   finally { loading.value = false; }
 });

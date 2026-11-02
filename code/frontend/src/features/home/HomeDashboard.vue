@@ -6,7 +6,7 @@ const props = defineProps<{
   answersCount: number; plan?: Topic; completed: number[]; diagnosis?: Diagnosis;
 }>();
 const emit = defineEmits<{
-  setup: []; learn: [index: number]; plan: []; analysis: []; direction: [];
+  posttest: []; setup: []; learn: [index: number]; plan: []; analysis: []; direction: [];
 }>();
 const nextUnit = computed(() => props.plan?.units.findIndex((_, i) => !props.completed.includes(i)) ?? -1);
 const percent = computed(() => props.plan ? Math.round(props.completed.length / props.plan.units.length * 100) : 0);
@@ -29,7 +29,7 @@ const setupCount = computed(() => Number(props.assessmentDone) + Number(Boolean(
         <article><p class="eyebrow">YOUR STARTING POINT</p><h3>学习起点</h3><p class="home-score">{{ diagnosis?.score ?? '—' }}<span> / 100</span></p><p>{{ diagnosis?.advice }}</p><small>拼音与声调文字辨识</small><button class="text-button" @click="emit('analysis')">查看前测报告 ↗</button></article>
         <article><p class="eyebrow">YOUR INTEREST</p><h3>{{ plan.title }}</h3><p>{{ plan.description }}</p><div class="home-card-bottom"><span>{{ plan.units.length }} 个学习单元</span><button class="text-button" @click="emit('direction')">修改方向 ↗</button></div></article>
       </div>
-      <section class="home-units"><div class="home-section-title"><h2>我的学习单元</h2><span>{{ plan.title }}</span></div><button v-for="(unit,index) in plan.units" :key="index" class="home-unit" @click="emit('learn', index)"><span class="home-unit-number" :class="{ done: completed.includes(index) }">{{ completed.includes(index) ? '✓' : String(index + 1).padStart(2, '0') }}</span><span><strong>{{ unit.title }}</strong><small>{{ unit.goal }}</small></span><span class="home-unit-action">{{ completed.includes(index) ? '复习' : index === nextUnit ? '继续' : '查看' }} ↗</span></button></section>
+      <article class="posttest-entry"><div><p class="eyebrow">AFTER YOUR LEARNING</p><h2>后测与诊断报告</h2><p>完成方向学习后，检查词句理解和情境应用，规划下一步练习。</p></div><button class="primary" @click="emit('posttest')">进入后测 →</button></article><section class="home-units"><div class="home-section-title"><h2>我的学习单元</h2><span>{{ plan.title }}</span></div><button v-for="(unit,index) in plan.units" :key="index" class="home-unit" @click="emit('learn', index)"><span class="home-unit-number" :class="{ done: completed.includes(index) }">{{ completed.includes(index) ? '✓' : String(index + 1).padStart(2, '0') }}</span><span><strong>{{ unit.title }}</strong><small>{{ unit.goal }}</small></span><span class="home-unit-action">{{ completed.includes(index) ? '复习' : index === nextUnit ? '继续' : '查看' }} ↗</span></button></section>
     </template>
   </section>
 </template>
