@@ -1,19 +1,9 @@
 # Frontend
 
-OwlOwlGo 的 H5 客户端，规划使用 Vue 3、TypeScript、Vite 和 Pinia。
+Vue 3 + TypeScript 客户端，已实现账号注册、登录、退出、游客入口，以及前测 → 诊断 → 方向选择 → 预设学习规划。
 
-目录职责：
+运行 `npm ci`、`npm run dev`，打开终端显示的本地地址；`npm run build` 验证类型和构建，`npm test` 检查组件交互。
 
-- `src/app/`：应用初始化、路由和全局状态；
-- `src/features/`：按业务能力拆分的页面与交互；
-- `src/shared/`：跨业务复用的组件、API 客户端、类型和工具；
-- `src/styles/`：全局样式与设计变量；
-- `tests/`：前端单元和组件测试。
+账号接口由 Vite 将 `/api` 代理到 `127.0.0.1:8000`，需启动后端；游客学习流程可独立运行。学习 mock 和真实账号 API 分别位于 `src/shared/api/demo.ts` 与 `auth.ts`。
 
-当前以架构骨架为基础，已补充拼音与声调测评 Demo，其余业务能力按 features 下目录占位。
-
-运行 npm ci、npm run dev 启动；npm run build 验证类型及生产构建。此阶段无需后端服务即可查看入口。
-
-## 当前演示入口
-
-已实现拼音与声调固定题目测评，运行 npm run dev 后访问 http://127.0.0.1:5173/。仅该模块提供交互；其他功能保留规划。题目内容与计分逻辑位于 src/features/phonetics，组件测试位于 tests/phonetics.test.ts。运行 npm test 检查交互流程。
+页面按 `src/features` 划分；账号组件位于 `auth`，流程编排位于 `assessment`，拼音测评位于 `phonetics`。登录后的学习状态、账号与会话通过后端 JSON 保存，游客仅保留本次页面。DeepSeek 分析配置见 [接入说明](../../docs/software/learning-agent.md)。详见 [账号说明](../../docs/software/accounts.md) 与 [演示说明](../../docs/software/demo-guide.md)。

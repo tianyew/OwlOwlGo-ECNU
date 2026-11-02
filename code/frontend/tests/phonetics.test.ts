@@ -1,4 +1,4 @@
-﻿// @vitest-environment happy-dom
+// @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createApp, nextTick, type App } from 'vue';
 import PhoneticsDemo from '../src/features/phonetics/PhoneticsDemo.vue';
@@ -10,11 +10,11 @@ async function clickButton(text: string) {
   const button = [...host.querySelectorAll('button')].find(item => item.textContent?.includes(text));
   expect(button).toBeDefined();
   button!.click();
-  await nextTick();
+  await nextTick(); await nextTick(); await nextTick();
 }
 async function choose(index: number) {
   (host.querySelectorAll('input')[index] as HTMLInputElement).click();
-  await nextTick();
+  await nextTick(); await nextTick(); await nextTick();
 }
 beforeEach(() => {
   host = document.createElement('div'); document.body.appendChild(host);
@@ -55,4 +55,11 @@ describe('fixed pinyin assessment', () => {
     expect(host.querySelectorAll('.breakdown article')).toHaveLength(3);
     expect(host.querySelectorAll('.review-wrong')).toHaveLength(0);
   });
+});
+
+// Keep the server evidence identical to the questions actually shown to learners.
+it('keeps backend assessment evidence aligned with the displayed question bank', async () => {
+  const { questions } = await import('../src/features/phonetics/questions');
+  const { default: items } = await import('../../backend/app/domain/learner/assessment_items.json');
+  expect(items).toEqual(questions);
 });
