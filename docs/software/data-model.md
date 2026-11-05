@@ -1,4 +1,4 @@
-﻿# 数据模型草案
+# 数据模型草案
 
 > 概念设计，尚未创建数据库表或迁移。ID 规划采用 UUID，时间统一保存 UTC，展示按用户时区转换。
 
@@ -22,6 +22,7 @@
 | MediaAsset | 类型（音频/笔顺）、地址、语言、来源、许可、审核状态 | 未授权资源不得发布 |
 | LearningSession / Attempt | 用户、plan_revision_id、plan_unit_id、任务版本、作答、正误、耗时、尝试序号、幂等键 | 一次提交最多处理一次；关联具体计划单元，独立复习会话可不绑定单元 |
 | LearnerKnowledgeState | 用户+知识点、掌握估计、置信度、练习时间、模型版本、状态版本 | 数据不足标记不确定 |
+| LearnerProfileSnapshot / ProfileCell | 用户、画像版本、评分策略版本、语言能力维度×Bloom层级、分数、置信度、证据数、支架偏好、证据ID | 未作答为证据不足而非0分；语言难度、认知层级和支架强度分别建模；详见[多维学习者能力画像架构](learner-profile-architecture.md) |
 | InterventionDecision | 会话、输入信号、0–4 级帮助、原因、策略版本 | 不介入也记录决策 |
 | ReviewSchedule | 用户+知识点、到期时间、复习次数、调度版本 | 去重与延迟测验可追踪 |
 | LearningEvent / RewardLedger | 事件类型、时间、会话、奖励依据、幂等键 | 不将重复提交重复计分 |
@@ -51,8 +52,12 @@ erDiagram
   TASK ||--o{ ATTEMPT : receives
   USER ||--o{ LEARNER_KNOWLEDGE_STATE : maintains
   KNOWLEDGE_POINT ||--o{ LEARNER_KNOWLEDGE_STATE : tracks
+  USER ||--o{ LEARNER_PROFILE_SNAPSHOT : owns
+  LEARNER_PROFILE_SNAPSHOT ||--o{ PROFILE_CELL : contains
+  ATTEMPT }o--o{ PROFILE_CELL : evidences
   LEARNING_SESSION ||--o{ INTERVENTION_DECISION : explains
   USER ||--o{ REVIEW_SCHEDULE : reviews
 ```
 
 正式 SQL schema 在选定首个纵向功能后细化。录音若后续引入，单独制定授权、保存期限和删除规则；当前架构不默认采集或保存音频。
+
