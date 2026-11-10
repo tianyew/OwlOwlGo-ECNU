@@ -11,6 +11,7 @@ from app.integrations.llm.deepseek import AnalysisUnavailable, DeepSeekClient
 from app.main import create_app
 from app.schemas.learning import KEY, PROMPT_VERSION, LearningState, evidence, fingerprint
 from app.services.agents.assessment import AnalysisContent, AssessmentAgent
+from tests.helpers import choose_topic, submit_quiz
 
 
 def login(client):
@@ -51,21 +52,21 @@ def setup(tmp_path):
 def test_roundtrip_partial_plan_and_isolation(setup):
     client, app, path, settings = setup
     state = LearningState().model_dump()
-    state["quiz"] = {
-        "stage": "quiz",
-        "current": 0,
-        "selected": 2,
-        "submitted": True,
-        "answers": [2],
+    state["drafts"] = {
+        "assessment": {
+            "content_version": 1,
+            "current": 0,
+            "answers": [{"question_id": "initial", "selected_index": 2}],
+        }
     }
     saved = client.put("/api/v1/learning/progress", json={"revision": 0, "state": state})
     assert saved.status_code == 200
     restarted = TestClient(create_app(path, settings=settings))
     login(restarted)
-    assert restarted.get("/api/v1/learning/progress").json()["state"] == state
-    saved = restarted.put("/api/v1/learning/progress", json={"revision": 1, "state": finished()})
-    assert saved.status_code == 200
-    assert client.get("/api/v1/learning/progress").json()["state"]["completed"] == {"travel": [0]}
+    assert restarted.get("/api/v1/learning/progress").json()["state"] == saved.json()["state"]
+    submit_quiz(restarted)
+    choose_topic(restarted)
+    assert restarted.get("/api/v1/learning/progress").json()["state"]["completed"]["travel"] == []
     other = TestClient(app)
     other.post(
         "/api/v1/auth/register",
@@ -123,7 +124,7 @@ def test_validation_conflict_and_origin(setup):
 
 def test_analysis_missing_key_cache_and_invalidation(setup):
     client, app, _, _ = setup
-    client.put("/api/v1/learning/progress", json={"revision": 0, "state": finished()})
+    submit_quiz(client)
     result = client.post("/api/v1/learning/analysis")
     assert result.status_code == 503 and "学习建议暂不可用" in result.json()["detail"]
     fake = Mock(
@@ -132,33 +133,35 @@ def test_analysis_missing_key_cache_and_invalidation(setup):
     app.state.agents.agents["assessment_review"].analyze = fake
     result = client.post("/api/v1/learning/analysis")
     assert result.status_code == 200
-    evidence = fake.call_args.args[0]
-    assert evidence["correct"] == 8
-    assert "admin" not in json.dumps(evidence)
+    assert fake.call_args.args[0]["correct"] == 8
+    assert "admin" not in json.dumps(fake.call_args.args[0])
     assert client.post("/api/v1/learning/analysis").json() == result.json()
     assert fake.call_count == 1
-    state = finished()
-    state["completed"] = {"travel": [0, 1]}
-    saved = client.put("/api/v1/learning/progress", json={"revision": 1, "state": state})
-    assert saved.json()["analysis"] == result.json()
+    choose_topic(client)
+    submit_quiz(client, "unit-travel-0")
+    assert client.get("/api/v1/learning/progress").json()["analysis"] == result.json()
     client.post("/api/v1/learning/analysis")
     assert fake.call_count == 1
-    state["quiz"]["answers"] = [1, *KEY[1:]]
-    saved = client.put("/api/v1/learning/progress", json={"revision": 2, "state": state})
-    assert saved.json()["analysis"] is None
+    revision = client.get("/api/v1/learning/progress").json()["revision"]
+    assert (
+        client.post("/api/v1/learning/assessment/reset", json={"revision": revision}).status_code
+        == 200
+    )
+    submit_quiz(client, answers=[1, *KEY[1:]])
+    assert client.get("/api/v1/learning/progress").json()["analysis"] is None
     client.post("/api/v1/learning/analysis")
     assert fake.call_count == 2
 
 
-def test_stale_analysis_does_not_overwrite_new_progress(setup):
+@pytest.mark.parametrize("same_answers", [False, True])
+def test_stale_analysis_does_not_overwrite_new_progress(setup, same_answers):
     client, app, _, _ = setup
-    client.put("/api/v1/learning/progress", json={"revision": 0, "state": finished()})
+    submit_quiz(client)
 
     def analyze(_):
-        changed = finished()
-        changed["quiz"]["answers"] = [1, *KEY[1:]]
-        user = client.get("/api/v1/auth/me").json()["id"]
-        app.state.learning.save(user, changed, 1)
+        revision = client.get("/api/v1/learning/progress").json()["revision"]
+        client.post("/api/v1/learning/assessment/reset", json={"revision": revision})
+        submit_quiz(client, answers=KEY if same_answers else [1, *KEY[1:]])
         return {"summary": "stale"}
 
     app.state.agents.agents["assessment_review"].analyze = analyze
@@ -255,10 +258,14 @@ def test_setup_completion_validation_and_legacy_migration(setup):
         ).status_code
         == 422
     )
-    state = finished()
+    submit_quiz(client)
+    saved = choose_topic(client)
+    state = saved["state"]
     state["onboarding_complete"] = True
     assert (
-        client.put("/api/v1/learning/progress", json={"revision": 0, "state": state}).status_code
+        client.put(
+            "/api/v1/learning/progress", json={"revision": saved["revision"], "state": state}
+        ).status_code
         == 200
     )
     assert client.get("/api/v1/learning/progress").json()["state"]["onboarding_complete"]

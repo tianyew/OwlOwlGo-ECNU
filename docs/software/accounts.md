@@ -4,7 +4,7 @@
 
 ## 启动与使用
 
-在 `code/backend` 安装 `python -m pip install -e ".[dev]"`，运行 `python -m uvicorn app.main:app --reload --host 127.0.0.1`。前端在 `code/frontend` 执行 `npm run dev`，通过前端地址访问。Vite 将 `/api` 转发到 `127.0.0.1:8000`，保持浏览器同源 Cookie。
+在 `code/backend` 安装 `python -m pip install -e ".[dev]"`，运行 `python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000`。前端在 `code/frontend` 执行 `npm run dev`，通过前端地址访问。Vite 将 `/api` 转发到 `127.0.0.1:8000`，保持浏览器同源 Cookie。
 
 首页可注册或登录，也可选择游客体验。默认演示账号为 `admin / admin`，无额外管理权限；后端启动时仅在账号不存在时创建，重启不会覆盖已有账号。设置 `OWL_SEED_DEMO_ACCOUNT=false` 可关闭自动创建（不会删除已经创建的账号）。账号为 3–32 位英文字母、数字或下划线，不区分大小写；密码 8–128 位；昵称 1–40 位。注册成功自动登录。退出后服务端会话失效。密码重置、邮箱验证和第三方登录尚未实现。
 

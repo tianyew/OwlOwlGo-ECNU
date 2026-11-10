@@ -5,7 +5,7 @@
 
 OwlOwlGo 是面向成年汉语学习者的 AI 游戏化汉语学习 H5 应用，目标是根据作答表现调整任务难度，并在合适时机提供渐进提示与讲解。项目采用 Vue 3 + TypeScript 前端和 Python + FastAPI 后端。
 
-**当前状态：汉语学习网页的架构与产品设计阶段。** 面向成年汉语初学者，优先验证来华留学生场景，结合语言学习与文化理解。已搭建前后端骨架、模块目录、静态项目入口，并形成产品定位、页面设计、数据模型和 API 边界。已补充“拼音与声调”的固定 8 题交互测评 Demo（即时反馈、解析、总分、分项结果与重测）。登录后进入 Home，按首次学习设置完成状态展示引导或日常学习面板。已加入 JSON 持久化账号注册、登录、退出、会话与学习进度恢复，以及可配置的 DeepSeek 学习分析，见 [配置说明](docs/software/learning-agent.md)。已串联“前测 → 诊断 → 方向选择 → 预设学习规划”，支持四个主题、修改方向和单元详情；通过本地 mock 接口读取数据，不依赖模型或数据库。运行、验收及汇报见 [原型演示说明](docs/software/demo-guide.md)。其他业务功能仍待实现。
+**当前状态：已实现服务端判分的学习原型。** 支持账号与会话、8 题拼音声调前测、4 个方向共 20 个单元、每个方向 10 题后测，以及基于真实作答的七维 × 六层证据画像。题库与课程由后端统一提供，登录用户的草稿、判分、完成记录和分析保存在 JSON 文件中。DeepSeek 可选用于前测建议，配置见[学习分析说明](docs/software/learning-agent.md)。操作与验收见[完整学习链路](docs/software/server-unit-demo.md)。PostgreSQL、RAG、LangGraph 和动态课程生成仍待实现。
 
 ## 快速开始
 
@@ -14,7 +14,7 @@ OwlOwlGo 是面向成年汉语学习者的 AI 游戏化汉语学习 H5 应用，
 - Node.js 22+、npm 10+；
 - Python 3.12+。
 
-账号注册和登录使用 FastAPI + 本地 JSON 文件，不依赖外部数据库或 LLM 服务；游客原型可独立体验。账号运行与迁移说明见 [账号体系](docs/software/accounts.md)。后续业务开发规划使用 PostgreSQL 17；Docker Compose 与环境变量说明见[开发与配置指南](docs/development.md)。
+账号注册和登录使用 FastAPI + 本地 JSON 文件，不依赖外部数据库或 LLM 服务；课程与题目浏览也需要启动后端，游客可预览，登录后可提交测验。账号运行与迁移说明见 [账号体系](docs/software/accounts.md)。后续业务开发规划使用 PostgreSQL 17；Docker Compose 与环境变量说明见[开发与配置指南](docs/development.md)。
 
 ### 1. 获取代码
 
@@ -48,7 +48,7 @@ source .venv/bin/activate
 
 ```bash
 python -m pip install -e ".[dev]"
-python -m uvicorn app.main:app --reload
+python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
 ### 3. 启动前端
@@ -74,7 +74,9 @@ Windows PowerShell 若无法执行 `npm.ps1`，使用 `npm.cmd install` 和 `npm
 curl http://localhost:8000/openapi.json
 ```
 
-Windows PowerShell 可使用 `Invoke-RestMethod http://localhost:8000/openapi.json`。当前响应包含应用信息与 `/api/v1/auth/` 下的四个账号接口。
+Windows PowerShell 可使用 `Invoke-RestMethod http://localhost:8000/openapi.json`。当前响应包含账号、课程、全部测验的取题和提交、学习进度、画像与前测分析接口。
+
+前测、全部单元和后测已接入后端判分与进度保存，运行和验收步骤见[完整学习链路](docs/software/server-unit-demo.md)。
 
 ## 仓库结构
 

@@ -1,5 +1,8 @@
 # API client
 
-`demo.ts` 提供本地异步 mock 接口：`getQuestions`、`submitAnswers`、`getTopics`、`getPlan`。本轮通过固定数据支持完整交互，后续在该层替换为 HTTP 请求并对齐后端契约。
+`curriculum.ts` 通过后端 `/api/v1/learning/curriculum` 获取课程。
+`learning.ts` 处理草稿进度、通用测验提交、前测重置、画像和 DeepSeek 分析。
+`auth.ts` 提供账号与会话接口。`demo.ts` 仅保留兼容类型导出。
 
-演示题目包含答案和解析，仅用于本地原型；正式测评需要服务端计分和不含答案的题目接口。认证、错误映射等 HTTP 能力尚待实现。
+题目接口不返回正确答案与解析；正式提交后才返回本账号的成绩和反馈。
+分数、完成状态和画像均使用后端结果。游客可浏览，登录后才能提交。

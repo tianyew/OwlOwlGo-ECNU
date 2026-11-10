@@ -60,7 +60,7 @@ def create_app(data_path: Path | None = None, settings: Settings | None = None) 
         # Never echo submitted password values in validation errors.
         if request.url.path.startswith("/api/v1/learning/"):
             return JSONResponse(
-                status_code=422, content={"detail": "学习进度格式不正确，请重新加载。"}
+                status_code=422, content={"detail": "学习请求格式不正确，请检查题目与答案后重试。"}
             )
         return JSONResponse(
             status_code=422,
