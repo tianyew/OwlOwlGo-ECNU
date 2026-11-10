@@ -25,7 +25,7 @@ it('requires all answers and displays the returned score and feedback', async ()
   const submit = await mount();
   expect((host.querySelector('button.primary') as HTMLButtonElement).disabled).toBe(true);
   expect(host.textContent).not.toContain('“左边”是方位词');
-  chooseBoth(); await settle(); await click(host, '提交礼貌问路');
+  chooseBoth(); await settle(); await click(host, '提交答案');
   expect(submit).toHaveBeenCalledOnce();
   expect(submit.mock.calls[0][0]).toBe(quizId);
   expect(host.querySelector('.quiz-result')?.textContent).toContain('50 分');
@@ -35,12 +35,12 @@ it('requires all answers and displays the returned score and feedback', async ()
 });
 it('keeps choices and the retry key after a lost response and uses a new key for a new attempt', async () => {
   const submit = vi.fn().mockRejectedValueOnce(new Error('连接失败')).mockResolvedValue(response());
-  await mount(submit); chooseBoth(); await settle(); await click(host, '提交礼貌问路');
+  await mount(submit); chooseBoth(); await settle(); await click(host, '提交答案');
   expect(host.textContent).toContain('连接失败'); expect(host.querySelectorAll('input:checked')).toHaveLength(2);
-  await click(host, '提交礼貌问路');
+  await click(host, '提交答案');
   const key = submit.mock.calls[0][1].submission_id;
   expect(submit.mock.calls[1][1].submission_id).toBe(key);
-  await click(host, '重新练习'); chooseBoth(); await settle(); await click(host, '提交礼貌问路');
+  await click(host, '重新练习'); chooseBoth(); await settle(); await click(host, '提交答案');
   expect(submit.mock.calls[2][1].submission_id).not.toBe(key);
 });
 it('restores latest feedback and a previously earned completion without submitting', async () => {

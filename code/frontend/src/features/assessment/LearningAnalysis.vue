@@ -6,7 +6,7 @@ function question(id: string) { return props.assessment?.items.find(item => item
 </script>
 <template>
   <section id="learning-analysis" class="analysis-panel" aria-label="个性化学习建议" :aria-busy="analyzing">
-    <p class="eyebrow">YOUR NEXT SMALL STEP</p><h2>从这次作答，找到下一步。</h2>
+    <h2>从这次作答，找到下一步。</h2>
     <p v-if="!signedIn">登录后，系统会分析作答并保留建议。</p>
     <p v-else-if="analyzing" role="status">正在结合你的作答逐题分析…你可以继续选择学习方向。</p>
     <p v-else-if="waiting" role="status">保存作答后将自动更新学习建议。</p>

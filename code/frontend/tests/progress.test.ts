@@ -56,7 +56,7 @@ it('does not analyze or display a successful pretest when submitting fails and c
   expect(host.textContent).toContain('提交连接失败');
   expect(learningApi.analyze).not.toHaveBeenCalled(); expect(store.saved.results.assessment).toBeUndefined();
   const first = vi.mocked(learningApi.submit).mock.calls[0][1];
-  await click(host, '提交拼音与声调前测');
+  await click(host, '提交答案');
   expect(vi.mocked(learningApi.submit).mock.calls[1][1]).toEqual(first);
   expect(host.querySelector('.score-circle strong')?.textContent).toBe('100');
 });
@@ -114,7 +114,7 @@ it('does not award a completion when unit submission fails', async () => {
   await mount(); await answerQuiz(host, 'unit-daily-0');
   expect(host.textContent).toContain('小测提交失败'); expect(store.saved.state.completed.daily ?? []).toEqual([]);
   expect(host.textContent).toContain('本方向已完成 0 / 5');
-  await click(host, '提交问候与自我介绍');
+  await click(host, '提交答案');
   expect(host.textContent).toContain('本方向已完成 1 / 5');
 });
 it('shows profile data returned by the backend including unmeasured cells', async () => {
@@ -154,4 +154,56 @@ it('handles a grading revision conflict by requiring the latest saved progress',
   await click(host, '重新加载已保存进度');
   expect(host.querySelector('.save-status')).toBeNull();
   expect(learningApi.submit).toHaveBeenCalledOnce();
+});
+
+it('uses workspace navigation without resetting the current course or previous scores', async () => {
+  withAssessment(store.saved, 'travel'); store.saved.state.onboarding_complete = true;
+  await mount(false);
+  const nav = host.querySelector('.workspace-nav') as HTMLElement;
+  expect(nav.querySelector('[aria-current="page"]')?.textContent).toContain('学习首页');
+  await click(nav, '学习方向');
+  expect(host.querySelector('.topic-grid')).not.toBeNull();
+  await click(nav, '我的学习');
+  expect(host.querySelector('.unit-page-heading')?.textContent).toContain('礼貌问路');
+  expect(host.querySelector('.topic-grid')).toBeNull();
+  await click(nav, '学习画像');
+  expect(host.querySelectorAll('.profile-table td')).toHaveLength(42);
+  await click(nav, '学习首页');
+  expect(host.querySelector('[aria-label="学习首页"]')).not.toBeNull();
+  expect(store.saved.results.assessment.score).toBe(100);
+  expect(learningApi.reset).not.toHaveBeenCalled();
+  expect(learningApi.submit).not.toHaveBeenCalled();
+});
+
+it('jumps to unanswered questions and preserves answers when returning through Home', async () => {
+  await mount(); await click(host, '开始测评');
+  (host.querySelector('.practice-question input') as HTMLInputElement).click(); await settle();
+  const map = host.querySelector('.question-map')!;
+  expect(map.querySelectorAll('button.answered')).toHaveLength(1);
+  (map.querySelectorAll('button')[7] as HTMLButtonElement).click(); await settle();
+  expect(host.textContent).toContain('第 8 / 8 题');
+  expect(host.textContent).toContain('还有 7 题待完成');
+  expect((host.querySelector('.quiz-submit-area > button.primary') as HTMLButtonElement).disabled).toBe(true);
+  expect(store.saved.state.drafts.assessment.current).toBe(7);
+  await click(host.querySelector('.workspace-nav') as HTMLElement, '学习首页');
+  expect(host.textContent).toContain('前测已作答 1 / 8 题');
+  await click(host, '继续完成学习设置');
+  expect(host.textContent).toContain('第 8 / 8 题');
+  (host.querySelector('.question-map button') as HTMLButtonElement).click(); await settle();
+  expect(host.querySelector('input:checked')).not.toBeNull();
+  expect(learningApi.submit).not.toHaveBeenCalled();
+});
+
+it('announces saving, failure and recovery without claiming unsaved answers are saved', async () => {
+  await mount(); await click(host, '开始测评');
+  let rejectSave!: (reason: Error) => void;
+  vi.mocked(learningApi.save).mockImplementationOnce(() => new Promise((_, reject) => { rejectSave = reject; }));
+  (host.querySelector('.practice-question input') as HTMLInputElement).click(); await settle();
+  expect(host.querySelector('.sync-indicator')?.textContent).toContain('正在保存进度');
+  rejectSave(new Error('网络已断开')); await settle();
+  expect(host.querySelector('.sync-indicator')?.textContent).toContain('进度尚未保存');
+  expect(host.querySelector('input:checked')).not.toBeNull();
+  await click(host, '重试保存');
+  expect(host.querySelector('.sync-indicator')?.textContent).toContain('进度已保存');
+  expect(store.saved.state.drafts.assessment.answers).toHaveLength(1);
 });

@@ -21,9 +21,9 @@ const tones = [
 </script>
 <template>
   <section class="phonetics-demo">
-    <div class="section-heading"><div><p class="eyebrow">PINYIN & TONES / 入门小测</p><h1>{{ result ? '看看你的声调起点' : '拼音与声调' }}</h1></div></div>
+    <div class="section-heading"><div><h1>{{ result ? '看看你的声调起点' : '拼音与声调' }}</h1></div></div>
     <template v-if="!started">
-      <div class="welcome"><div><span class="overline">先认识声音，再走进汉语。</span><h2>同一个 ma，<br>四种声调，四种意思。</h2><p>从拼音结构到四声辨识，再到日常连读中的变调。用一组小题，找到你的学习起点。</p><p class="muted" lang="en">A short quiz on pinyin, four tones and basic tone changes.</p><button class="primary" @click="started = true">开始测评 →</button><div class="quiz-meta"><span>8 道选择题</span><span>约 3 分钟</span><span>全部提交后查看解析</span></div></div><div class="tone-art"><span class="tone-character">声</span><p>mā · má · mǎ · mà</p></div></div>
+      <div class="welcome"><div><h2>同一个 ma，<br>四种声调，四种意思。</h2><p>从拼音结构到四声辨识，再到日常连读中的变调。用一组小题，找到你的学习起点。</p><button class="primary" @click="started = true">开始测评 →</button><p class="hero-meta">8 道题 · 约 3 分钟</p></div><div class="tone-art"><span class="tone-character">声</span><p>mā · má · mǎ · mà</p></div></div>
       <div class="tones" aria-label="四声速览"><article v-for="tone in tones" :key="tone.name"><div class="tone-label"><strong>{{ tone.mark }}</strong><span>{{ tone.name }}</span></div><svg viewBox="0 0 120 88" role="img" :aria-label="tone.note"><path :d="tone.path" /></svg><p>{{ tone.note }}</p></article></div>
     </template>
     <template v-else>

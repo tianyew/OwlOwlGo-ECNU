@@ -44,3 +44,34 @@ it('lets a guest preview the server curriculum without producing scores or profi
   expect(host.textContent).toContain('登录后可提交');
   expect(learningApi.save).not.toHaveBeenCalled(); expect(learningApi.submit).not.toHaveBeenCalled();
 });
+
+it('keeps guest navigation read-only while exposing the course overview', async () => {
+  app = createApp(LearningJourney); app.mount(host); await settle();
+  const nav = host.querySelector('.workspace-nav') as HTMLElement;
+  const profile = [...nav.querySelectorAll('button')].find(button => button.textContent?.includes('学习画像'))!;
+  expect(profile.disabled).toBe(true);
+  await click(nav, '学习首页');
+  expect(host.querySelectorAll('.discover-card')).toHaveLength(4);
+  expect(host.textContent).toContain('游客浏览模式');
+  await click(nav, '学习方向');
+  expect(host.querySelectorAll('.topic-card')).toHaveLength(4);
+  await click(nav, '我的学习');
+  expect(host.querySelector('.phonetics-demo')).not.toBeNull();
+  expect(learningApi.save).not.toHaveBeenCalled();
+  expect(learningApi.submit).not.toHaveBeenCalled();
+});
+
+it('opens every lesson from the learning path while preserving completed units', async () => {
+  withAssessment(store.saved, 'travel'); store.saved.state.onboarding_complete = true;
+  store.saved.state.completed.travel = [0, 2];
+  app = createApp(LearningJourney, { userId: 'tester' }); app.mount(host); await settle();
+  expect(host.querySelectorAll('.learning-path .path-completed')).toHaveLength(2);
+  expect(host.querySelector('.learning-path [aria-current="step"]')?.textContent).toContain(topics[0].units[1].title);
+  for (const [index, unit] of topics[0].units.entries()) {
+    (host.querySelectorAll('.learning-path .home-unit')[index] as HTMLButtonElement).click(); await settle();
+    expect(host.querySelector('.unit-page-heading')?.textContent).toContain(unit.title);
+    await click(host.querySelector('.workspace-nav') as HTMLElement, '学习首页');
+  }
+  expect(store.saved.state.completed.travel).toEqual([0, 2]);
+  expect(learningApi.submit).not.toHaveBeenCalled();
+});

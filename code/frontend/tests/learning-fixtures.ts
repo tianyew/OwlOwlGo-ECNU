@@ -104,5 +104,5 @@ export async function answerQuiz(host: HTMLElement, id: string) {
     (fieldset!.querySelectorAll('input')[question.answer] as HTMLInputElement).click(); await settle();
     if (!id.startsWith('unit-') && index < questions.length - 1) await click(host, '下一题');
   }
-  await click(host, '提交' + quizFixture(id).title);
+  await click(host, '提交答案');
 }

@@ -66,30 +66,30 @@ function guest() { showForm.value = false; error.value = ''; password.value = ''
   <template v-else>
     <div class="account-bar">
       <span v-if="user">你好，<strong>{{ user.display_name }}</strong> <small>@{{ user.username }}</small></span>
-      <span v-else>游客体验 <small>Guest</small></span>
+      <span v-else>游客体验</span>
       <button v-if="user" class="secondary" :disabled="busy || learningBusy" @click="logout">{{ busy ? '正在退出…' : '退出登录' }}</button>
       <button v-else-if="!showForm" class="secondary" @click="showForm = true; error = ''">登录 / 注册</button>
     </div>
     <p v-if="error" class="account-error" role="alert">{{ error }}</p>
     <div v-if="showForm" class="account-layout">
       <aside class="account-story">
-        <p class="eyebrow">A LITTLE CHINESE. EVERY DAY.</p>
+
         <h2>让中文，<br><span>走进你的日常。</span></h2>
         <p>从一句问候，到一场对话。<br>找到适合你的起点，以自己的节奏向前。</p>
         <div class="story-art" aria-hidden="true"><span class="language-tile">你</span><span class="language-tile">nǐ</span></div>
-        <div class="story-caption"><span><i></i>了解你的起点</span><span><i></i>探索你的兴趣</span></div>
+
       </aside>
       <section class="account-card">
-      <p class="eyebrow">WELCOME TO OWLOWLGO</p>
+
       <h1>{{ mode === 'register' ? '创建你的学习账号' : '欢迎回来' }}</h1>
       <p>{{ mode === 'register' ? '注册后自动登录，开启你的中文之旅。' : '登录账号，或以游客身份体验学习流程。' }}</p>
       <form @submit.prevent="submit">
-        <label v-if="mode === 'register'">昵称 Display name<input v-model="displayName" required maxlength="40" autocomplete="nickname" :disabled="busy"></label>
-        <label>账号 Username<input v-model="username" required minlength="3" maxlength="32" pattern="[A-Za-z0-9_]{3,32}" autocomplete="username" autocapitalize="none" spellcheck="false" :disabled="busy" aria-describedby="username-help"></label>
-        <small id="username-help">3–32 位英文字母、数字或下划线，不区分大小写。</small>
-        <label>密码 Password<input v-model="password" type="password" required :minlength="mode === 'register' ? 8 : 1" maxlength="128" :autocomplete="mode === 'register' ? 'new-password' : 'current-password'" :disabled="busy" aria-describedby="password-help"></label>
-        <small id="password-help">{{ mode === 'register' ? '8–128 位，建议使用较长且不重复使用的密码。' : '请输入账号密码。' }}</small>
-        <label v-if="mode === 'register'">确认密码 Confirm password<input v-model="confirmation" type="password" required minlength="8" maxlength="128" autocomplete="new-password" :disabled="busy"></label>
+        <label v-if="mode === 'register'">昵称<input v-model="displayName" required maxlength="40" autocomplete="nickname" :disabled="busy"></label>
+        <label>账号<input v-model="username" required minlength="3" maxlength="32" pattern="[A-Za-z0-9_]{3,32}" autocomplete="username" autocapitalize="none" spellcheck="false" :disabled="busy" :aria-describedby="mode === 'register' ? 'username-help' : undefined"></label>
+        <small v-if="mode === 'register'" id="username-help">3–32 位字母、数字或下划线。</small>
+        <label>密码<input v-model="password" type="password" required :minlength="mode === 'register' ? 8 : 1" maxlength="128" :autocomplete="mode === 'register' ? 'new-password' : 'current-password'" :disabled="busy" :aria-describedby="mode === 'register' ? 'password-help' : undefined"></label>
+        <small v-if="mode === 'register'" id="password-help">8–128 位。</small>
+        <label v-if="mode === 'register'">确认密码<input v-model="confirmation" type="password" required minlength="8" maxlength="128" autocomplete="new-password" :disabled="busy"></label>
         <button class="primary" type="submit" :disabled="busy">{{ busy ? '正在处理…' : mode === 'register' ? '注册并登录' : '登录' }}</button>
       </form>
       <div class="account-links"><button class="secondary" :disabled="busy" @click="switchMode">{{ mode === 'register' ? '已有账号？去登录' : '没有账号？去注册' }}</button><button class="secondary" :disabled="busy" @click="guest">先以游客体验</button></div>
