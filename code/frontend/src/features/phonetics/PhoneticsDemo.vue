@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import ServerUnitQuiz from '../assessment/ServerUnitQuiz.vue';
+import type { CompanionQuizContext } from '../companion/demo';
 import type { QuizDraft, QuizResult, QuizSubmission, SubmissionResponse } from '../../shared/api/learning';
 const props = defineProps<{
   signedIn: boolean; disabled: boolean; draft?: QuizDraft; result?: QuizResult;
   submit: (quizId: string, body: QuizSubmission) => Promise<SubmissionResponse>;
 }>();
-const emit = defineEmits<{ complete: []; restart: []; browse: []; draft: [id: string, draft: QuizDraft] }>();
+const emit = defineEmits<{ complete: []; restart: []; browse: []; draft: [id: string, draft: QuizDraft]; context: [value: CompanionQuizContext] }>();
 const started = ref(Boolean(props.draft || props.result));
 const breakdown = computed(() => [...new Set(props.result?.items.map(item => item.category) ?? [])].map(category => {
   const items = props.result!.items.filter(item => item.category === category);
@@ -30,7 +31,7 @@ const tones = [
       <div v-if="result" class="result-hero"><div class="score-circle"><strong>{{ result.score }}</strong><span>/ 100</span></div><div><h2>本次前测结果</h2><p>答对 {{ result.correct }} / {{ result.total }} 题</p></div></div>
       <div v-if="result" class="breakdown"><article v-for="item in breakdown" :key="item.category"><strong>{{ item.category }}</strong><span>{{ item.correct }} / {{ item.total }}</span></article></div>
       <slot v-if="result" name="analysis" />
-      <ServerUnitQuiz quiz-id="assessment" :signed-in="signedIn" :disabled="disabled" :draft="draft" :submit="submit" @draft="(id, value) => emit('draft', id, value)" />
+      <ServerUnitQuiz quiz-id="assessment" :signed-in="signedIn" :disabled="disabled" :draft="draft" :submit="submit" @draft="(id, value) => emit('draft', id, value)" @context="emit('context', $event)" />
       <div v-if="result" class="question-actions"><button class="secondary" :disabled="disabled" @click="emit('restart')">重新测评</button><button class="primary" :disabled="disabled" @click="emit('complete')">选择学习方向 →</button></div>
     </template>
     <button v-if="!signedIn" class="secondary" @click="emit('browse')">先浏览学习方向 →</button>

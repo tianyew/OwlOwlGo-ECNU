@@ -10,6 +10,8 @@ import LearningAnalysis from './LearningAnalysis.vue';
 import LearnerProfile from './LearnerProfile.vue';
 import FinalReport from './FinalReport.vue';
 import AppIcon from '../../shared/components/AppIcon.vue';
+import StudyCompanion from '../companion/StudyCompanion.vue';
+import type { CompanionContext, CompanionQuizContext } from '../companion/demo';
 const props = defineProps<{ userId?: string; displayName?: string }>();
 const emit = defineEmits<{ savingChange: [value: boolean] }>();
 const signedIn = computed(() => Boolean(props.userId));
@@ -49,6 +51,50 @@ const workspace = ref<HTMLElement>();
 const navActive = computed(() => view.value === 'home' ? 'home' : view.value === 'profile' || view.value === 'report' ? 'profile' : state.value.stage === 'topics' ? 'topics' : 'learn');
 const pageTitle = computed(() => ({ home: '学习首页', profile: '学习记录', topics: '探索学习方向', learn: '我的学习' })[navActive.value]);
 const completedCount = computed(() => (state.value.completed[state.value.topic ?? ''] ?? []).length);
+const companionQuiz = ref<CompanionQuizContext | null>(null);
+const companionQuizId = computed(() => {
+  if (view.value !== 'journey' || state.value.stage === 'topics') return null;
+  if (state.value.stage === 'assessment') return 'assessment';
+  if (outcome.value === 'posttest') return plan.value?.posttest_id ?? null;
+  if (outcome.value === 'plan') return plan.value?.units[openedUnit.value]?.quiz_id ?? null;
+  return null;
+});
+function updateCompanionQuiz(value: CompanionQuizContext) {
+  if (value.quizId === companionQuizId.value) companionQuiz.value = value;
+}
+watch([companionQuizId, restoredKey], () => { companionQuiz.value = null; }, { flush: 'sync' });
+const companionContext = computed<CompanionContext>(() => {
+  let scene: CompanionContext['scene'] = 'welcome';
+  if (!loading.value && !loadError.value) {
+    scene = view.value === 'home' ? 'home' : view.value === 'profile' ? 'profile'
+      : view.value === 'report' ? 'report' : state.value.stage === 'assessment' ? 'assessment'
+      : state.value.stage === 'topics' ? 'topics' : outcome.value === 'posttest' ? 'posttest'
+      : outcome.value === 'final' ? 'report' : 'lesson';
+  }
+  const unit = scene === 'lesson' ? plan.value?.units[openedUnit.value] : undefined;
+  const quiz = companionQuiz.value?.quizId === companionQuizId.value ? companionQuiz.value : null;
+  const submitted = quiz?.submitted ?? false;
+  const result = quiz && submitted ? results.value[quiz.quizId] : undefined;
+  const recent = signedIn.value ? Object.values(results.value).sort((a, b) =>
+    (Date.parse(b.created_at ?? '') || 0) - (Date.parse(a.created_at ?? '') || 0)) : [];
+  const review = quiz ? (submitted && result ? [result] : [])
+    : ['home', 'profile', 'report'].includes(scene) ? recent : [];
+  const labels = { welcome: '学习空间', home: '学习首页', topics: '选择学习方向',
+    assessment: '拼音与声调前测', posttest: `${plan.value?.title ?? ''} · 方向后测`,
+    lesson: `${plan.value?.title ?? ''} · 第 ${openedUnit.value + 1} 单元`,
+    profile: '我的学习画像', report: view.value === 'report' ? '前测报告' : '阶段学习报告' };
+  return {
+    key: `${scene}:${unit?.id ?? ''}:${quiz?.question.id ?? companionQuizId.value ?? ''}:${submitted ? result?.submission_id ?? 'result' : 'practice'}`,
+    scene, label: unit ? `${labels.lesson} · ${unit.title}` : labels[scene], signedIn: signedIn.value,
+    lesson: unit ? { title: unit.title, goal: unit.goal, grammar: unit.grammar, example: unit.example, words: unit.words } : undefined,
+    question: quiz?.question, submitted,
+    mistakes: review.flatMap(item => item.items.filter(q => !q.is_correct).map(q => ({
+      prompt: q.prompt, selected: q.options[q.selected_index], correct: q.options[q.correct_index], explanation: q.explanation,
+    }))).slice(0, 3),
+    profile: signedIn.value && profile.value ? { evidenceCount: profile.value.evidence_count,
+      repeatCount: profile.value.repeat_count, focusAreas: profile.value.focus_areas, nextSteps: profile.value.next_steps } : undefined,
+  };
+});
 function resumeLearning() { view.value = 'journey'; outcome.value = 'plan'; void focusHeading(); }
 function goLearning() {
   if (plan.value) openPlan(openedUnit.value);
@@ -216,9 +262,9 @@ onBeforeUnmount(() => { disposed = true; window.removeEventListener('beforeunloa
     <template v-else>
       <button v-if="signedIn" class="text-button back-home" @click="goHome">← 返回首页</button>
       <nav class="journey-steps" aria-label="学习流程"><span :aria-current="state.stage === 'assessment' ? 'step' : undefined">01 前测与诊断</span><span :aria-current="state.stage === 'topics' ? 'step' : undefined">02 选择方向</span><span :aria-current="state.stage === 'plan' && outcome === 'plan' ? 'step' : undefined">03 学习规划</span><span :aria-current="outcome === 'posttest' ? 'step' : undefined">04 后测</span><span :aria-current="outcome === 'final' ? 'step' : undefined">05 学习报告</span></nav>
-      <PhoneticsDemo v-if="state.stage === 'assessment'" :key="restoredKey" :signed-in="signedIn" :disabled="blocked" :draft="state.drafts.assessment" :result="assessment" :submit="submitQuiz" @draft="updateDraft" @complete="selectTopic" @restart="restart" @browse="selectTopic"><template #analysis><LearningAnalysis :analysis="analysis" :assessment="assessment" :analyzing="analyzing" :error="analysisError" :signed-in="signedIn" :waiting="blocked" @retry="runAnalysis" /></template></PhoneticsDemo>
+      <PhoneticsDemo v-if="state.stage === 'assessment'" :key="restoredKey" :signed-in="signedIn" :disabled="blocked" :draft="state.drafts.assessment" :result="assessment" :submit="submitQuiz" @draft="updateDraft" @context="updateCompanionQuiz" @complete="selectTopic" @restart="restart" @browse="selectTopic"><template #analysis><LearningAnalysis :analysis="analysis" :assessment="assessment" :analyzing="analyzing" :error="analysisError" :signed-in="signedIn" :waiting="blocked" @retry="runAnalysis" /></template></PhoneticsDemo>
       <section v-else-if="outcome === 'final' && plan && postResult && profile" class="journey-panel"><FinalReport :topic="plan.title" :result="postResult" :assessment="assessment" :completed="(state.completed[plan.id] ?? []).length" :topic-complete="topicCompletion[plan.id] ?? false" :profile="profile" @plan="openPlan()" @retry="retryPost" /></section>
-      <section v-else-if="outcome === 'posttest' && plan" class="journey-panel"><h1 ref="heading" tabindex="-1">{{ plan.title }} · 后测</h1><p>回顾五个单元的词句理解与情境辨识，完成 10 道题后提交。</p><ServerUnitQuiz :key="plan.posttest_id + restoredKey + quizViewKey" :quiz-id="plan.posttest_id" :signed-in="signedIn" :disabled="blocked" :draft="state.drafts[plan.posttest_id]" :submit="submitQuiz" @draft="updateDraft" /><div class="question-actions"><button class="secondary" @click="openPlan()">返回学习规划</button><button v-if="postResult && !state.drafts[plan.posttest_id]" class="primary" @click="outcome = 'final'">查看学习报告 →</button></div></section>
+      <section v-else-if="outcome === 'posttest' && plan" class="journey-panel"><h1 ref="heading" tabindex="-1">{{ plan.title }} · 后测</h1><p>回顾五个单元的词句理解与情境辨识，完成 10 道题后提交。</p><ServerUnitQuiz :key="plan.posttest_id + restoredKey + quizViewKey" :quiz-id="plan.posttest_id" :signed-in="signedIn" :disabled="blocked" :draft="state.drafts[plan.posttest_id]" :submit="submitQuiz" @draft="updateDraft" @context="updateCompanionQuiz" /><div class="question-actions"><button class="secondary" @click="openPlan()">返回学习规划</button><button v-if="postResult && !state.drafts[plan.posttest_id]" class="primary" @click="outcome = 'final'">查看学习报告 →</button></div></section>
       <section v-else class="journey-panel">
         <div class="section-heading"><div><h1 ref="heading" tabindex="-1">{{ state.stage === 'topics' ? '想用汉语探索什么？' : plan?.title + ' · 学习规划' }}</h1></div></div>
         <aside v-if="diagnosis" class="diagnosis-summary"><strong>本次前测 {{ diagnosis.score }} / 100</strong><p>{{ diagnosis.advice }}</p></aside>
@@ -227,7 +273,7 @@ onBeforeUnmount(() => { disposed = true; window.removeEventListener('beforeunloa
           <div v-if="!state.onboarding_complete && signedIn" class="setup-finish"><div><strong>你的第一份学习规划已准备好。</strong></div><button class="primary" :disabled="blocked" @click="finishSetup">完成设置，进入首页 →</button></div>
           <p>本方向已完成 {{ (state.completed[plan.id] ?? []).length }} / {{ plan.units.length }} 个单元</p><details class="context-help"><summary>学习安排</summary><p>{{ plan.description }}</p><p>{{ plan.schedule }}</p></details><p v-if="topicCompletion[plan.id]">本方向已完成，欢迎继续复习。</p>
           <nav class="pagination" aria-label="学习单元分页"><button class="secondary" :disabled="openedUnit === 0" @click="turnUnit(openedUnit - 1)">← 上一单元</button><span>第 {{ openedUnit + 1 }} / {{ plan.units.length }} 单元</span><button class="secondary" :disabled="openedUnit === plan.units.length - 1" @click="turnUnit(openedUnit + 1)">下一单元 →</button></nav>
-          <ol class="unit-list"><li v-for="{ unit, index } in [{ unit: plan.units[openedUnit], index: openedUnit }]" :key="plan.id + index"><article class="unit-page"><header class="unit-page-heading"><span class="unit-number">{{ (state.completed[plan.id] ?? []).includes(index) ? '✓' : index + 1 }}</span><span><strong>{{ unit.title }}</strong></span><span>{{ (state.completed[plan.id] ?? []).includes(index) ? '已完成 · 复习' : '开始学习' }}</span></header><div class="unit-detail"><h3>这一课，你可以做到</h3><p>{{ unit.goal }}</p><p><strong>词汇与拼音：</strong>{{ unit.words }}</p><div class="lesson-note"><strong>核心句型</strong><p>{{ unit.grammar }}</p><p>{{ unit.example }}</p></div><h3>走进真实情境</h3><div class="lesson-dialogue"><p v-for="(line, i) in unit.dialogue" :key="i">{{ line }}</p></div><h3>从理解到运用</h3><ol class="practice-tasks"><li v-for="task in unit.practices" :key="task">{{ task }}</li></ol><ServerUnitQuiz :key="unit.quiz_id + restoredKey" :quiz-id="unit.quiz_id" :signed-in="signedIn" :disabled="blocked" :draft="state.drafts[unit.quiz_id]" :submit="submitQuiz" @draft="updateDraft" /></div></article></li></ol>
+          <ol class="unit-list"><li v-for="{ unit, index } in [{ unit: plan.units[openedUnit], index: openedUnit }]" :key="plan.id + index"><article class="unit-page"><header class="unit-page-heading"><span class="unit-number">{{ (state.completed[plan.id] ?? []).includes(index) ? '✓' : index + 1 }}</span><span><strong>{{ unit.title }}</strong></span><span>{{ (state.completed[plan.id] ?? []).includes(index) ? '已完成 · 复习' : '开始学习' }}</span></header><div class="unit-detail"><h3>这一课，你可以做到</h3><p>{{ unit.goal }}</p><p><strong>词汇与拼音：</strong>{{ unit.words }}</p><div class="lesson-note"><strong>核心句型</strong><p>{{ unit.grammar }}</p><p>{{ unit.example }}</p></div><h3>走进真实情境</h3><div class="lesson-dialogue"><p v-for="(line, i) in unit.dialogue" :key="i">{{ line }}</p></div><h3>从理解到运用</h3><ol class="practice-tasks"><li v-for="task in unit.practices" :key="task">{{ task }}</li></ol><ServerUnitQuiz :key="unit.quiz_id + restoredKey" :quiz-id="unit.quiz_id" :signed-in="signedIn" :disabled="blocked" :draft="state.drafts[unit.quiz_id]" :submit="submitQuiz" @draft="updateDraft" @context="updateCompanionQuiz" /></div></article></li></ol>
           <nav class="pagination" aria-label="单元底部分页"><button class="secondary" :disabled="openedUnit === 0" @click="turnUnit(openedUnit - 1)">← 上一单元</button><span>第 {{ openedUnit + 1 }} / {{ plan.units.length }} 单元</span><button v-if="openedUnit < plan.units.length - 1" class="primary" @click="turnUnit(openedUnit + 1)">下一单元 →</button><button v-else class="primary" @click="openPost">进入后测 →</button></nav>
           <article class="posttest-entry"><div><h2>学习之后，看看掌握了多少。</h2><p>可先尝试后测了解待复习内容；方向完成需要五个单元均通过，且后测曾达到 60 分。</p></div><button class="primary" @click="openPost">{{ postResult ? '查看后测结果' : '开始后测' }} →</button></article>
           <nav class="plan-tools" aria-label="学习管理">
@@ -241,4 +287,5 @@ onBeforeUnmount(() => { disposed = true; window.removeEventListener('beforeunloa
     </fieldset>
     </div>
   </div>
+  <StudyCompanion :context="companionContext" />
 </template>

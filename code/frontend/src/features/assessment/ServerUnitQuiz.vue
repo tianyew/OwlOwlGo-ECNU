@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import AppIcon from '../../shared/components/AppIcon.vue';
+import type { CompanionQuizContext } from '../companion/demo';
 import { learningApi, type Quiz, type QuizDraft, type QuizResult, type QuizSubmission, type SubmissionResponse } from '../../shared/api/learning';
 const props = defineProps<{
   quizId: string; disabled: boolean; signedIn: boolean; draft?: QuizDraft;
   submit: (quizId: string, body: QuizSubmission) => Promise<SubmissionResponse>;
 }>();
-const emit = defineEmits<{ draft: [quizId: string, draft: QuizDraft]; loaded: [quiz: Quiz]; result: [value: QuizResult] }>();
+const emit = defineEmits<{ draft: [quizId: string, draft: QuizDraft]; loaded: [quiz: Quiz]; result: [value: QuizResult]; context: [value: CompanionQuizContext] }>();
 const quiz = ref<Quiz>();
 const answers = ref<Record<string, number>>({});
 const result = ref<QuizResult | null>(null);
@@ -15,6 +16,7 @@ const loading = ref(true);
 const submitting = ref(false);
 const error = ref('');
 const page = ref(0);
+const focusedQuestion = ref<string | null>(null);
 const panel = ref<HTMLElement>();
 let submissionId = '';
 let disposed = false;
@@ -22,6 +24,12 @@ const paginated = computed(() => quiz.value?.kind !== 'unit');
 const visible = computed(() => quiz.value?.questions.map((question, index) => ({ question, index })).filter(item => !paginated.value || item.index === page.value) ?? []);
 const ready = computed(() => Boolean(quiz.value?.questions.every(q => Number.isInteger(answers.value[q.id]))));
 const answered = computed(() => Object.keys(answers.value).length);
+const companionQuestion = computed(() => quiz.value?.questions.find(q => q.id === focusedQuestion.value) ?? quiz.value?.questions[page.value]);
+watch([companionQuestion, () => Boolean(result.value)], () => {
+  const question = companionQuestion.value;
+  if (question) emit('context', { quizId: props.quizId, submitted: Boolean(result.value),
+    question: { id: question.id, prompt: question.prompt, category: question.category } });
+}, { flush: 'post' });
 async function load() {
   loading.value = true; error.value = '';
   try {
@@ -44,13 +52,16 @@ function saveDraft() {
     answers: quiz.value.questions.filter(q => Number.isInteger(answers.value[q.id])).map(q => ({ question_id: q.id, selected_index: answers.value[q.id] })) });
 }
 function choose(id: string, index: number) {
+  focusedQuestion.value = id;
   answers.value = { ...answers.value, [id]: index }; submissionId = ''; error.value = ''; saveDraft();
 }
 async function turn(index: number) {
   if (!quiz.value || index < 0 || index >= quiz.value.questions.length) return;
+  focusedQuestion.value = null;
   page.value = index; saveDraft(); await nextTick(); panel.value?.focus();
 }
 function retry() {
+  focusedQuestion.value = null;
   result.value = null; answers.value = {}; page.value = 0; submissionId = ''; error.value = ''; saveDraft();
 }
 async function submit() {
@@ -84,7 +95,7 @@ onBeforeUnmount(() => { disposed = true; });
       <p v-if="paginated" class="quiz-page-status" role="status">第 {{ page + 1 }} / {{ quiz.questions.length }} 题 · 已作答 {{ answered }} / {{ quiz.questions.length }}</p>
       <progress :value="answered" :max="quiz.questions.length" aria-label="测验作答进度"></progress>
       <nav v-if="paginated" class="question-map" aria-label="快速跳转题目"><button v-for="(question, index) in quiz.questions" :key="question.id" :aria-label="`第 ${index + 1} 题，${Number.isInteger(answers[question.id]) ? '已作答' : '未作答'}`" :aria-current="page === index ? 'step' : undefined" :class="{ answered: Number.isInteger(answers[question.id]) }" :disabled="submitting" @click="turn(index)">{{ index + 1 }}<span v-if="Number.isInteger(answers[question.id])" class="answer-dot" aria-hidden="true"></span></button></nav>
-      <fieldset v-for="{ question, index } in visible" :key="question.id" class="practice-question" :disabled="Boolean(result) || submitting || !signedIn">
+      <fieldset v-for="{ question, index } in visible" :key="question.id" class="practice-question" :disabled="Boolean(result) || submitting || !signedIn" @focusin="focusedQuestion = question.id">
         <legend>{{ index + 1 }}. {{ question.prompt }}</legend><p v-if="question.example" class="question-example">{{ question.example }}</p><p v-if="question.subtitle" class="muted" lang="en">{{ question.subtitle }}</p>
         <label v-for="(option, choice) in question.options" :key="choice" class="practice-option" :class="{
           chosen: answers[question.id] === choice,
