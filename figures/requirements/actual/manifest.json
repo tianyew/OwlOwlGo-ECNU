@@ -1,0 +1,122 @@
+{
+  "captured_at": "2026-11-16",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "source": "Current unmodified Vite + FastAPI on localhost; isolated temporary JSON data; external AI disabled",
+  "screens": [
+    {
+      "id": "F01",
+      "title": "登录",
+      "file": "F01-login.png",
+      "entry": "打开应用，未登录时显示",
+      "component": "AccountGate.vue / showForm=true, mode=login"
+    },
+    {
+      "id": "F02",
+      "title": "注册",
+      "file": "F02-register.png",
+      "entry": "F01 → 没有账号？去注册",
+      "component": "AccountGate.vue / mode=register"
+    },
+    {
+      "id": "F03",
+      "title": "新用户首页",
+      "file": "F03-home-new.png",
+      "entry": "F01登录成功，尚未完成设置",
+      "component": "HomeDashboard.vue / !setupComplete"
+    },
+    {
+      "id": "F04",
+      "title": "前测介绍",
+      "file": "F04-pretest-intro.png",
+      "entry": "F03 → 开始学习设置",
+      "component": "PhoneticsDemo.vue / !started"
+    },
+    {
+      "id": "F05",
+      "title": "前测答题",
+      "file": "F05-pretest-questions.png",
+      "entry": "F04 → 开始测评",
+      "component": "PhoneticsDemo.vue + ServerUnitQuiz.vue / assessment"
+    },
+    {
+      "id": "F06",
+      "title": "前测提交后",
+      "file": "F06-pretest-result.png",
+      "entry": "F05答齐8题 → 提交答案",
+      "component": "同一前测页面的result态，并非新路由"
+    },
+    {
+      "id": "F07",
+      "title": "选择学习方向",
+      "file": "F07-directions.png",
+      "entry": "F06 → 选择学习方向；或侧栏学习方向",
+      "component": "LearningJourney.vue / stage=topics"
+    },
+    {
+      "id": "F08",
+      "title": "学习规划与单元内容",
+      "file": "F08-plan-unit.png",
+      "entry": "F07选方向 → 确认方向，查看学习规划",
+      "component": "LearningJourney.vue / stage=plan, outcome=plan"
+    },
+    {
+      "id": "F09",
+      "title": "完成设置后的首页",
+      "file": "F09-home-learning.png",
+      "entry": "F08 → 完成设置，进入首页",
+      "component": "HomeDashboard.vue / setupComplete && plan"
+    },
+    {
+      "id": "F10",
+      "title": "本次前测报告",
+      "file": "F10-diagnosis.png",
+      "entry": "F09右栏 → 查看前测报告",
+      "component": "LearningJourney.vue / view=report + LearningAnalysis.vue"
+    },
+    {
+      "id": "F11",
+      "title": "单元小测区块",
+      "file": "F11-unit-quiz-detail.png",
+      "entry": "F09继续学习 → F08课程正文向下滚动",
+      "component": "F08内的ServerUnitQuiz.vue，不是独立页面"
+    },
+    {
+      "id": "F12",
+      "title": "小鸮浮动面板",
+      "file": "F12-companion.png",
+      "entry": "F08右下角 → AI伴学",
+      "component": "StudyCompanion.vue / open=true；当前为预设回复"
+    },
+    {
+      "id": "F13",
+      "title": "方向后测答题",
+      "file": "F13-posttest.png",
+      "entry": "F08页底 → 开始后测；F09 → 进入后测",
+      "component": "LearningJourney.vue / outcome=posttest"
+    },
+    {
+      "id": "F14",
+      "title": "方向后测结果",
+      "file": "F14-posttest-result.png",
+      "entry": "F13答齐10题 → 提交答案",
+      "component": "同一后测页面的result态"
+    },
+    {
+      "id": "F15",
+      "title": "方向学习报告",
+      "file": "F15-final-report.png",
+      "entry": "F14 → 查看学习报告",
+      "component": "LearningJourney.vue / outcome=final + FinalReport.vue"
+    },
+    {
+      "id": "F16",
+      "title": "学习画像",
+      "file": "F16-profile.png",
+      "entry": "侧栏学习画像；或F09 → 查看学习画像",
+      "component": "LearningJourney.vue / view=profile + LearnerProfile.vue"
+    }
+  ]
+}

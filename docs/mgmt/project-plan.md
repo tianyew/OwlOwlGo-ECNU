@@ -1,5 +1,7 @@
 # OwlOwlGo 项目计划进度表
 
+> 2026-11-16执行入口：[实际功能状态](../requirements/implementation-status.md)、[实名五人页面分工](iteration-01-plan.md)、[本轮验收清单](../testing/iteration-01-acceptance.md)。以下早期周次与进度记录保留，不代表当前实际完成度；本轮按页面分工v3的三个工作周安排为建议，不据自然日期推算课程周次。
+
 > 版本：v1.1  
 > 更新日期：2026-10-07  
 > 当前阶段：第 1 周——系统分析  
