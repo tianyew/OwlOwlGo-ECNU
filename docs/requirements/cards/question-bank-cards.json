@@ -1,0 +1,39 @@
+[
+  {
+    "id": "Q-A",
+    "owner": "管佳欣",
+    "purpose": "题库数据库与角色权限",
+    "document": "question-bank.md#q-a",
+    "status": "待开发/验收"
+  },
+  {
+    "id": "Q-B",
+    "owner": "钱俊",
+    "purpose": "HSK依据与题库内容准备",
+    "document": "question-bank.md#q-b",
+    "status": "待开发/验收"
+  },
+  {
+    "id": "Q-C",
+    "owner": "黄云舒",
+    "purpose": "批量上传、校验预览与确认导入",
+    "document": "question-bank.md#q-c",
+    "status": "待开发/验收"
+  },
+  {
+    "id": "Q-D",
+    "owner": "周子涵",
+    "purpose": "题库组卷、动态作答与实例恢复",
+    "document": "question-bank.md#q-d",
+    "status": "待开发/验收"
+  },
+  {
+    "id": "Q-E",
+    "owner": "郑仲佑",
+    "purpose": "衔接AI候选生成、审核、发布、停用与覆盖统计",
+    "document": "question-bank.md#q-e",
+    "status": "待开发/验收",
+    "related_card": "P-E05",
+    "generation_contract": "contracts.md N09"
+  }
+]

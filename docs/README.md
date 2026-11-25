@@ -9,6 +9,10 @@
 | 需求分析 | [工程问题定义](requirements/problem_definition.md) | 5W1H、目标用户、痛点与产品边界 |
 | 需求分析 | [功能规格](requirements/functional_spec.md) | 角色、功能树、业务规则、领域模型与验收标准 |
 | 需求分析 | [非功能需求](requirements/nonfunctional_spec.md) | 性能、可靠性、安全、隐私与 AI 质量 |
+| 实现核对 | [实际功能状态](requirements/implementation-status.md) | 2026-11-16代码与测试基线、需求差距、本轮处置 |
+| 开发卡片 | [真实页面对应的25张需求卡](requirements/cards/README.md) | 当前页面截图、区块定位、跳转图片、具体开发与验收 |
+| 迭代执行 | [本轮五人页面分工](mgmt/iteration-01-plan.md) | 按需求包分工、登录首页、前测诊断、方向规划、单元伴学、画像复习的按钮级分工与数据库配套 |
+| 测试验收 | [本轮验收清单](testing/iteration-01-acceptance.md) | 35项验收、页面串联、统一测试规则、全局门禁与签收模板 |
 | 算法设计 | [算法文档说明](algorithm/README.md) | 调研、策略与参数文档的维护要求 |
 | 算法设计 | [RockStartIT AI Tutor 论文调研](algorithm/research.md) | 课程知识库、教学控制、用户评价、研究局限与项目启示 |
 | 软件设计 | [系统架构与技术方案调研报告](software/architecture.md) | 正式学习流程、核心技术选型、上下文/记忆/恢复实现、历史自学提案 |
@@ -16,6 +20,7 @@
 | 软件设计 | [数据模型](software/data-model.md) | 方向、诊断、计划修订、汉语内容、学习事件与复习关系 |
 | 软件设计 | [API 边界](software/api-contract.md) | 前测、方向、计划生成/修订与学习接口及一致性约束 |
 | 软件设计 | [架构决策记录](adr/README.md) | 决策的背景、选择与影响 |
+| 开发与部署 | [PostgreSQL接入计划](software/postgresql-integration-plan.md) | 当前缺口、表职责、事务、历史迁移、对账与回退 |
 | 开发与部署 | [开发与配置指南](development.md) | 环境变量、Docker Compose 与检查命令 |
 | 项目管理 | [项目计划](mgmt/project-plan.md) | 17 周安排、工作项、里程碑与风险 |
 | 项目管理 | [管理文档说明](mgmt/README.md) | 计划、沟通和风险文档的维护边界 |
@@ -39,7 +44,7 @@
 | 图表 | `figures/` | 同时保留图表与可编辑源文件 |
 | 部署与脚本 | `infrastructure/`、`scripts/` | 配置与辅助工具各自维护 |
 
-算法调研、原型和复盘的具体成果随课程阶段补充，新增时同步登记本索引。当前测试与业务目录主要为骨架，目录存在不代表相关功能已经完成。
+算法调研、原型和复盘的具体成果随课程阶段补充，新增时同步登记本索引。当前已有可执行前后端业务与测试，部分领域及跨系统测试仍为骨架；实际状态以[功能状态核对](requirements/implementation-status.md)为准，目录存在不代表相关功能已经完成。
 
 课程示例中的 `core_engine/` 职责目前由 `code/backend/app/domain/` 承担；纯领域逻辑集中在这里，数据库访问和 Web 编排放在后端其他层。后续出现独立复用需求时再拆分核心引擎。
 

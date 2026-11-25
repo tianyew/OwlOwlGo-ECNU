@@ -1,9 +1,15 @@
 # Frontend
 
-Vue 3 + TypeScript 客户端，已实现账号注册、登录、退出、游客入口，以及前测 → 诊断 → 方向选择 → 预设学习规划。
+Vue 3 + TypeScript 客户端，支持账号、前测、四个方向的二十个单元、后测与真实证据画像。
 
-运行 `npm ci`、`npm run dev`，打开终端显示的本地地址；`npm run build` 验证类型和构建，`npm test` 检查组件交互。
+运行 `npm ci`、`npm run dev`；`npm run build` 检查类型并构建，`npm test` 验证交互。
+Vite 将 `/api` 转发到 `127.0.0.1:8000`，课程与取题均需启动后端。
+游客可浏览题目和课程，登录后提交测验并保存记录。
 
-账号接口由 Vite 将 `/api` 代理到 `127.0.0.1:8000`，需启动后端；游客学习流程可独立运行。学习 mock 和真实账号 API 分别位于 `src/shared/api/demo.ts` 与 `auth.ts`。
+`src/shared/api/curriculum.ts` 读取后端课程目录，`learning.ts` 处理进度、测验提交与画像，
+`auth.ts` 处理身份接口。前端不维护正确答案或正式计分函数。
+通用测验组件位于 `features/assessment/ServerUnitQuiz.vue`，支持作答分页、草稿恢复、提交和结果展示。
+前测、单元和后测共用该组件；画像展示后端返回的证据矩阵。
 
-页面按 `src/features` 划分；账号组件位于 `auth`，流程编排位于 `assessment`，拼音测评位于 `phonetics`。登录后的学习状态、账号与会话通过后端 JSON 保存，游客仅保留本次页面。DeepSeek 分析配置见 [接入说明](../../docs/software/learning-agent.md)。详见 [账号说明](../../docs/software/accounts.md) 与 [演示说明](../../docs/software/demo-guide.md)。
+运行与验收见[完整学习链路](../../docs/software/server-unit-demo.md)，
+DeepSeek 前测建议配置见[学习分析说明](../../docs/software/learning-agent.md)。

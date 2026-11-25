@@ -7,8 +7,8 @@ import LearningJourney from './features/assessment/LearningJourney.vue';
 
 <template>
   <div class="shell">
-    <header class="site-header"><a class="brand" href="./"><span class="logo">汉</span><span>OwlOwlGo <small>LEARN CHINESE</small></span></a><span class="header-note"><b>中文之旅</b><span>Learn at your own pace.</span></span></header>
-    <main><AccountGate v-slot="{ user }" :learning-busy="learningBusy"><LearningJourney :key="user?.id ?? 'guest'" :user-id="user?.id" :display-name="user?.display_name" @saving-change="learningBusy = $event" /></AccountGate></main>
-    <footer>OwlOwlGo · 中文之旅</footer>
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+    <header class="site-header"><a class="brand" href="./" aria-label="OwlOwlGo 首页"><span class="logo">汉</span><span>OwlOwlGo</span></a></header>
+    <main id="main-content" tabindex="-1"><AccountGate v-slot="{ user }" :learning-busy="learningBusy"><LearningJourney :key="user?.id ?? 'guest'" :user-id="user?.id" :display-name="user?.display_name" @saving-change="learningBusy = $event" /></AccountGate></main>
   </div>
 </template>

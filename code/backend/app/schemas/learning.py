@@ -7,7 +7,9 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.domain.content.catalog import get_quiz, validate_answers
 from app.integrations.llm.prompts.assessment import PROMPT_VERSION
+from app.schemas.unit_quiz import UnitAnswer
 
 Topic = Literal["travel", "daily", "campus", "poetry"]
 Answer = Annotated[int, Field(strict=True, ge=0, le=3)]
@@ -50,6 +52,13 @@ class PracticeAttempt(BaseModel):
         return self
 
 
+class QuizDraft(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    content_version: Literal[1] = 1
+    current: int = Field(default=0, strict=True, ge=0, le=9)
+    answers: list[UnitAnswer] = Field(default_factory=list, max_length=10)
+
+
 class LearningState(BaseModel):
     model_config = ConfigDict(extra="forbid")
     onboarding_complete: bool = False
@@ -62,9 +71,19 @@ class LearningState(BaseModel):
     )
     checks: dict[str, PracticeAttempt] = Field(default_factory=dict, max_length=20)
     posttests: dict[Topic, PracticeAttempt] = Field(default_factory=dict)
+    drafts: dict[str, QuizDraft] = Field(default_factory=dict, max_length=25)
 
     @model_validator(mode="after")
     def consistent(self):
+        for quiz_id, draft in self.drafts.items():
+            try:
+                quiz = get_quiz(quiz_id)
+                answers = {a.question_id: a.selected_index for a in draft.answers}
+                validate_answers(quiz_id, answers, complete=False)
+                if len(answers) != len(draft.answers) or draft.current >= len(quiz["questions"]):
+                    raise ValueError("Invalid draft")
+            except KeyError as exc:
+                raise ValueError("Invalid quiz") from exc
         if self.onboarding_complete and (self.quiz.stage != "result" or self.topic is None):
             raise ValueError("Complete assessment and choose a plan first")
         if self.stage != "assessment" and self.quiz.stage != "result":

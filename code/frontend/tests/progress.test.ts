@@ -1,197 +1,209 @@
 // @vitest-environment happy-dom
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createApp, nextTick, type App } from 'vue';
-import RootApp from '../src/App.vue';
-import { authApi } from '../src/shared/api/auth';
-vi.mock('../src/shared/api/auth', async original => {
-  const module = await original<typeof import('../src/shared/api/auth')>();
-  return { ...module, authApi: { me: vi.fn(), login: vi.fn(), logout: vi.fn(), register: vi.fn() } };
-});
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { createApp, type App } from 'vue';
 import LearningJourney from '../src/features/assessment/LearningJourney.vue';
-import { learningApi, emptyQuiz, type SavedProgress, type Analysis } from '../src/shared/api/learning';
-import { AuthError } from '../src/shared/api/auth';
-vi.mock('../src/shared/api/learning', async original => {
-  const module = await original<typeof import('../src/shared/api/learning')>();
-  return { ...module, learningApi: { load: vi.fn(), save: vi.fn(), analyze: vi.fn() } };
-});
+import RootApp from '../src/App.vue';
+import { authApi, AuthError } from '../src/shared/api/auth';
+import { learningApi, type Analysis } from '../src/shared/api/learning';
+import { installLearning, withAssessment, settle, click, answerQuiz } from './learning-fixtures';
 let app: App;
 let host: HTMLDivElement;
-let saved: SavedProgress;
-const feedback: Analysis = { provider: 'deepseek', model: 'demo', prompt_version: 'assessment-v2', created_at: 'today', summary: '逐题分析结果', strengths: [], focus_areas: [], next_steps: [], question_feedback: [], practice_tasks: [] };
-function finishState() {
-  saved.state.quiz = { stage: 'result', current: 7, selected: 1, submitted: true, answers: [0,2,0,1,3,1,2,1] };
-}
-async function settle() { for (let i = 0; i < 16; i++) await nextTick(); }
+let store: ReturnType<typeof installLearning>;
+const feedback: Analysis = { provider: 'deepseek', model: 'test', prompt_version: 'assessment-v5', created_at: 'today', summary: '逐题分析结果', strengths: [], focus_areas: [], next_steps: [], question_feedback: [], practice_tasks: [] };
 async function mount(open = true) {
   host = document.createElement('div'); document.body.appendChild(host);
   app = createApp(LearningJourney, { userId: 'user-one' }); app.mount(host); await settle();
-  if (open) await click((saved.state.onboarding_complete ?? saved.state.stage === 'plan') ? '继续学习' : '学习设置');
+  if (open) await click(host, store.saved.state.onboarding_complete ? '继续学习' : '学习设置');
 }
 function unmount() { app.unmount(); host.remove(); }
-async function click(text: string) {
-  const button = [...host.querySelectorAll('button')].find(b => b.textContent?.includes(text));
-  expect(button).toBeDefined(); button!.click(); await settle();
-}
-async function completeUnit() {
-  const { getTopics } = await import('../src/shared/api/demo');
-  const unit = (await getTopics())[0].units[0];
-  const container = host.querySelector('.practice-quiz')!;
-  for (const [i, q] of unit.quiz.entries()) {
-    (container.querySelectorAll('fieldset')[i].querySelectorAll('input')[q.answer] as HTMLInputElement).click(); await settle();
-  }
-  await click('提交礼貌问路');
-}
-beforeEach(() => {
-  vi.resetAllMocks();
-  vi.mocked(learningApi.analyze).mockRejectedValue(new Error("学习建议暂不可用，请稍后重试。"));
-  saved = { revision: 0, updated_at: null, analysis: null,
-    state: { content_version: 1, stage: 'assessment', quiz: emptyQuiz(), topic: null, completed: {} } };
-  vi.mocked(learningApi.load).mockImplementation(async () => structuredClone(saved));
-  vi.mocked(learningApi.save).mockImplementation(async (state, revision) => {
-    saved = { revision: revision + 1, state: structuredClone(state), updated_at: 'today', analysis: null };
-    return structuredClone(saved);
-  });
+beforeEach(() => { store = installLearning(); });
+afterEach(() => { app?.unmount(); host?.remove(); vi.restoreAllMocks(); });
+
+it('opens Home for a new account without starting or submitting an assessment', async () => {
+  await mount(false);
+  expect(host.querySelector('[aria-label="学习首页"]')).not.toBeNull();
+  expect(host.textContent).toContain('第一步 · 完成学习设置');
+  expect(learningApi.submit).not.toHaveBeenCalled(); expect(learningApi.quiz).not.toHaveBeenCalled();
 });
-afterEach(() => { unmount(); });
-describe('persistent learning', () => {
-  it('automatically analyzes a finished assessment once and shows the result beside diagnosis', async () => {
-    finishState(); vi.mocked(learningApi.analyze).mockResolvedValue(feedback);
-    await mount();
-    expect(learningApi.analyze).toHaveBeenCalledTimes(1);
-    expect(host.querySelector('.phonetics-demo .analysis-result')?.textContent).toContain('逐题分析结果');
-    await click('返回首页'); await click('继续完成学习设置');
-    expect(learningApi.analyze).toHaveBeenCalledTimes(1);
-  });
-  it('reuses persisted analysis without a model request', async () => {
-    finishState(); saved.analysis = feedback; await mount();
-    expect(learningApi.analyze).not.toHaveBeenCalled();
-    expect(host.textContent).toContain('逐题分析结果');
-  });
-  it('waits for final progress to save before automatic analysis and supports save retry', async () => {
-    saved.state.quiz = { stage: 'quiz', current: 7, selected: 1, submitted: true, answers: [0,2,0,1,3,1,2,1] };
-    await mount();
-    vi.mocked(learningApi.save).mockRejectedValueOnce(new Error('保存失败'));
-    await click('查看测评结果');
-    expect(learningApi.analyze).not.toHaveBeenCalled();
-    await click('重试保存');
-    expect(learningApi.analyze).toHaveBeenCalledTimes(1);
-    await settle(); expect(learningApi.analyze).toHaveBeenCalledTimes(1);
-  });
-  it('ignores an in-flight result after starting a new assessment', async () => {
-    finishState(); let resolve!: (value: Analysis) => void;
-    vi.mocked(learningApi.analyze).mockImplementation(() => new Promise(done => { resolve = done; }));
-    await mount(); await click('重新测评'); resolve(feedback); await settle();
-    expect(host.querySelector('.analysis-result')).toBeNull();
-    expect(saved.state.quiz.stage).not.toBe('result');
-  });
-  it('keeps the report out of topic and plan pages and does not reanalyze progress changes', async () => {
-    finishState(); saved.analysis = feedback;
-    vi.mocked(learningApi.save).mockImplementation(async (state, revision) => {
-      saved = { revision: revision + 1, state: structuredClone(state), updated_at: 'today', analysis: feedback };
-      return structuredClone(saved);
-    });
-    await mount(); await click('选择学习方向');
-    expect(host.querySelector('#learning-analysis')).toBeNull();
-    (host.querySelector('input[value="travel"]') as HTMLInputElement).click(); await settle();
-    await click('确认方向');
-    expect(host.querySelector('#learning-analysis')).toBeNull();
-    await completeUnit(); await click('完成设置，进入首页');
-    expect(host.textContent).not.toContain('逐题分析结果');
-    await click('查看前测报告');
-    expect(host.textContent).toContain('逐题分析结果');
-    expect(saved.state.stage).toBe('plan');
-    expect(saved.state.topic).toBe('travel');
-    await click('返回首页'); await click('修改方向');
-    (host.querySelector('input[value="poetry"]') as HTMLInputElement).click(); await settle();
-    await click('确认方向');
-    expect(host.querySelector('#learning-analysis')).toBeNull();
-    expect(learningApi.analyze).not.toHaveBeenCalled();
-  });
-  it('shows Home for a new account without automatically entering assessment', async () => {
-    await mount(false);
-    expect(host.querySelector('[aria-label="学习首页"]')).not.toBeNull();
-    expect(host.textContent).toContain('第一步 · 完成学习设置');
-    expect(host.querySelector('.phonetics-demo')).toBeNull();
-    expect(learningApi.save).not.toHaveBeenCalled();
-  });
-  it('resumes unfinished setup from Home and can return without losing the quiz', async () => {
-    saved.state.quiz = { stage: 'quiz', current: 0, selected: 0, submitted: true, answers: [0] };
-    await mount(false);
-    expect(host.textContent).toContain('前测已提交 1 / 8 题');
-    await click('继续完成学习设置');
-    expect(host.textContent).toContain('已提交 1 题');
-    await click('返回首页');
-    expect(host.textContent).toContain('前测已提交 1 / 8 题');
-  });
-  it('persists explicit setup completion and does not show onboarding on the next login', async () => {
-    saved.state = { content_version: 1, onboarding_complete: false, stage: 'plan', topic: 'travel', completed: {},
-      quiz: { stage: 'result', current: 7, selected: 1, submitted: true, answers: [0,2,0,1,3,1,2,1] } };
-    await mount();
-    await click('完成设置，进入首页');
-    expect(saved.state.onboarding_complete).toBe(true);
-    expect(host.textContent).toContain('我的学习单元');
-    expect(host.textContent).not.toContain('第一步 · 完成学习设置');
-    unmount(); await mount(false);
-    expect(host.textContent).toContain('继续学习');
-    await click('修改方向');
-    (host.querySelector('input[value="poetry"]') as HTMLInputElement).click(); await settle();
-    await click('返回首页');
-    expect(host.textContent).toContain('旅游出行');
-    expect(saved.state.topic).toBe('travel');
-    expect(saved.state.onboarding_complete).toBe(true);
-  });
-  it('offers review after all units are complete and supports legacy saved plans', async () => {
-    saved.state = { content_version: 1, stage: 'plan', topic: 'travel', completed: {travel:[0,1,2,3,4]},
-      quiz: { stage: 'result', current: 7, selected: 1, submitted: true, answers: [0,2,0,1,3,1,2,1] } };
-    await mount(false);
-    expect(host.textContent).toContain('回顾学习内容');
-    expect(host.textContent).not.toContain('第一步 · 完成学习设置');
-  });
-  it('starts and saves the quiz inside the full signed-in app', async () => {
-    vi.mocked(authApi.me).mockResolvedValue({ id: 'user-one', username: 'admin', display_name: 'Demo' });
-    host = document.createElement('div'); document.body.appendChild(host);
-    app = createApp(RootApp); app.mount(host); await settle();
-    await click('开始学习设置'); await click('开始测评');
-    expect(host.textContent).toContain('第 1 / 8 题');
-    expect(saved.state.quiz.stage).toBe('quiz');
-  });
-  it('restores submitted quiz answers after remount and continues without duplicate scoring', async () => {
-    await mount(); await click('开始测评');
-    (host.querySelector('input') as HTMLInputElement).click(); await settle(); await click('提交答案');
-    expect(saved.state.quiz.answers).toEqual([0]);
-    unmount(); await mount();
-    expect((host.querySelector('fieldset') as HTMLFieldSetElement).disabled).toBe(true);
-    expect(host.textContent).toContain('已提交 1 题');
-    await click('下一题');
-    expect(saved.state.quiz.current).toBe(1);
-    expect(saved.state.quiz.answers).toEqual([0]);
-  });
-  it('persists unit completion, restores plan and displays analysis failure honestly', async () => {
-    saved.state = { content_version: 1, stage: 'plan', topic: 'travel', completed: {},
-      quiz: { stage: 'result', current: 7, selected: 1, submitted: true, answers: [0,2,0,1,3,1,2,1] } };
-    await mount(); await completeUnit();
-    expect(saved.state.completed.travel).toEqual([0]);
-    unmount(); await mount(); expect(host.textContent).toContain('1 / 5');
-    vi.mocked(learningApi.analyze).mockRejectedValue(new Error('学习建议暂不可用，请稍后重试。'));
-    await click('返回首页'); await click('查看前测报告');
-    await click('重试分析'); expect(host.textContent).toContain('学习建议暂不可用');
-    expect(host.querySelector('.analysis-result')).toBeNull();
-  });
-  it('keeps unsaved progress and offers retry without showing saved status', async () => {
-    await mount();
-    vi.mocked(learningApi.save).mockRejectedValueOnce(new Error('连接失败'));
-    await click('开始测评'); expect(host.textContent).toContain('连接失败');
-    await click('重试保存'); expect(host.querySelector('.save-status')).toBeNull();
-    expect(saved.state.quiz.stage).toBe('quiz');
-  });
-  it('does not overwrite progress after a load failure or revision conflict', async () => {
-    vi.mocked(learningApi.load).mockRejectedValueOnce(new Error('加载失败'));
-    await mount(false); expect(host.textContent).toContain('加载失败');
-    expect(learningApi.save).not.toHaveBeenCalled();
-    await click('重新加载进度'); await click('开始学习设置');
-    vi.mocked(learningApi.save).mockRejectedValueOnce(new AuthError('版本冲突', 409));
-    await click('开始测评'); expect(host.textContent).toContain('版本冲突');
-    await click('重新加载已保存进度'); expect(host.textContent).toContain('开始测评');
-    expect(learningApi.save).toHaveBeenCalledTimes(1);
-  });
+it('saves assessment answers and page position and restores the draft after remount', async () => {
+  await mount(); await click(host, '开始测评');
+  (host.querySelector('.practice-question input') as HTMLInputElement).click(); await settle();
+  await click(host, '下一题');
+  expect(store.saved.state.drafts.assessment.answers).toEqual([{ question_id: 'initial', selected_index: 0 }]);
+  expect(store.saved.state.drafts.assessment.current).toBe(1);
+  expect(store.saved.results.assessment).toBeUndefined();
+  unmount(); await mount();
+  expect(host.textContent).toContain('第 2 / 8 题');
+  expect(host.textContent).toContain('已作答 1 / 8');
+});
+it('submits pretest choices to the backend before automatically requesting AI analysis', async () => {
+  vi.mocked(learningApi.analyze).mockResolvedValue(feedback);
+  await mount(); await click(host, '开始测评');
+  expect(learningApi.analyze).not.toHaveBeenCalled();
+  await answerQuiz(host, 'assessment');
+  expect(learningApi.submit).toHaveBeenCalledOnce();
+  expect(vi.mocked(learningApi.submit).mock.calls[0][0]).toBe('assessment');
+  expect(host.querySelector('.score-circle strong')?.textContent).toBe('100');
+  expect(host.textContent).toContain('逐题分析结果');
+  expect(learningApi.analyze).toHaveBeenCalledOnce();
+  await click(host, '选择学习方向');
+  expect(host.querySelector('.analysis-result')).toBeNull();
+  expect(learningApi.analyze).toHaveBeenCalledOnce();
+});
+it('does not analyze or display a successful pretest when submitting fails and can retry', async () => {
+  vi.mocked(learningApi.submit).mockRejectedValueOnce(new Error('提交连接失败'));
+  await mount(); await click(host, '开始测评'); await answerQuiz(host, 'assessment');
+  expect(host.textContent).toContain('提交连接失败');
+  expect(learningApi.analyze).not.toHaveBeenCalled(); expect(store.saved.results.assessment).toBeUndefined();
+  const first = vi.mocked(learningApi.submit).mock.calls[0][1];
+  await click(host, '提交答案');
+  expect(vi.mocked(learningApi.submit).mock.calls[1][1]).toEqual(first);
+  expect(host.querySelector('.score-circle strong')?.textContent).toBe('100');
+});
+it('reuses persisted AI feedback without another model request', async () => {
+  withAssessment(store.saved); store.saved.analysis = feedback;
+  await mount();
+  expect(host.textContent).toContain('逐题分析结果'); expect(learningApi.analyze).not.toHaveBeenCalled();
+});
+it('ignores an old analysis after resetting the assessment', async () => {
+  withAssessment(store.saved);
+  let resolve!: (value: Analysis) => void;
+  vi.mocked(learningApi.analyze).mockImplementation(() => new Promise(done => { resolve = done; }));
+  await mount(); await click(host, '重新测评');
+  expect(learningApi.reset).toHaveBeenCalledOnce(); expect(host.textContent).toContain('开始测评');
+  resolve(feedback); await settle();
+  expect(host.querySelector('.analysis-result')).toBeNull(); expect(store.saved.results.assessment).toBeUndefined();
+});
+it('retains unsaved answers and offers a save retry', async () => {
+  await mount(); await click(host, '开始测评');
+  vi.mocked(learningApi.save).mockRejectedValueOnce(new Error('保存连接失败'));
+  (host.querySelector('.practice-question input') as HTMLInputElement).click(); await settle();
+  expect(host.textContent).toContain('保存连接失败'); expect(host.querySelector('input:checked')).not.toBeNull();
+  await click(host, '重试保存');
+  expect(store.saved.state.drafts.assessment.answers).toHaveLength(1); expect(host.querySelector('.save-status')).toBeNull();
+});
+it('never overwrites server progress after a load failure or revision conflict', async () => {
+  vi.mocked(learningApi.load).mockRejectedValueOnce(new Error('加载失败'));
+  await mount(false); expect(host.textContent).toContain('加载失败'); expect(learningApi.save).not.toHaveBeenCalled();
+  await click(host, '重新加载进度'); await click(host, '学习设置'); await click(host, '开始测评');
+  vi.mocked(learningApi.save).mockRejectedValueOnce(new AuthError('版本冲突', 409));
+  (host.querySelector('.practice-question input') as HTMLInputElement).click(); await settle();
+  expect(host.textContent).toContain('版本冲突');
+  await click(host, '重新加载已保存进度');
+  expect(learningApi.save).toHaveBeenCalledOnce(); expect(store.saved.state.drafts.assessment).toBeUndefined();
+});
+it('saves explicit setup completion and restores Home with the selected direction', async () => {
+  withAssessment(store.saved, 'travel');
+  await mount(); await click(host, '完成设置，进入首页');
+  expect(store.saved.state.onboarding_complete).toBe(true); expect(host.textContent).toContain('我的学习单元');
+  unmount(); await mount(false);
+  expect(host.textContent).toContain('继续学习'); expect(host.textContent).toContain('旅游出行');
+});
+it('displays server unit completion and restores the result after remount', async () => {
+  withAssessment(store.saved, 'travel');
+  await mount(); await answerQuiz(host, 'unit-travel-0');
+  expect(host.textContent).toContain('本方向已完成 1 / 5');
+  expect(learningApi.submit).toHaveBeenCalledWith('unit-travel-0', expect.any(Object), expect.any(Number));
+  unmount(); await mount();
+  expect(host.querySelector('.quiz-result')?.textContent).toContain('100 分');
+  expect(host.textContent).toContain('本方向已完成 1 / 5');
+});
+it('does not award a completion when unit submission fails', async () => {
+  withAssessment(store.saved, 'daily');
+  vi.mocked(learningApi.submit).mockRejectedValueOnce(new Error('小测提交失败'));
+  await mount(); await answerQuiz(host, 'unit-daily-0');
+  expect(host.textContent).toContain('小测提交失败'); expect(store.saved.state.completed.daily ?? []).toEqual([]);
+  expect(host.textContent).toContain('本方向已完成 0 / 5');
+  await click(host, '提交答案');
+  expect(host.textContent).toContain('本方向已完成 1 / 5');
+});
+it('shows profile data returned by the backend including unmeasured cells', async () => {
+  withAssessment(store.saved, 'travel'); store.saved.state.onboarding_complete = true;
+  await mount(false); await click(host, '查看学习画像');
+  expect(host.querySelectorAll('.profile-table tbody tr')).toHaveLength(7);
+  expect(host.querySelectorAll('.profile-table td')).toHaveLength(42);
+  expect(host.textContent).toContain('尚未测评'); expect(host.textContent).toContain('75%');
+  expect(host.textContent).not.toContain('固定示例');
+});
+it('saves a pretest draft through the complete authenticated app', async () => {
+  vi.spyOn(authApi, 'me').mockResolvedValue({ id: 'user-one', username: 'tester', display_name: '测试' });
+  host = document.createElement('div'); document.body.appendChild(host);
+  app = createApp(RootApp); app.mount(host); await settle();
+  await click(host, '学习设置'); await click(host, '开始测评');
+  (host.querySelector('.practice-question input') as HTMLInputElement).click(); await settle();
+  expect(store.saved.state.drafts.assessment.answers).toHaveLength(1);
+});
+it('restores an unfinished post-test page and choices without treating a draft as a result', async () => {
+  withAssessment(store.saved, 'campus');
+  await mount(); await click(host, '开始后测');
+  (host.querySelector('.practice-question input') as HTMLInputElement).click(); await settle();
+  await click(host, '下一题');
+  expect(store.saved.state.drafts['post-campus'].current).toBe(1);
+  unmount(); await mount(); await click(host, '开始后测');
+  expect(host.textContent).toContain('第 2 / 10 题');
+  expect(host.textContent).toContain('已作答 1 / 10');
+  expect(host.querySelector('.quiz-result')).toBeNull();
+  expect(learningApi.submit).not.toHaveBeenCalled();
+});
+it('handles a grading revision conflict by requiring the latest saved progress', async () => {
+  withAssessment(store.saved, 'poetry');
+  vi.mocked(learningApi.submit).mockRejectedValueOnce(new AuthError('测验版本冲突', 409));
+  await mount(); await answerQuiz(host, 'unit-poetry-0');
+  expect(host.textContent).toContain('测验版本冲突');
+  expect(store.saved.state.completed.poetry ?? []).toEqual([]);
+  await click(host, '重新加载已保存进度');
+  expect(host.querySelector('.save-status')).toBeNull();
+  expect(learningApi.submit).toHaveBeenCalledOnce();
+});
+
+it('uses workspace navigation without resetting the current course or previous scores', async () => {
+  withAssessment(store.saved, 'travel'); store.saved.state.onboarding_complete = true;
+  await mount(false);
+  const nav = host.querySelector('.workspace-nav') as HTMLElement;
+  expect(nav.querySelector('[aria-current="page"]')?.textContent).toContain('学习首页');
+  await click(nav, '学习方向');
+  expect(host.querySelector('.topic-grid')).not.toBeNull();
+  await click(nav, '我的学习');
+  expect(host.querySelector('.unit-page-heading')?.textContent).toContain('礼貌问路');
+  expect(host.querySelector('.topic-grid')).toBeNull();
+  await click(nav, '学习画像');
+  expect(host.querySelectorAll('.profile-table td')).toHaveLength(42);
+  await click(nav, '学习首页');
+  expect(host.querySelector('[aria-label="学习首页"]')).not.toBeNull();
+  expect(store.saved.results.assessment.score).toBe(100);
+  expect(learningApi.reset).not.toHaveBeenCalled();
+  expect(learningApi.submit).not.toHaveBeenCalled();
+});
+
+it('jumps to unanswered questions and preserves answers when returning through Home', async () => {
+  await mount(); await click(host, '开始测评');
+  (host.querySelector('.practice-question input') as HTMLInputElement).click(); await settle();
+  const map = host.querySelector('.question-map')!;
+  expect(map.querySelectorAll('button.answered')).toHaveLength(1);
+  (map.querySelectorAll('button')[7] as HTMLButtonElement).click(); await settle();
+  expect(host.textContent).toContain('第 8 / 8 题');
+  expect(host.textContent).toContain('还有 7 题待完成');
+  expect((host.querySelector('.quiz-submit-area > button.primary') as HTMLButtonElement).disabled).toBe(true);
+  expect(store.saved.state.drafts.assessment.current).toBe(7);
+  await click(host.querySelector('.workspace-nav') as HTMLElement, '学习首页');
+  expect(host.textContent).toContain('前测已作答 1 / 8 题');
+  await click(host, '继续完成学习设置');
+  expect(host.textContent).toContain('第 8 / 8 题');
+  (host.querySelector('.question-map button') as HTMLButtonElement).click(); await settle();
+  expect(host.querySelector('input:checked')).not.toBeNull();
+  expect(learningApi.submit).not.toHaveBeenCalled();
+});
+
+it('announces saving, failure and recovery without claiming unsaved answers are saved', async () => {
+  await mount(); await click(host, '开始测评');
+  let rejectSave!: (reason: Error) => void;
+  vi.mocked(learningApi.save).mockImplementationOnce(() => new Promise((_, reject) => { rejectSave = reject; }));
+  (host.querySelector('.practice-question input') as HTMLInputElement).click(); await settle();
+  expect(host.querySelector('.sync-indicator')?.textContent).toContain('正在保存进度');
+  rejectSave(new Error('网络已断开')); await settle();
+  expect(host.querySelector('.sync-indicator')?.textContent).toContain('进度尚未保存');
+  expect(host.querySelector('input:checked')).not.toBeNull();
+  await click(host, '重试保存');
+  expect(host.querySelector('.sync-indicator')?.textContent).toContain('进度已保存');
+  expect(store.saved.state.drafts.assessment.answers).toHaveLength(1);
 });

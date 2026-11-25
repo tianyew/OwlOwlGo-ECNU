@@ -1,0 +1,1669 @@
+{
+  "content_version": 1,
+  "topics": [
+    {
+      "id": "travel",
+      "title": "旅游出行",
+      "english": "Travel",
+      "description": "从问路与交通，到点餐、入住，最后独立安排一日旅行。",
+      "units": [
+        {
+          "title": "礼貌问路与方位",
+          "goal": "询问地点并理解基本方位",
+          "words": "车站 chēzhàn · station；左边 zuǒbian · left；右边 yòubian · right；附近 fùjìn · nearby",
+          "grammar": "“请问，……在哪儿？”询问位置；“在……旁边”说明相对位置。",
+          "example": "请问，地铁站在哪儿？在银行旁边。",
+          "dialogue": [
+            "A：请问，附近有地铁站吗？",
+            "B：有，往前走，在银行右边。",
+            "A：谢谢！我往前走，再找银行。"
+          ],
+          "task": "把地铁站换成博物馆，结合一张简易地图询问位置。",
+          "practices": [
+            "认读：遮住拼音，读出本单元词语，再对照检查。",
+            "替换：把地铁站换成博物馆，结合一张简易地图询问位置。",
+            "迁移：合上例句，用自己的信息完成一次两轮交流。"
+          ],
+          "quiz": [
+            {
+              "prompt": "在本单元情境中，怎样表达“询问地点并理解基本方位”？",
+              "options": [
+                "请问，车站在哪儿？",
+                "车站多少钱？",
+                "我叫车站。"
+              ],
+              "answer": 0,
+              "explanation": "本单元核心句型：请问，地铁站在哪儿？在银行旁边。。“请问，……在哪儿？”询问位置；“在……旁边”说明相对位置。",
+              "category": "情境表达",
+              "id": "travel-0-expression",
+              "source_question_id": "travel-0-expression",
+              "dimension": "vocabulary",
+              "bloom": "apply"
+            },
+            {
+              "prompt": "“银行在车站左边”说明什么？",
+              "options": [
+                "银行的价格",
+                "银行的位置",
+                "银行的时间"
+              ],
+              "answer": 1,
+              "explanation": "“左边”是方位词，用来说明位置。",
+              "category": "词句理解",
+              "id": "travel-0-position",
+              "source_question_id": "travel-0-position",
+              "dimension": "vocabulary",
+              "bloom": "understand"
+            }
+          ],
+          "id": "travel-0"
+        },
+        {
+          "title": "交通路线与换乘",
+          "goal": "确认目的地和交通路线",
+          "words": "机场 jīchǎng · airport；地铁 dìtiě · metro；换乘 huànchéng · transfer；站 zhàn · stop",
+          "grammar": "“坐……到……”说明路线；“先……再……”表达先后顺序。",
+          "example": "先坐二号线，再换乘十号线。",
+          "dialogue": [
+            "A：去机场怎么走？",
+            "B：先坐二号线，再换乘十号线。",
+            "A：这趟车到机场吗？"
+          ],
+          "task": "用“先……再……”介绍从学校到机场的路线。",
+          "practices": [
+            "认读：遮住拼音，读出本单元词语，再对照检查。",
+            "替换：用“先……再……”介绍从学校到机场的路线。",
+            "迁移：合上例句，用自己的信息完成一次两轮交流。"
+          ],
+          "quiz": [
+            {
+              "prompt": "在本单元情境中，怎样表达“确认目的地和交通路线”？",
+              "options": [
+                "这趟车到机场吗？",
+                "机场是什么颜色？",
+                "我喜欢昨天。"
+              ],
+              "answer": 0,
+              "explanation": "本单元核心句型：先坐二号线，再换乘十号线。。“坐……到……”说明路线；“先……再……”表达先后顺序。",
+              "category": "情境表达",
+              "id": "travel-1-0",
+              "source_question_id": "travel-1-0",
+              "dimension": "vocabulary",
+              "bloom": "apply"
+            },
+            {
+              "prompt": "“先坐地铁，再换公交”中，先做什么？",
+              "options": [
+                "坐公交",
+                "坐地铁",
+                "步行到机场"
+              ],
+              "answer": 1,
+              "explanation": "“先”后的动作先发生，“再”后的动作后发生。",
+              "category": "词句理解",
+              "id": "travel-1-1",
+              "source_question_id": "travel-1-1",
+              "dimension": "vocabulary",
+              "bloom": "understand"
+            }
+          ],
+          "id": "travel-1"
+        },
+        {
+          "title": "点餐与饮食偏好",
+          "goal": "点餐并说明饮食需求",
+          "words": "菜单 càidān · menu；一份 yí fèn · a portion；辣 là · spicy；打包 dǎbāo · take away",
+          "grammar": "“我想要……”点餐；“不要…… / 少放……”说明需求。",
+          "example": "我想要一份米饭，少放辣椒。",
+          "dialogue": [
+            "A：您好，请给我一份面条。",
+            "B：要辣的吗？",
+            "A：不要辣，再要一杯茶。"
+          ],
+          "task": "组合主食、饮品和口味，完成一次点单。",
+          "practices": [
+            "认读：遮住拼音，读出本单元词语，再对照检查。",
+            "替换：组合主食、饮品和口味，完成一次点单。",
+            "迁移：合上例句，用自己的信息完成一次两轮交流。"
+          ],
+          "quiz": [
+            {
+              "prompt": "在本单元情境中，怎样表达“点餐并说明饮食需求”？",
+              "options": [
+                "我要一份面条，不要辣。",
+                "面条在哪一年？",
+                "我坐一杯茶。"
+              ],
+              "answer": 0,
+              "explanation": "本单元核心句型：我想要一份米饭，少放辣椒。。“我想要……”点餐；“不要…… / 少放……”说明需求。",
+              "category": "情境表达",
+              "id": "travel-2-0",
+              "source_question_id": "travel-2-0",
+              "dimension": "vocabulary",
+              "bloom": "apply"
+            },
+            {
+              "prompt": "服务员问“要辣的吗？”，不吃辣应回答什么？",
+              "options": [
+                "再来一份",
+                "不要辣，谢谢",
+                "往左走"
+              ],
+              "answer": 1,
+              "explanation": "“不要辣”直接说明口味需求，并可加“谢谢”表达礼貌。",
+              "category": "综合应用",
+              "id": "travel-2-1",
+              "source_question_id": "travel-2-1",
+              "dimension": "vocabulary",
+              "bloom": "understand"
+            }
+          ],
+          "id": "travel-2"
+        },
+        {
+          "title": "入住与解决问题",
+          "goal": "说明预订并提出合理请求",
+          "words": "预订 yùdìng · reservation；护照 hùzhào · passport；房间 fángjiān · room；热水 rèshuǐ · hot water",
+          "grammar": "“我预订了……”说明已完成的安排；“可以帮我……吗？”请求帮助。",
+          "example": "我预订了一个房间，可以帮我查一下吗？",
+          "dialogue": [
+            "A：您好，我预订了一个房间。",
+            "B：请出示护照。",
+            "A：好的。另外，房间没有热水，可以帮我看看吗？"
+          ],
+          "task": "模拟入住后发现空调有问题，向前台求助。",
+          "practices": [
+            "认读：遮住拼音，读出本单元词语，再对照检查。",
+            "替换：模拟入住后发现空调有问题，向前台求助。",
+            "迁移：合上例句，用自己的信息完成一次两轮交流。"
+          ],
+          "quiz": [
+            {
+              "prompt": "在本单元情境中，怎样表达“说明预订并提出合理请求”？",
+              "options": [
+                "我预订了房间，请帮我查一下。",
+                "我想吃一个房间。",
+                "护照往前走。"
+              ],
+              "answer": 0,
+              "explanation": "本单元核心句型：我预订了一个房间，可以帮我查一下吗？。“我预订了……”说明已完成的安排；“可以帮我……吗？”请求帮助。",
+              "category": "情境表达",
+              "id": "travel-3-0",
+              "source_question_id": "travel-3-0",
+              "dimension": "vocabulary",
+              "bloom": "apply"
+            },
+            {
+              "prompt": "“房间没有热水”后，哪句最适合继续交流？",
+              "options": [
+                "可以帮我看看吗？",
+                "这碗面不要辣",
+                "我叫热水"
+              ],
+              "answer": 0,
+              "explanation": "先说明问题，再礼貌请求协助，便于对方理解需求。",
+              "category": "综合应用",
+              "id": "travel-3-1",
+              "source_question_id": "travel-3-1",
+              "dimension": "vocabulary",
+              "bloom": "understand"
+            }
+          ],
+          "id": "travel-3"
+        },
+        {
+          "title": "安排一日旅行",
+          "goal": "整合路线、时间和活动安排",
+          "words": "上午 shàngwǔ · morning；然后 ránhòu · then；门票 ménpiào · ticket；集合 jíhé · meet up",
+          "grammar": "用“先……然后……最后……”串联三个活动；用“在……见”约定地点。",
+          "example": "上午先去博物馆，然后吃午饭，最后去公园。",
+          "dialogue": [
+            "A：我们明天先去哪儿？",
+            "B：九点在地铁站见，先去博物馆。",
+            "A：好，然后一起吃午饭。"
+          ],
+          "task": "写一份含集合时间、交通方式、午餐需求的三步行程。",
+          "practices": [
+            "认读：遮住拼音，读出本单元词语，再对照检查。",
+            "替换：写一份含集合时间、交通方式、午餐需求的三步行程。",
+            "迁移：合上例句，用自己的信息完成一次两轮交流。"
+          ],
+          "quiz": [
+            {
+              "prompt": "在本单元情境中，怎样表达“整合路线、时间和活动安排”？",
+              "options": [
+                "九点在车站见，先去博物馆，再吃饭。",
+                "昨天明天在哪里？",
+                "我是一张门票。"
+              ],
+              "answer": 0,
+              "explanation": "本单元核心句型：上午先去博物馆，然后吃午饭，最后去公园。。用“先……然后……最后……”串联三个活动；用“在……见”约定地点。",
+              "category": "情境表达",
+              "id": "travel-4-0",
+              "source_question_id": "travel-4-0",
+              "dimension": "vocabulary",
+              "bloom": "apply"
+            },
+            {
+              "prompt": "哪一项能让集合安排更明确？",
+              "options": [
+                "只说“再见”",
+                "说明时间和地点",
+                "只说“很好”"
+              ],
+              "answer": 1,
+              "explanation": "约定集合时同时说明时间与地点，方便实际执行。",
+              "category": "综合应用",
+              "id": "travel-4-1",
+              "source_question_id": "travel-4-1",
+              "dimension": "vocabulary",
+              "bloom": "understand"
+            }
+          ],
+          "id": "travel-4"
+        }
+      ],
+      "posttest": [
+        {
+          "prompt": "“银行在车站左边”说明什么？",
+          "options": [
+            "银行的位置",
+            "银行的时间",
+            "银行的价格"
+          ],
+          "answer": 0,
+          "explanation": "“左边”是方位词，用来说明位置。",
+          "category": "词句理解",
+          "id": "travel-post-0",
+          "source_question_id": "travel-0-position",
+          "dimension": "vocabulary",
+          "bloom": "understand"
+        },
+        {
+          "prompt": "你在街上想找博物馆，怎样向陌生人开口？",
+          "options": [
+            "我叫博物馆",
+            "博物馆要一份",
+            "请问，博物馆怎么走？"
+          ],
+          "answer": 2,
+          "explanation": "问路时先用“请问”礼貌开口，再询问路线。",
+          "category": "迁移应用",
+          "id": "travel-post-1",
+          "source_question_id": "travel-transfer-0",
+          "dimension": "vocabulary",
+          "bloom": "apply"
+        },
+        {
+          "prompt": "“先坐地铁，再换公交”中，先做什么？",
+          "options": [
+            "坐公交",
+            "坐地铁",
+            "步行到机场"
+          ],
+          "answer": 1,
+          "explanation": "“先”后的动作先发生，“再”后的动作后发生。",
+          "category": "词句理解",
+          "id": "travel-post-2",
+          "source_question_id": "travel-1-1",
+          "dimension": "vocabulary",
+          "bloom": "understand"
+        },
+        {
+          "prompt": "朋友说“先坐三号线，再换一号线”，你首先应该乘坐哪条线？",
+          "options": [
+            "十号线",
+            "三号线",
+            "一号线"
+          ],
+          "answer": 1,
+          "explanation": "路线中的“先……再……”明确了乘车顺序。",
+          "category": "迁移应用",
+          "id": "travel-post-3",
+          "source_question_id": "travel-transfer-1",
+          "dimension": "vocabulary",
+          "bloom": "apply"
+        },
+        {
+          "prompt": "服务员问“要辣的吗？”，不吃辣应回答什么？",
+          "options": [
+            "往左走",
+            "再来一份",
+            "不要辣，谢谢"
+          ],
+          "answer": 2,
+          "explanation": "“不要辣”直接说明口味需求，并可加“谢谢”表达礼貌。",
+          "category": "综合应用",
+          "id": "travel-post-4",
+          "source_question_id": "travel-2-1",
+          "dimension": "vocabulary",
+          "bloom": "understand"
+        },
+        {
+          "prompt": "你想外带一份不辣的面，哪句说明了完整需求？",
+          "options": [
+            "我要一份面，不要辣，打包带走",
+            "我要一杯热水",
+            "这里有三楼吗"
+          ],
+          "answer": 0,
+          "explanation": "完整点单包括食物、口味和是否打包。",
+          "category": "迁移应用",
+          "id": "travel-post-5",
+          "source_question_id": "travel-transfer-2",
+          "dimension": "vocabulary",
+          "bloom": "apply"
+        },
+        {
+          "prompt": "“房间没有热水”后，哪句最适合继续交流？",
+          "options": [
+            "这碗面不要辣",
+            "我叫热水",
+            "可以帮我看看吗？"
+          ],
+          "answer": 2,
+          "explanation": "先说明问题，再礼貌请求协助，便于对方理解需求。",
+          "category": "综合应用",
+          "id": "travel-post-6",
+          "source_question_id": "travel-3-1",
+          "dimension": "vocabulary",
+          "bloom": "understand"
+        },
+        {
+          "prompt": "入住后发现空调不能用，怎样向前台说明？",
+          "options": [
+            "地铁票两张",
+            "我不要菜单",
+            "房间的空调不能用，请帮我看看"
+          ],
+          "answer": 2,
+          "explanation": "说明设备和具体问题，再请求协助。",
+          "category": "迁移应用",
+          "id": "travel-post-7",
+          "source_question_id": "travel-transfer-3",
+          "dimension": "vocabulary",
+          "bloom": "apply"
+        },
+        {
+          "prompt": "哪一项能让集合安排更明确？",
+          "options": [
+            "只说“再见”",
+            "说明时间和地点",
+            "只说“很好”"
+          ],
+          "answer": 1,
+          "explanation": "约定集合时同时说明时间与地点，方便实际执行。",
+          "category": "综合应用",
+          "id": "travel-post-8",
+          "source_question_id": "travel-4-1",
+          "dimension": "vocabulary",
+          "bloom": "understand"
+        },
+        {
+          "prompt": "朋友发来“明天九点见”，你还需要确认什么？",
+          "options": [
+            "自己叫什么",
+            "茶的声母",
+            "在哪儿见"
+          ],
+          "answer": 2,
+          "explanation": "集合安排还缺见面地点，需要进一步确认。",
+          "category": "迁移应用",
+          "id": "travel-post-9",
+          "source_question_id": "travel-transfer-4",
+          "dimension": "vocabulary",
+          "bloom": "apply"
+        }
+      ]
+    },
+    {
+      "id": "daily",
+      "title": "日常生活",
+      "english": "Daily life",
+      "description": "从认识朋友出发，练习购物、作息、邀约，完成一次生活安排。",
+      "units": [
+        {
+          "title": "问候与自我介绍",
+          "goal": "问候并介绍个人信息",
+          "words": "名字 míngzi · name；来自 láizì · come from；认识 rènshi · know；高兴 gāoxìng · happy",
+          "grammar": "“我叫……”介绍名字；“我来自……”介绍来源；“你呢？”把话题交给对方。",
+          "example": "你好，我叫安娜，我来自法国。你呢？",
+          "dialogue": [
+            "A：你好，我叫安娜。你叫什么名字？",
+            "B：我叫小林，很高兴认识你。",
+            "A：我也是！你来自哪儿？"
+          ],
+          "task": "用真实或虚构信息介绍名字、国家和兴趣。",
+          "practices": [
+            "认读：遮住拼音，读出本单元词语，再对照检查。",
+            "替换：用真实或虚构信息介绍名字、国家和兴趣。",
+            "迁移：合上例句，用自己的信息完成一次两轮交流。"
+          ],
+          "quiz": [
+            {
+              "prompt": "在本单元情境中，怎样表达“问候并介绍个人信息”？",
+              "options": [
+                "你好，我叫安娜，我来自法国。",
+                "你好多少钱？",
+                "明天叫车站。"
+              ],
+              "answer": 0,
+              "explanation": "本单元核心句型：你好，我叫安娜，我来自法国。你呢？。“我叫……”介绍名字；“我来自……”介绍来源；“你呢？”把话题交给对方。",
+              "category": "情境表达",
+              "id": "daily-0-0",
+              "source_question_id": "daily-0-0",
+              "dimension": "vocabulary",
+              "bloom": "apply"
+            },
+            {
+              "prompt": "对方介绍完名字后，哪句适合回应？",
+              "options": [
+                "很高兴认识你",
+                "不要辣",
+                "左边第三个"
+              ],
+              "answer": 0,
+              "explanation": "初次认识时可以说“很高兴认识你”，延续友好交流。",
+              "category": "词句理解",
+              "id": "daily-0-1",
+              "source_question_id": "daily-0-1",
+              "dimension": "vocabulary",
+              "bloom": "understand"
+            }
+          ],
+          "id": "daily-0"
+        },
+        {
+          "title": "购物与数量表达",
+          "goal": "询问价格并说明数量",
+          "words": "多少 duōshao · how much；一共 yígòng · altogether；苹果 píngguǒ · apple；个 gè · measure word",
+          "grammar": "“……多少钱？”询价；“我要……个……”表达数量。",
+          "example": "苹果多少钱？我要三个，一共多少钱？",
+          "dialogue": [
+            "A：这个杯子多少钱？",
+            "B：一个二十元。",
+            "A：我要两个，一共四十元，对吗？"
+          ],
+          "task": "选两种物品，询价、说明数量并确认总价。",
+          "practices": [
+            "认读：遮住拼音，读出本单元词语，再对照检查。",
+            "替换：选两种物品，询价、说明数量并确认总价。",
+            "迁移：合上例句，用自己的信息完成一次两轮交流。"
+          ],
+          "quiz": [
+            {
+              "prompt": "在本单元情境中，怎样表达“询问价格并说明数量”？",
+              "options": [
+                "这个多少钱？我要两个。",
+                "这个在哪天认识？",
+                "我来自两个。"
+              ],
+              "answer": 0,
+              "explanation": "本单元核心句型：苹果多少钱？我要三个，一共多少钱？。“……多少钱？”询价；“我要……个……”表达数量。",
+              "category": "情境表达",
+              "id": "daily-1-0",
+              "source_question_id": "daily-1-0",
+              "dimension": "vocabulary",
+              "bloom": "apply"
+            },
+            {
+              "prompt": "杯子一个二十元，买两个一共多少元？",
+              "options": [
+                "二十元",
+                "四十元",
+                "六十元"
+              ],
+              "answer": 1,
+              "explanation": "二十乘二是四十；“一共”用来询问或说明合计。",
+              "category": "词句理解",
+              "id": "daily-1-1",
+              "source_question_id": "daily-1-1",
+              "dimension": "vocabulary",
+              "bloom": "understand"
+            }
+          ],
+          "id": "daily-1"
+        },
+        {
+          "title": "时间与日常安排",
+          "goal": "描述日常作息和时间",
+          "words": "起床 qǐchuáng · get up；半 bàn · half；晚上 wǎnshang · evening；每天 měitiān · every day",
+          "grammar": "时间通常放在动词前：“我每天七点起床”；“半”表示三十分钟。",
+          "example": "我每天七点半起床，八点上课。",
+          "dialogue": [
+            "A：你每天几点起床？",
+            "B：七点半。你呢？",
+            "A：我七点起床，晚上十点半睡觉。"
+          ],
+          "task": "写出起床、吃饭和睡觉三个时间，比较工作日与周末。",
+          "practices": [
+            "认读：遮住拼音，读出本单元词语，再对照检查。",
+            "替换：写出起床、吃饭和睡觉三个时间，比较工作日与周末。",
+            "迁移：合上例句，用自己的信息完成一次两轮交流。"
+          ],
+          "quiz": [
+            {
+              "prompt": "在本单元情境中，怎样表达“描述日常作息和时间”？",
+              "options": [
+                "我每天七点半起床。",
+                "我起床三个苹果。",
+                "几点来自法国？"
+              ],
+              "answer": 0,
+              "explanation": "本单元核心句型：我每天七点半起床，八点上课。。时间通常放在动词前：“我每天七点起床”；“半”表示三十分钟。",
+              "category": "情境表达",
+              "id": "daily-2-0",
+              "source_question_id": "daily-2-0",
+              "dimension": "vocabulary",
+              "bloom": "apply"
+            },
+            {
+              "prompt": "“七点半”是几点几分？",
+              "options": [
+                "七点十五分",
+                "七点三十分",
+                "八点三十分"
+              ],
+              "answer": 1,
+              "explanation": "“半”表示半小时，七点半就是七点三十分。",
+              "category": "综合应用",
+              "id": "daily-2-1",
+              "source_question_id": "daily-2-1",
+              "dimension": "vocabulary",
+              "bloom": "understand"
+            }
+          ],
+          "id": "daily-2"
+        },
+        {
+          "title": "邀请与礼貌回应",
+          "goal": "提出邀请并协商时间",
+          "words": "一起 yìqǐ · together；有空 yǒukòng · available；周末 zhōumò · weekend；改天 gǎitiān · another day",
+          "grammar": "“要不要一起……？”发出邀请；“……可以吗？”协商安排。",
+          "example": "周末要不要一起喝茶？下午三点可以吗？",
+          "dialogue": [
+            "A：明天一起去超市，好吗？",
+            "B：对不起，明天我有课。周日可以吗？",
+            "A：可以，我们周日十点见。"
+          ],
+          "task": "提出一个邀请，再分别练习接受与礼貌改期。",
+          "practices": [
+            "认读：遮住拼音，读出本单元词语，再对照检查。",
+            "替换：提出一个邀请，再分别练习接受与礼貌改期。",
+            "迁移：合上例句，用自己的信息完成一次两轮交流。"
+          ],
+          "quiz": [
+            {
+              "prompt": "在本单元情境中，怎样表达“提出邀请并协商时间”？",
+              "options": [
+                "周末一起喝茶，好吗？",
+                "喝茶叫什么名字？",
+                "我多少钱周末？"
+              ],
+              "answer": 0,
+              "explanation": "本单元核心句型：周末要不要一起喝茶？下午三点可以吗？。“要不要一起……？”发出邀请；“……可以吗？”协商安排。",
+              "category": "情境表达",
+              "id": "daily-3-0",
+              "source_question_id": "daily-3-0",
+              "dimension": "vocabulary",
+              "bloom": "apply"
+            },
+            {
+              "prompt": "不能赴约时，哪句既礼貌又能继续协商？",
+              "options": [
+                "不去",
+                "对不起，我明天有事，周日可以吗？",
+                "你不对"
+              ],
+              "answer": 1,
+              "explanation": "说明原因并提出替代时间，可以让交流继续。",
+              "category": "综合应用",
+              "id": "daily-3-1",
+              "source_question_id": "daily-3-1",
+              "dimension": "vocabulary",
+              "bloom": "understand"
+            }
+          ],
+          "id": "daily-3"
+        },
+        {
+          "title": "完成一次生活对话",
+          "goal": "串联介绍、购物和邀约信息",
+          "words": "需要 xūyào · need；准备 zhǔnbèi · prepare；以后 yǐhòu · afterwards；方便 fāngbiàn · convenient",
+          "grammar": "用“因为……所以……”简单解释安排，注意时间与动作的先后。",
+          "example": "因为明天要做饭，所以今天先去买菜。",
+          "dialogue": [
+            "A：周日你有空吗？一起做饭吧。",
+            "B：好，我们需要买什么？",
+            "A：先买蔬菜和米，再回家做饭。"
+          ],
+          "task": "为朋友聚餐拟定时间、购物清单和邀请消息。",
+          "practices": [
+            "认读：遮住拼音，读出本单元词语，再对照检查。",
+            "替换：为朋友聚餐拟定时间、购物清单和邀请消息。",
+            "迁移：合上例句，用自己的信息完成一次两轮交流。"
+          ],
+          "quiz": [
+            {
+              "prompt": "在本单元情境中，怎样表达“串联介绍、购物和邀约信息”？",
+              "options": [
+                "周日十点一起买菜，然后回家做饭。",
+                "米饭来自几点名字？",
+                "我坐三个周日。"
+              ],
+              "answer": 0,
+              "explanation": "本单元核心句型：因为明天要做饭，所以今天先去买菜。。用“因为……所以……”简单解释安排，注意时间与动作的先后。",
+              "category": "情境表达",
+              "id": "daily-4-0",
+              "source_question_id": "daily-4-0",
+              "dimension": "vocabulary",
+              "bloom": "apply"
+            },
+            {
+              "prompt": "朋友问“什么时候、在哪儿见？”，应提供什么？",
+              "options": [
+                "只有物品名称",
+                "具体时间和见面地点",
+                "只有自己的名字"
+              ],
+              "answer": 1,
+              "explanation": "综合交流时应回应对方所问的信息，时间和地点都要清楚。",
+              "category": "综合应用",
+              "id": "daily-4-1",
+              "source_question_id": "daily-4-1",
+              "dimension": "vocabulary",
+              "bloom": "understand"
+            }
+          ],
+          "id": "daily-4"
+        }
+      ],
+      "posttest": [
+        {
+          "prompt": "对方介绍完名字后，哪句适合回应？",
+          "options": [
+            "不要辣",
+            "左边第三个",
+            "很高兴认识你"
+          ],
+          "answer": 2,
+          "explanation": "初次认识时可以说“很高兴认识你”，延续友好交流。",
+          "category": "词句理解",
+          "id": "daily-post-0",
+          "source_question_id": "daily-0-1",
+          "dimension": "vocabulary",
+          "bloom": "understand"
+        },
+        {
+          "prompt": "新同学问“你来自哪儿？”，哪句切合问题？",
+          "options": [
+            "我要两个苹果",
+            "我每天八点起床",
+            "我来自加拿大"
+          ],
+          "answer": 2,
+          "explanation": "“来自哪儿”询问来源地，应回应国家或地区。",
+          "category": "迁移应用",
+          "id": "daily-post-1",
+          "source_question_id": "daily-transfer-0",
+          "dimension": "vocabulary",
+          "bloom": "apply"
+        },
+        {
+          "prompt": "杯子一个二十元，买两个一共多少元？",
+          "options": [
+            "二十元",
+            "四十元",
+            "六十元"
+          ],
+          "answer": 1,
+          "explanation": "二十乘二是四十；“一共”用来询问或说明合计。",
+          "category": "词句理解",
+          "id": "daily-post-2",
+          "source_question_id": "daily-1-1",
+          "dimension": "vocabulary",
+          "bloom": "understand"
+        },
+        {
+          "prompt": "橙子三个十二元，你买六个，一共多少元？",
+          "options": [
+            "十八元",
+            "二十四元",
+            "十二元"
+          ],
+          "answer": 1,
+          "explanation": "六个是三个的两倍，所以总价为二十四元。",
+          "category": "迁移应用",
+          "id": "daily-post-3",
+          "source_question_id": "daily-transfer-1",
+          "dimension": "vocabulary",
+          "bloom": "apply"
+        },
+        {
+          "prompt": "“七点半”是几点几分？",
+          "options": [
+            "八点三十分",
+            "七点十五分",
+            "七点三十分"
+          ],
+          "answer": 2,
+          "explanation": "“半”表示半小时，七点半就是七点三十分。",
+          "category": "综合应用",
+          "id": "daily-post-4",
+          "source_question_id": "daily-2-1",
+          "dimension": "vocabulary",
+          "bloom": "understand"
+        },
+        {
+          "prompt": "哪句话清楚描述了两个有先后的日常活动？",
+          "options": [
+            "我七点吃早饭，八点去上课",
+            "我喜欢早饭",
+            "今天有苹果"
+          ],
+          "answer": 0,
+          "explanation": "明确时间与对应动作，作息安排就更清晰。",
+          "category": "迁移应用",
+          "id": "daily-post-5",
+          "source_question_id": "daily-transfer-2",
+          "dimension": "vocabulary",
+          "bloom": "apply"
+        },
+        {
+          "prompt": "不能赴约时，哪句既礼貌又能继续协商？",
+          "options": [
+            "对不起，我明天有事，周日可以吗？",
+            "你不对",
+            "不去"
+          ],
+          "answer": 0,
+          "explanation": "说明原因并提出替代时间，可以让交流继续。",
+          "category": "综合应用",
+          "id": "daily-post-6",
+          "source_question_id": "daily-3-1",
+          "dimension": "vocabulary",
+          "bloom": "understand"
+        },
+        {
+          "prompt": "朋友邀请你周六看电影，你周六没空，哪句最合适？",
+          "options": [
+            "苹果一斤多少钱",
+            "你怎么这样",
+            "谢谢邀请！周六有事，周日可以吗？"
+          ],
+          "answer": 2,
+          "explanation": "感谢邀请、说明情况，再协商替代时间。",
+          "category": "迁移应用",
+          "id": "daily-post-7",
+          "source_question_id": "daily-transfer-3",
+          "dimension": "vocabulary",
+          "bloom": "apply"
+        },
+        {
+          "prompt": "朋友问“什么时候、在哪儿见？”，应提供什么？",
+          "options": [
+            "只有物品名称",
+            "具体时间和见面地点",
+            "只有自己的名字"
+          ],
+          "answer": 1,
+          "explanation": "综合交流时应回应对方所问的信息，时间和地点都要清楚。",
+          "category": "综合应用",
+          "id": "daily-post-8",
+          "source_question_id": "daily-4-1",
+          "dimension": "vocabulary",
+          "bloom": "understand"
+        },
+        {
+          "prompt": "给聚餐朋友发消息，哪一项信息最完整？",
+          "options": [
+            "明天",
+            "周日下午五点在我家见，我们一起做饭",
+            "来吧"
+          ],
+          "answer": 1,
+          "explanation": "完整邀约包含时间、地点和活动。",
+          "category": "迁移应用",
+          "id": "daily-post-9",
+          "source_question_id": "daily-transfer-4",
+          "dimension": "vocabulary",
+          "bloom": "apply"
+        }
+      ]
+    },
+    {
+      "id": "campus",
+      "title": "校园交流",
+      "english": "Campus",
+      "description": "从找教室与课堂求助，到课程介绍、小组分工和校园协商。",
+      "units": [
+        {
+          "title": "校园地点与路线",
+          "goal": "寻找校园地点并理解路线",
+          "words": "教室 jiàoshì · classroom；图书馆 túshūguǎn · library；楼 lóu · building；层 céng · floor",
+          "grammar": "“在几楼？”询问楼层；“从……到……”说明路线起终点。",
+          "example": "请问，中文教室在几楼？在三楼。",
+          "dialogue": [
+            "A：请问，图书馆怎么走？",
+            "B：从这里往前走，在教学楼旁边。",
+            "A：谢谢，阅览室在几楼？"
+          ],
+          "task": "根据校园示意图，说明宿舍到教室的路线。",
+          "practices": [
+            "认读：遮住拼音，读出本单元词语，再对照检查。",
+            "替换：根据校园示意图，说明宿舍到教室的路线。",
+            "迁移：合上例句，用自己的信息完成一次两轮交流。"
+          ],
+          "quiz": [
+            {
+              "prompt": "在本单元情境中，怎样表达“寻找校园地点并理解路线”？",
+              "options": [
+                "请问，教室在几楼？",
+                "教室多少钱一斤？",
+                "图书馆叫明天。"
+              ],
+              "answer": 0,
+              "explanation": "本单元核心句型：请问，中文教室在几楼？在三楼。。“在几楼？”询问楼层；“从……到……”说明路线起终点。",
+              "category": "情境表达",
+              "id": "campus-0-0",
+              "source_question_id": "campus-0-0",
+              "dimension": "vocabulary",
+              "bloom": "apply"
+            },
+            {
+              "prompt": "“教室在三楼”回答的是哪类问题？",
+              "options": [
+                "上课时间",
+                "楼层位置",
+                "课程价格"
+              ],
+              "answer": 1,
+              "explanation": "“几楼”询问楼层，“三楼”提供位置。",
+              "category": "词句理解",
+              "id": "campus-0-1",
+              "source_question_id": "campus-0-1",
+              "dimension": "vocabulary",
+              "bloom": "understand"
+            }
+          ],
+          "id": "campus-0"
+        },
+        {
+          "title": "课堂理解与求助",
+          "goal": "请求重复和解释不懂的内容",
+          "words": "再 zài · again；一遍 yí biàn · once；意思 yìsi · meaning；明白 míngbai · understand",
+          "grammar": "“请再……一遍”请求重复；“……是什么意思？”询问含义。",
+          "example": "老师，请再说一遍。这个词是什么意思？",
+          "dialogue": [
+            "A：老师，对不起，我没听清。",
+            "B：没关系，我再说一遍。",
+            "A：谢谢！“作业”是什么意思？"
+          ],
+          "task": "分别模拟没听清发音、没理解词义时如何求助。",
+          "practices": [
+            "认读：遮住拼音，读出本单元词语，再对照检查。",
+            "替换：分别模拟没听清发音、没理解词义时如何求助。",
+            "迁移：合上例句，用自己的信息完成一次两轮交流。"
+          ],
+          "quiz": [
+            {
+              "prompt": "在本单元情境中，怎样表达“请求重复和解释不懂的内容”？",
+              "options": [
+                "老师，请再说一遍。",
+                "老师一共两个。",
+                "解释在左边。"
+              ],
+              "answer": 0,
+              "explanation": "本单元核心句型：老师，请再说一遍。这个词是什么意思？。“请再……一遍”请求重复；“……是什么意思？”询问含义。",
+              "category": "情境表达",
+              "id": "campus-1-0",
+              "source_question_id": "campus-1-0",
+              "dimension": "vocabulary",
+              "bloom": "apply"
+            },
+            {
+              "prompt": "听清了发音，但不理解“作业”，该怎么问？",
+              "options": [
+                "这个词是什么意思？",
+                "请问几点？",
+                "要不要辣？"
+              ],
+              "answer": 0,
+              "explanation": "词义不懂时问“是什么意思”；没有听清时请求重复。",
+              "category": "词句理解",
+              "id": "campus-1-1",
+              "source_question_id": "campus-1-1",
+              "dimension": "vocabulary",
+              "bloom": "understand"
+            }
+          ],
+          "id": "campus-1"
+        },
+        {
+          "title": "课程与学习习惯",
+          "goal": "介绍课程并表达原因",
+          "words": "课程 kèchéng · course；觉得 juéde · think；有趣 yǒuqù · interesting；练习 liànxí · practise",
+          "grammar": "“我觉得……很……”表达评价；“因为……”补充原因。",
+          "example": "我喜欢中文课，因为课堂练习很有趣。",
+          "dialogue": [
+            "A：你最喜欢什么课？",
+            "B：中文课，我觉得很有趣。",
+            "A：你课后怎么练习？",
+            "B：我每天读十分钟课文。"
+          ],
+          "task": "介绍一门课程，补充喜欢的原因与一个学习习惯。",
+          "practices": [
+            "认读：遮住拼音，读出本单元词语，再对照检查。",
+            "替换：介绍一门课程，补充喜欢的原因与一个学习习惯。",
+            "迁移：合上例句，用自己的信息完成一次两轮交流。"
+          ],
+          "quiz": [
+            {
+              "prompt": "在本单元情境中，怎样表达“介绍课程并表达原因”？",
+              "options": [
+                "我喜欢中文课，因为很有趣。",
+                "中文课往右走。",
+                "我有三斤课程。"
+              ],
+              "answer": 0,
+              "explanation": "本单元核心句型：我喜欢中文课，因为课堂练习很有趣。。“我觉得……很……”表达评价；“因为……”补充原因。",
+              "category": "情境表达",
+              "id": "campus-2-0",
+              "source_question_id": "campus-2-0",
+              "dimension": "vocabulary",
+              "bloom": "apply"
+            },
+            {
+              "prompt": "哪句话说明了学习习惯？",
+              "options": [
+                "我每天复习十分钟",
+                "这个杯子二十元",
+                "图书馆在旁边"
+              ],
+              "answer": 0,
+              "explanation": "“每天复习十分钟”同时包含频率、活动和时长。",
+              "category": "综合应用",
+              "id": "campus-2-1",
+              "source_question_id": "campus-2-1",
+              "dimension": "vocabulary",
+              "bloom": "understand"
+            }
+          ],
+          "id": "campus-2"
+        },
+        {
+          "title": "合作任务与分工",
+          "goal": "提出分工并确认任务时间",
+          "words": "负责 fùzé · be responsible；资料 zīliào · materials；讨论 tǎolùn · discuss；之前 zhīqián · before",
+          "grammar": "“我负责……，你负责……”说明分工；“……之前”明确截止时间。",
+          "example": "我负责找资料，你负责做海报，周五之前完成。",
+          "dialogue": [
+            "A：我们怎么分工？",
+            "B：我找资料，你做海报，可以吗？",
+            "A：可以，周四晚上一起检查。"
+          ],
+          "task": "为两人小组设定任务、截止时间和一次讨论。",
+          "practices": [
+            "认读：遮住拼音，读出本单元词语，再对照检查。",
+            "替换：为两人小组设定任务、截止时间和一次讨论。",
+            "迁移：合上例句，用自己的信息完成一次两轮交流。"
+          ],
+          "quiz": [
+            {
+              "prompt": "在本单元情境中，怎样表达“提出分工并确认任务时间”？",
+              "options": [
+                "我负责找资料，你负责做海报。",
+                "资料多少钱一楼？",
+                "我来自负责。"
+              ],
+              "answer": 0,
+              "explanation": "本单元核心句型：我负责找资料，你负责做海报，周五之前完成。。“我负责……，你负责……”说明分工；“……之前”明确截止时间。",
+              "category": "情境表达",
+              "id": "campus-3-0",
+              "source_question_id": "campus-3-0",
+              "dimension": "vocabulary",
+              "bloom": "apply"
+            },
+            {
+              "prompt": "“周五之前交作业”指什么？",
+              "options": [
+                "周五之后再开始",
+                "需要在规定截止时间前提交",
+                "不用交作业"
+              ],
+              "answer": 1,
+              "explanation": "“之前”明确时间上限，应该提前安排完成与提交。",
+              "category": "综合应用",
+              "id": "campus-3-1",
+              "source_question_id": "campus-3-1",
+              "dimension": "vocabulary",
+              "bloom": "understand"
+            }
+          ],
+          "id": "campus-3"
+        },
+        {
+          "title": "校园综合交流",
+          "goal": "协调课程冲突并提出解决方案",
+          "words": "冲突 chōngtū · conflict；调整 tiáozhěng · adjust；确认 quèrèn · confirm；通知 tōngzhī · notify",
+          "grammar": "“因为……，能不能……？”说明原因后提出请求，再确认新安排。",
+          "example": "因为下午有课，我们能不能改到晚上讨论？",
+          "dialogue": [
+            "A：下午的小组讨论我可能来不了。",
+            "B：那改到晚上七点怎么样？",
+            "A：可以，在图书馆见，我通知其他同学。"
+          ],
+          "task": "给同学写一条改期消息，包含原因、新时间和地点。",
+          "practices": [
+            "认读：遮住拼音，读出本单元词语，再对照检查。",
+            "替换：给同学写一条改期消息，包含原因、新时间和地点。",
+            "迁移：合上例句，用自己的信息完成一次两轮交流。"
+          ],
+          "quiz": [
+            {
+              "prompt": "在本单元情境中，怎样表达“协调课程冲突并提出解决方案”？",
+              "options": [
+                "下午有课，能不能改到晚上讨论？",
+                "讨论是一杯茶。",
+                "晚上叫什么国家？"
+              ],
+              "answer": 0,
+              "explanation": "本单元核心句型：因为下午有课，我们能不能改到晚上讨论？。“因为……，能不能……？”说明原因后提出请求，再确认新安排。",
+              "category": "情境表达",
+              "id": "campus-4-0",
+              "source_question_id": "campus-4-0",
+              "dimension": "vocabulary",
+              "bloom": "apply"
+            },
+            {
+              "prompt": "协商改期后，哪一步有助于避免误会？",
+              "options": [
+                "确认新时间地点并通知组员",
+                "不再回应",
+                "只重复课程名称"
+              ],
+              "answer": 0,
+              "explanation": "达成新安排后确认时间地点，并让相关同学都知道。",
+              "category": "综合应用",
+              "id": "campus-4-1",
+              "source_question_id": "campus-4-1",
+              "dimension": "vocabulary",
+              "bloom": "understand"
+            }
+          ],
+          "id": "campus-4"
+        }
+      ],
+      "posttest": [
+        {
+          "prompt": "“教室在三楼”回答的是哪类问题？",
+          "options": [
+            "楼层位置",
+            "课程价格",
+            "上课时间"
+          ],
+          "answer": 0,
+          "explanation": "“几楼”询问楼层，“三楼”提供位置。",
+          "category": "词句理解",
+          "id": "campus-post-0",
+          "source_question_id": "campus-0-1",
+          "dimension": "vocabulary",
+          "bloom": "understand"
+        },
+        {
+          "prompt": "同学说“办公室在四楼，教室在二楼”，你去上课应到哪一层？",
+          "options": [
+            "一楼",
+            "二楼",
+            "四楼"
+          ],
+          "answer": 1,
+          "explanation": "要对应目的地“教室”和它所在的楼层。",
+          "category": "迁移应用",
+          "id": "campus-post-1",
+          "source_question_id": "campus-transfer-0",
+          "dimension": "vocabulary",
+          "bloom": "apply"
+        },
+        {
+          "prompt": "听清了发音，但不理解“作业”，该怎么问？",
+          "options": [
+            "这个词是什么意思？",
+            "请问几点？",
+            "要不要辣？"
+          ],
+          "answer": 0,
+          "explanation": "词义不懂时问“是什么意思”；没有听清时请求重复。",
+          "category": "词句理解",
+          "id": "campus-post-2",
+          "source_question_id": "campus-1-1",
+          "dimension": "vocabulary",
+          "bloom": "understand"
+        },
+        {
+          "prompt": "老师说得太快，你应怎样表达？",
+          "options": [
+            "请说慢一点，我没听清",
+            "老师多少钱",
+            "我不要教室"
+          ],
+          "answer": 0,
+          "explanation": "没有听清时可以请求放慢语速或重复。",
+          "category": "迁移应用",
+          "id": "campus-post-3",
+          "source_question_id": "campus-transfer-1",
+          "dimension": "vocabulary",
+          "bloom": "apply"
+        },
+        {
+          "prompt": "哪句话说明了学习习惯？",
+          "options": [
+            "图书馆在旁边",
+            "我每天复习十分钟",
+            "这个杯子二十元"
+          ],
+          "answer": 1,
+          "explanation": "“每天复习十分钟”同时包含频率、活动和时长。",
+          "category": "综合应用",
+          "id": "campus-post-4",
+          "source_question_id": "campus-2-1",
+          "dimension": "vocabulary",
+          "bloom": "understand"
+        },
+        {
+          "prompt": "同学问“你为什么喜欢这门课？”，哪句回应了原因？",
+          "options": [
+            "周二上午",
+            "因为老师讲得很清楚",
+            "在三楼"
+          ],
+          "answer": 1,
+          "explanation": "“为什么”询问原因，可以用“因为……”回答。",
+          "category": "迁移应用",
+          "id": "campus-post-5",
+          "source_question_id": "campus-transfer-2",
+          "dimension": "vocabulary",
+          "bloom": "apply"
+        },
+        {
+          "prompt": "“周五之前交作业”指什么？",
+          "options": [
+            "需要在规定截止时间前提交",
+            "不用交作业",
+            "周五之后再开始"
+          ],
+          "answer": 0,
+          "explanation": "“之前”明确时间上限，应该提前安排完成与提交。",
+          "category": "综合应用",
+          "id": "campus-post-6",
+          "source_question_id": "campus-3-1",
+          "dimension": "vocabulary",
+          "bloom": "understand"
+        },
+        {
+          "prompt": "“你找资料，我整理图片，今晚八点核对”，其中什么信息最明确？",
+          "options": [
+            "分工和核对时间",
+            "午餐菜单",
+            "组员国籍"
+          ],
+          "answer": 0,
+          "explanation": "两个人的任务和共同检查时间都已明确。",
+          "category": "迁移应用",
+          "id": "campus-post-7",
+          "source_question_id": "campus-transfer-3",
+          "dimension": "vocabulary",
+          "bloom": "apply"
+        },
+        {
+          "prompt": "协商改期后，哪一步有助于避免误会？",
+          "options": [
+            "确认新时间地点并通知组员",
+            "不再回应",
+            "只重复课程名称"
+          ],
+          "answer": 0,
+          "explanation": "达成新安排后确认时间地点，并让相关同学都知道。",
+          "category": "综合应用",
+          "id": "campus-post-8",
+          "source_question_id": "campus-4-1",
+          "dimension": "vocabulary",
+          "bloom": "understand"
+        },
+        {
+          "prompt": "讨论改到周四七点后，还要做什么？",
+          "options": [
+            "只告诉一位无关同学",
+            "不需要回应",
+            "确认地点并通知全组同学"
+          ],
+          "answer": 2,
+          "explanation": "协调任务要让所有参与者收到一致的信息。",
+          "category": "迁移应用",
+          "id": "campus-post-9",
+          "source_question_id": "campus-transfer-4",
+          "dimension": "vocabulary",
+          "bloom": "apply"
+        }
+      ]
+    },
+    {
+      "id": "poetry",
+      "title": "古诗入门",
+      "english": "Poetry",
+      "description": "从景物和动作读懂短诗，联系现代汉语，分享自己的理解与感受。",
+      "units": [
+        {
+          "title": "读懂诗中的景物",
+          "goal": "识别景物词并联系现代说法",
+          "words": "月 yuè · moon；光 guāng · light；床前 chuáng qián · before the bed；霜 shuāng · frost",
+          "grammar": "古诗中的“月”在日常交流中常说“月亮”；先抓景物，再理解整句。",
+          "example": "床前明月光，疑是地上霜。（李白《静夜思》）",
+          "dialogue": [
+            "A：诗里写了哪些景物？",
+            "B：月光和像霜一样的白色。",
+            "A：“疑是”表示诗人起初以为是霜。"
+          ],
+          "task": "圈出景物词，用“我看见……”描述一幅月夜图。",
+          "practices": [
+            "认读：遮住拼音，读出本单元词语，再对照检查。",
+            "替换：圈出景物词，用“我看见……”描述一幅月夜图。",
+            "迁移：合上例句，用自己的信息完成一次两轮交流。"
+          ],
+          "quiz": [
+            {
+              "prompt": "在本单元情境中，怎样表达“识别景物词并联系现代说法”？",
+              "options": [
+                "我看见月亮，地上有月光。",
+                "月亮一共两元。",
+                "床前是上课时间。"
+              ],
+              "answer": 0,
+              "explanation": "本单元核心句型：床前明月光，疑是地上霜。（李白《静夜思》）。古诗中的“月”在日常交流中常说“月亮”；先抓景物，再理解整句。",
+              "category": "情境表达",
+              "id": "poetry-0-0",
+              "source_question_id": "poetry-0-0",
+              "dimension": "poetry",
+              "bloom": "apply"
+            },
+            {
+              "prompt": "“疑是地上霜”中，“疑是”更接近什么？",
+              "options": [
+                "起初以为是",
+                "确定一定是",
+                "完全看不见"
+              ],
+              "answer": 0,
+              "explanation": "“疑是”包含猜想、恍惚以为的意思，并非断言真的有霜。",
+              "category": "词句理解",
+              "id": "poetry-0-1",
+              "source_question_id": "poetry-0-1",
+              "dimension": "poetry",
+              "bloom": "understand"
+            }
+          ],
+          "id": "poetry-0"
+        },
+        {
+          "title": "动作与观察视角",
+          "goal": "理解动作词并改述诗句",
+          "words": "举头 jǔ tóu · raise the head；低头 dī tóu · lower the head；望 wàng · gaze；思 sī · think of",
+          "grammar": "把“举头”改述为“抬起头”，把“望”改述为“看着”，保持动作和对象。",
+          "example": "举头望明月，低头思故乡。（李白《静夜思》）",
+          "dialogue": [
+            "A：诗人先做了什么？",
+            "B：抬起头看月亮。",
+            "A：后来呢？",
+            "B：低下头，想起自己的家乡。"
+          ],
+          "task": "用“先……再……”把两句诗改述成现代汉语。",
+          "practices": [
+            "认读：遮住拼音，读出本单元词语，再对照检查。",
+            "替换：用“先……再……”把两句诗改述成现代汉语。",
+            "迁移：合上例句，用自己的信息完成一次两轮交流。"
+          ],
+          "quiz": [
+            {
+              "prompt": "在本单元情境中，怎样表达“理解动作词并改述诗句”？",
+              "options": [
+                "先抬头看月亮，再低头想家乡。",
+                "先去上课，再买门票。",
+                "先数价格，再坐公交。"
+              ],
+              "answer": 0,
+              "explanation": "本单元核心句型：举头望明月，低头思故乡。（李白《静夜思》）。把“举头”改述为“抬起头”，把“望”改述为“看着”，保持动作和对象。",
+              "category": "情境表达",
+              "id": "poetry-1-0",
+              "source_question_id": "poetry-1-0",
+              "dimension": "poetry",
+              "bloom": "apply"
+            },
+            {
+              "prompt": "“举头望明月”中，“望”的对象是什么？",
+              "options": [
+                "故乡",
+                "明月",
+                "地上的霜"
+              ],
+              "answer": 1,
+              "explanation": "“望明月”指看月亮；理解时应保留动作对象。",
+              "category": "词句理解",
+              "id": "poetry-1-1",
+              "source_question_id": "poetry-1-1",
+              "dimension": "poetry",
+              "bloom": "understand"
+            }
+          ],
+          "id": "poetry-1"
+        },
+        {
+          "title": "从诗意到日常情感",
+          "goal": "用日常汉语表达思念",
+          "words": "故乡 gùxiāng · hometown；想念 xiǎngniàn · miss；家人 jiārén · family；远 yuǎn · far",
+          "grammar": "“我想……”可以表达思念；具体对象与原因让意思更完整。",
+          "example": "看到月亮，我想起了家乡和家人。",
+          "dialogue": [
+            "A：这首诗让你想起什么？",
+            "B：我的家人。我有一点想家。",
+            "A：你可以给他们打个电话。"
+          ],
+          "task": "写两句关于家乡的话：一个景物和一种心情。",
+          "practices": [
+            "认读：遮住拼音，读出本单元词语，再对照检查。",
+            "替换：写两句关于家乡的话：一个景物和一种心情。",
+            "迁移：合上例句，用自己的信息完成一次两轮交流。"
+          ],
+          "quiz": [
+            {
+              "prompt": "在本单元情境中，怎样表达“用日常汉语表达思念”？",
+              "options": [
+                "看到月亮，我想起家乡。",
+                "我想要一个教室的价格。",
+                "家乡往公交去。"
+              ],
+              "answer": 0,
+              "explanation": "本单元核心句型：看到月亮，我想起了家乡和家人。。“我想……”可以表达思念；具体对象与原因让意思更完整。",
+              "category": "情境表达",
+              "id": "poetry-2-0",
+              "source_question_id": "poetry-2-0",
+              "dimension": "poetry",
+              "bloom": "apply"
+            },
+            {
+              "prompt": "“思故乡”表达的主要情感是什么？",
+              "options": [
+                "思念家乡",
+                "询问路程",
+                "购买物品"
+              ],
+              "answer": 0,
+              "explanation": "“思”在这里是思念，“故乡”是家乡。",
+              "category": "综合应用",
+              "id": "poetry-2-1",
+              "source_question_id": "poetry-2-1",
+              "dimension": "poetry",
+              "bloom": "understand"
+            }
+          ],
+          "id": "poetry-2"
+        },
+        {
+          "title": "认识春天的画面",
+          "goal": "结合景物理解简短诗句",
+          "words": "春 chūn · spring；鸟 niǎo · bird；风雨 fēngyǔ · wind and rain；花 huā · flower",
+          "grammar": "理解“闻”时联系上下文：在《春晓》中是“听见”；用“听见……看见……”描述感官。",
+          "example": "春眠不觉晓，处处闻啼鸟。（孟浩然《春晓》）",
+          "dialogue": [
+            "A：“闻啼鸟”是什么意思？",
+            "B：听见鸟叫。",
+            "A：你早上听见什么？",
+            "B：我听见窗外的鸟叫。"
+          ],
+          "task": "写一段两句晨景，分别用“听见”和“看见”。",
+          "practices": [
+            "认读：遮住拼音，读出本单元词语，再对照检查。",
+            "替换：写一段两句晨景，分别用“听见”和“看见”。",
+            "迁移：合上例句，用自己的信息完成一次两轮交流。"
+          ],
+          "quiz": [
+            {
+              "prompt": "在本单元情境中，怎样表达“结合景物理解简短诗句”？",
+              "options": [
+                "早上，我听见鸟叫，看见花开。",
+                "鸟叫一共二十元。",
+                "春天负责护照。"
+              ],
+              "answer": 0,
+              "explanation": "本单元核心句型：春眠不觉晓，处处闻啼鸟。（孟浩然《春晓》）。理解“闻”时联系上下文：在《春晓》中是“听见”；用“听见……看见……”描述感官。",
+              "category": "情境表达",
+              "id": "poetry-3-0",
+              "source_question_id": "poetry-3-0",
+              "dimension": "poetry",
+              "bloom": "apply"
+            },
+            {
+              "prompt": "《春晓》中的“闻”应怎样理解？",
+              "options": [
+                "闻气味",
+                "听见",
+                "询问"
+              ],
+              "answer": 1,
+              "explanation": "此处“闻”指听见，需根据“啼鸟”的语境理解。",
+              "category": "综合应用",
+              "id": "poetry-3-1",
+              "source_question_id": "poetry-3-1",
+              "dimension": "poetry",
+              "bloom": "understand"
+            }
+          ],
+          "id": "poetry-3"
+        },
+        {
+          "title": "读诗与分享感受",
+          "goal": "引用诗句并说明个人感受",
+          "words": "诗句 shījù · verse；画面 huàmiàn · scene；安静 ānjìng · quiet；感受 gǎnshòu · feeling",
+          "grammar": "分享按“诗句 → 现代意思 → 我的感受”三步进行，区分诗中内容和个人联想。",
+          "example": "我喜欢“举头望明月”，它让我想起家乡的夜晚。",
+          "dialogue": [
+            "A：你最喜欢哪一句？",
+            "B：“处处闻啼鸟”。它写到听见鸟叫。",
+            "A：这让你有什么感受？",
+            "B：我觉得春天的早晨很有生机。"
+          ],
+          "task": "选学过的一句诗，介绍作者、现代意思和个人感受。",
+          "practices": [
+            "认读：遮住拼音，读出本单元词语，再对照检查。",
+            "替换：选学过的一句诗，介绍作者、现代意思和个人感受。",
+            "迁移：合上例句，用自己的信息完成一次两轮交流。"
+          ],
+          "quiz": [
+            {
+              "prompt": "在本单元情境中，怎样表达“引用诗句并说明个人感受”？",
+              "options": [
+                "我喜欢这句诗，它让我想起家乡。",
+                "这句诗在三楼上课。",
+                "我要两份作者。"
+              ],
+              "answer": 0,
+              "explanation": "本单元核心句型：我喜欢“举头望明月”，它让我想起家乡的夜晚。。分享按“诗句 → 现代意思 → 我的感受”三步进行，区分诗中内容和个人联想。",
+              "category": "情境表达",
+              "id": "poetry-4-0",
+              "source_question_id": "poetry-4-0",
+              "dimension": "poetry",
+              "bloom": "apply"
+            },
+            {
+              "prompt": "分享诗歌时，哪种说法清楚区分了诗意与个人感受？",
+              "options": [
+                "诗里写月亮，让我想起家人",
+                "所有人读完一定都一样",
+                "不看诗句直接猜作者心情"
+              ],
+              "answer": 0,
+              "explanation": "先指出诗中画面，再说明自己的联想，有助于有依据地表达。",
+              "category": "综合应用",
+              "id": "poetry-4-1",
+              "source_question_id": "poetry-4-1",
+              "dimension": "poetry",
+              "bloom": "understand"
+            }
+          ],
+          "id": "poetry-4"
+        }
+      ],
+      "posttest": [
+        {
+          "prompt": "“疑是地上霜”中，“疑是”更接近什么？",
+          "options": [
+            "确定一定是",
+            "完全看不见",
+            "起初以为是"
+          ],
+          "answer": 2,
+          "explanation": "“疑是”包含猜想、恍惚以为的意思，并非断言真的有霜。",
+          "category": "词句理解",
+          "id": "poetry-post-0",
+          "source_question_id": "poetry-0-1",
+          "dimension": "poetry",
+          "bloom": "understand"
+        },
+        {
+          "prompt": "用现代汉语描述“床前明月光”，哪句保留了主要画面？",
+          "options": [
+            "太阳在教室上课",
+            "床前洒着明亮的月光",
+            "床前有很多公交车"
+          ],
+          "answer": 1,
+          "explanation": "改述应保留地点“床前”和景物“明亮的月光”。",
+          "category": "迁移应用",
+          "id": "poetry-post-1",
+          "source_question_id": "poetry-transfer-0",
+          "dimension": "poetry",
+          "bloom": "apply"
+        },
+        {
+          "prompt": "“举头望明月”中，“望”的对象是什么？",
+          "options": [
+            "故乡",
+            "明月",
+            "地上的霜"
+          ],
+          "answer": 1,
+          "explanation": "“望明月”指看月亮；理解时应保留动作对象。",
+          "category": "词句理解",
+          "id": "poetry-post-2",
+          "source_question_id": "poetry-1-1",
+          "dimension": "poetry",
+          "bloom": "understand"
+        },
+        {
+          "prompt": "“低头思故乡”中的动作与情感对应哪一项？",
+          "options": [
+            "低头、思念家乡",
+            "走路、询问方向",
+            "抬头、开心购物"
+          ],
+          "answer": 0,
+          "explanation": "“低头”是动作，“思故乡”表达思乡。",
+          "category": "迁移应用",
+          "id": "poetry-post-3",
+          "source_question_id": "poetry-transfer-1",
+          "dimension": "poetry",
+          "bloom": "apply"
+        },
+        {
+          "prompt": "“思故乡”表达的主要情感是什么？",
+          "options": [
+            "购买物品",
+            "思念家乡",
+            "询问路程"
+          ],
+          "answer": 1,
+          "explanation": "“思”在这里是思念，“故乡”是家乡。",
+          "category": "综合应用",
+          "id": "poetry-post-4",
+          "source_question_id": "poetry-2-1",
+          "dimension": "poetry",
+          "bloom": "understand"
+        },
+        {
+          "prompt": "哪句话把思乡情感联系到了个人生活？",
+          "options": [
+            "这个苹果多少钱",
+            "请再说一遍",
+            "离开家以后，我常常想念家人"
+          ],
+          "answer": 2,
+          "explanation": "联系个人经历，可以用日常汉语表达相近的情感。",
+          "category": "迁移应用",
+          "id": "poetry-post-5",
+          "source_question_id": "poetry-transfer-2",
+          "dimension": "poetry",
+          "bloom": "apply"
+        },
+        {
+          "prompt": "《春晓》中的“闻”应怎样理解？",
+          "options": [
+            "听见",
+            "询问",
+            "闻气味"
+          ],
+          "answer": 0,
+          "explanation": "此处“闻”指听见，需根据“啼鸟”的语境理解。",
+          "category": "综合应用",
+          "id": "poetry-post-6",
+          "source_question_id": "poetry-3-1",
+          "dimension": "poetry",
+          "bloom": "understand"
+        },
+        {
+          "prompt": "“处处闻啼鸟”主要呈现哪一种感官体验？",
+          "options": [
+            "触觉",
+            "听觉",
+            "味觉"
+          ],
+          "answer": 1,
+          "explanation": "诗句描述听见四处鸟叫，属于听觉体验。",
+          "category": "迁移应用",
+          "id": "poetry-post-7",
+          "source_question_id": "poetry-transfer-3",
+          "dimension": "poetry",
+          "bloom": "apply"
+        },
+        {
+          "prompt": "分享诗歌时，哪种说法清楚区分了诗意与个人感受？",
+          "options": [
+            "诗里写月亮，让我想起家人",
+            "所有人读完一定都一样",
+            "不看诗句直接猜作者心情"
+          ],
+          "answer": 0,
+          "explanation": "先指出诗中画面，再说明自己的联想，有助于有依据地表达。",
+          "category": "综合应用",
+          "id": "poetry-post-8",
+          "source_question_id": "poetry-4-1",
+          "dimension": "poetry",
+          "bloom": "understand"
+        },
+        {
+          "prompt": "介绍一首短诗时，哪种顺序有助于表达清楚？",
+          "options": [
+            "引用诗句、解释画面、说自己的感受",
+            "只说不喜欢，不解释",
+            "只报一个分数"
+          ],
+          "answer": 0,
+          "explanation": "从文本出发，再解释与分享感受，表达更有依据。",
+          "category": "迁移应用",
+          "id": "poetry-post-9",
+          "source_question_id": "poetry-transfer-4",
+          "dimension": "poetry",
+          "bloom": "apply"
+        }
+      ]
+    }
+  ]
+}

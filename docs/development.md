@@ -1,6 +1,6 @@
 # 开发与配置指南
 
-安装与启动见[根目录 README](../README.md#快速开始)。当前前端为可独立运行的汉语项目静态入口，后端处于骨架阶段。
+安装与启动见[根目录 README](../README.md#快速开始)。当前课程、前后测、全部单元与画像均通过 FastAPI 提供，见[完整学习链路](software/server-unit-demo.md)。前端开发服务为 5173，后端为 8000。
 
 ## Docker Compose
 
@@ -30,7 +30,7 @@ docker compose -f infrastructure/compose.yaml up --build
 
 不得把真实 API Key、Token、密码、真实学习数据或个人配置提交到 Git。
 
-当前后端配置模块和前端 API 客户端均为占位文件，尚未接入这些环境变量；本地后端启动不会自动读取根目录 `.env`。Docker Compose 使用 `env_file` 将配置注入后端容器。接入配置模块时需同步更新本文。
+上表保留根目录环境模板的规划字段，不能视为已接入能力。当前 DeepSeek 实际读取 `code/backend/.env` 中的 `DEEPSEEK_API_KEY`、`DEEPSEEK_MODEL`、`DEEPSEEK_TIMEOUT`；本地后端不会自动读取根目录 `.env`。账号 `OWL_*` 参数通过进程环境设置。Docker Compose 使用 `env_file` 注入配置；业务存储仍为 JSON。
 
 ## 开发与测试
 
@@ -48,7 +48,7 @@ npm run test      # 执行测试
 
 ```bash
 cd code/backend
-python -m uvicorn app.main:app --reload
+python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 python -m pytest
 python -m ruff check .
 python -m ruff format --check .
@@ -62,6 +62,6 @@ python -m ruff format --check .
 - 端到端测试：测评、关卡、失败、提示、迁移题和报告；
 - AI 评测：答案正确性、格式、难度、提示泄露和内容安全。
 
-前端使用 package-lock.json 锁定依赖，CI 执行 npm ci 和 npm run build；后端检查 Python 语法。业务测试在具体功能实现时补充，当前不配置无测试文件的业务测试门禁。
+前端使用 package-lock.json 锁定依赖，CI 执行 npm ci 和 npm run build；后端检查 Python 语法。现有后端与前端业务测试需用上述命令手动运行，CI 尚未配置 pytest 和 Vitest 门禁。
 
-测试目录目前只有说明文件，尚无可执行用例；ESLint 配置也尚未建立。以上命令列出开发阶段的工具入口，不能视为现有完整测试门禁。协作流程见[贡献指南](../CONTRIBUTING.md)，跨系统测试职责见[测试说明](../tests/README.md)。
+当前已包含前后端可执行测试；根目录跨系统测试目录主要保留规划说明，ESLint 配置尚未建立。协作流程见[贡献指南](../CONTRIBUTING.md)，跨系统测试职责见[测试说明](../tests/README.md)。
