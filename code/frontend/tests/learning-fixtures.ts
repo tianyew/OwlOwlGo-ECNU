@@ -63,6 +63,18 @@ export function withAssessment(saved: SavedProgress, topic?: string) {
 }
 export function installLearning(initial = savedFixture()) {
   const store = { saved: structuredClone(initial) };
+  const submissions = new Map(Object.values(initial.results).map(result => [result.submission_id, result]));
+  vi.spyOn(learningApi, 'report').mockImplementation(async id => {
+    const result = submissions.get(id);
+    if (!result || result.kind !== 'posttest') throw new Error('Missing posttest');
+    const topic = result.topic ?? '';
+    return {
+      result: structuredClone(result),
+      completed_units: (store.saved.state.completed[topic] ?? []).length,
+      topic_completion: store.saved.topic_completion[topic] ?? false,
+      profile: structuredClone(store.saved.profile),
+    };
+  });
   vi.spyOn(curriculumApi, 'load').mockImplementation(async () => ({ content_version: 1, topics: structuredClone(topics) }));
   vi.spyOn(learningApi, 'load').mockImplementation(async () => structuredClone(store.saved));
   vi.spyOn(learningApi, 'save').mockImplementation(async (state, revision) => {
@@ -74,6 +86,7 @@ export function installLearning(initial = savedFixture()) {
   vi.spyOn(learningApi, 'submit').mockImplementation(async (id, body, revision) => {
     const result = resultFixture(id, body.answers);
     result.submission_id = body.submission_id;
+    submissions.set(result.submission_id, result);
     store.saved.results[id] = result; store.saved.revision = revision + 1;
     delete store.saved.state.drafts[id];
     if (id === 'assessment') withAssessment(store.saved);

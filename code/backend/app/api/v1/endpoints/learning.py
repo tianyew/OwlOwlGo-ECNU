@@ -11,7 +11,8 @@ from app.db.repositories.learning import (
     analysis_source,
     latest_results,
 )
-from app.domain.content.catalog import CONTENT_VERSION, get_quiz, public_catalog, public_questions
+from app.domain.content.catalog import CONTENT_VERSION, QUIZZES, get_quiz, public_catalog, public_questions
+from app.domain.learner.profile import formal_records, latest_wrong
 from app.integrations.llm.deepseek import AnalysisUnavailable
 from app.schemas.learning import SaveProgress, evidence
 from app.schemas.unit_quiz import ResetAssessment, SubmitUnitQuiz
@@ -122,6 +123,41 @@ def reset_assessment(body: ResetAssessment, request: Request, user: User):
         return repo.without_unit_history(repo.reset_assessment(user.id, body.revision))
     except ProgressConflict as exc:
         raise conflict(exc) from None
+
+
+@router.get("/posttest-history")
+def read_posttest_history(request: Request, user: User):
+    record = request.app.state.learning.get(user.id)
+    return [
+        {key: result[key] for key in ("submission_id", "topic", "score", "created_at")}
+        for result in reversed(formal_records(record["submissions"]))
+        if result["kind"] == "posttest"
+    ]
+
+
+@router.get("/submissions/{submission_id}")
+def read_submission(submission_id: str, request: Request, user: User):
+    repo = request.app.state.learning
+    record = repo.get(user.id)
+    result = record["submissions"].get(submission_id)
+    if result is None or result.get("provenance") == "legacy_answers":
+        raise HTTPException(404, "找不到这次正式提交。")
+    if result["kind"] != "posttest":
+        raise HTTPException(422, "这次提交不是方向后测。")
+    topic = result["topic"]
+    progress = repo.without_unit_history(record)
+    return {
+        "result": result,
+        "topic_completion": progress["topic_completion"].get(topic, False),
+        "completed_units": len(record["state"]["completed"].get(topic, [])),
+        "profile": progress["profile"],
+    }
+
+
+@router.get("/review-queue")
+def read_review_queue(request: Request, user: User):
+    record = request.app.state.learning.get(user.id)
+    return latest_wrong(record["submissions"], QUIZZES)
 
 
 @router.get("/profile")

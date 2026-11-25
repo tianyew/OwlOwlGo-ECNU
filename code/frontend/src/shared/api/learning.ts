@@ -24,6 +24,7 @@ export interface EvidenceStats {
   latest_correct: number; attempt_count: number; repeat_count: number; evidence_status: string; confidence: number;
 }
 export interface LearnerProfile extends EvidenceStats {
+  has_review_items?: boolean;
   policy_version: string; submission_count: number; scope: string; focus_areas: string[]; next_steps: string[];
   matrix: (EvidenceStats & { dimension: string; name: string; cells: (EvidenceStats & { bloom: string; name: string })[] })[];
   knowledge_points: (EvidenceStats & { name: string })[];
@@ -41,6 +42,13 @@ export interface SavedProgress {
   revision: number; state: LearningState; updated_at: string | null; analysis: Analysis | null;
   results: Record<string, QuizResult>; profile: LearnerProfile; topic_completion: Record<string, boolean>;
 }
+export interface StageReport {
+  result: QuizResult; topic_completion: boolean; completed_units: number; profile: LearnerProfile;
+}
+export type ReviewItem = QuizResult['items'][number] & {
+  source_question_id: string; submission_id: string; quiz_id: string; unit_id: string | null;
+  topic_id: string | null; reason: string; last_submitted_at: string | null; practice_available: boolean;
+};
 export interface Quiz {
   id: string; kind: 'assessment' | 'unit' | 'posttest'; content_version: 1; title: string;
   questions: { id: string; prompt: string; options: string[]; category: string; example?: string; subtitle?: string }[];
@@ -75,4 +83,7 @@ export const learningApi = {
     request<SubmissionResponse>(`quizzes/${encodeURIComponent(id)}/submissions`, 'POST', { ...body, revision }),
   reset: (revision: number) => request<SavedProgress>('assessment/reset', 'POST', { revision }),
   profile: () => request<LearnerProfile>('profile'),
+  report: (id: string) => request<StageReport>(`submissions/${encodeURIComponent(id)}`),
+  posttestHistory: () => request<Pick<QuizResult, 'submission_id' | 'topic' | 'score' | 'created_at'>[]>('posttest-history'),
+  review: () => request<{ items: ReviewItem[] }>('review-queue'),
 };

@@ -1,5 +1,7 @@
 """Replayable evidence summaries; repeated questions do not create new coverage."""
 
+from datetime import UTC, datetime
+
 DIMENSIONS = {
     "phonetics": "拼音与声调",
     "vocabulary": "词汇与句式",
@@ -50,9 +52,54 @@ def statistics(items: list[dict]) -> dict:
     }
 
 
+def formal_records(submissions: dict) -> list[dict]:
+    return sorted(
+        (r for r in submissions.values()
+         if r.get("provenance") != "legacy_answers"
+         and r.get("kind") in {"assessment", "unit", "posttest"}),
+        key=lambda r: r.get("created_at") or "",
+    )
+
+
+def latest_by_source(records: list[dict]) -> dict:
+    return {
+        item["source_question_id"]: (record, item)
+        for record in records
+        for item in record["items"]
+    }
+
+
+def latest_wrong(submissions: dict, quizzes: dict) -> dict:
+    units = {
+        (quiz["topic"], question["source_question_id"]): quiz_id.removeprefix("unit-")
+        for quiz_id, quiz in quizzes.items() if quiz["kind"] == "unit"
+        for question in quiz["questions"]
+    }
+    latest = latest_by_source(formal_records(submissions))
+    wrong = sorted(source for source, (_, item) in latest.items() if not item["is_correct"])
+    wrong.sort(key=lambda source: latest[source][0].get("created_at") or "", reverse=True)
+    items = []
+    for source in wrong[:10]:
+        result, item = latest[source]
+        items.append({
+            **item,
+            "submission_id": result["submission_id"],
+            "quiz_id": result["quiz_id"],
+            "topic_id": result["topic"],
+            "unit_id": units.get((result["topic"], source)),
+            "reason": "最近一次正式作答仍答错。",
+            "last_submitted_at": result.get("created_at"),
+            "practice_available": False,
+        })
+    return {
+        "policy_version": "latest-wrong-v1",
+        "generated_at": datetime.now(UTC).isoformat(),
+        "items": items,
+    }
+
+
 def build_profile(submissions: dict) -> dict:
-    # Legacy client snapshots remain traceable but are not verified profile evidence.
-    records = [r for r in submissions.values() if r.get("provenance") != "legacy_answers"]
+    records = formal_records(submissions)
     items = [item for record in records for item in record["items"]]
     matrix = [
         {
@@ -86,6 +133,9 @@ def build_profile(submissions: dict) -> dict:
         "matrix": matrix,
         "knowledge_points": knowledge,
         "submission_count": len(records),
+        "has_review_items": any(
+            not item["is_correct"] for _, item in latest_by_source(records).values()
+        ),
         **statistics(items),
         "focus_areas": weak,
         "next_steps": [f"复习“{name}”的错题，再用不同例句练习。" for name in weak[:3]]

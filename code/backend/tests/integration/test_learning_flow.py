@@ -67,6 +67,36 @@ def test_entire_curriculum_uses_server_grading_and_produces_a_real_matrix(flow):
     assert client.get("/api/v1/learning/profile").json() == profile
 
 
+def test_old_posttest_report_and_latest_wrong_queue(flow):
+    client, app, _, _ = flow
+    prefix = "/api/v1/learning"
+    submit_quiz(client)
+    choose_topic(client)
+    quiz_id = "post-travel"
+    questions = get_quiz(quiz_id)["questions"]
+    wrong = [(question["answer"] + 1) % len(question["options"]) for question in questions]
+    first = submit_quiz(client, quiz_id, wrong)["result"]
+    path = f"{prefix}/submissions/{first['submission_id']}"
+    queue = client.get(f"{prefix}/review-queue").json()["items"]
+    assert len(queue) == 10
+    assert {item["submission_id"] for item in queue} == {first["submission_id"]}
+    assert any(item["unit_id"] == "travel-0" for item in queue)
+    second = submit_quiz(client, quiz_id)["result"]
+    assert client.get(f"{prefix}/review-queue").json()["items"] == []
+    report = client.get(path).json()
+    assert report["result"]["score"] == 0
+    assert report["profile"]["latest_score"] == 100
+    assert [item["submission_id"] for item in client.get(f"{prefix}/posttest-history").json()] == [
+        second["submission_id"], first["submission_id"],
+    ]
+    other = TestClient(app)
+    assert other.post("/api/v1/auth/register", json={
+        "username": "other_learner", "password": "sample-password", "display_name": "Other",
+    }).status_code in (200, 201)
+    assert other.get(path).status_code == 404
+    assert other.get(f"{prefix}/review-queue").json()["items"] == []
+
+
 def test_progress_cannot_forge_pretest_or_learning_evidence(flow):
     client, _, _, _ = flow
     forged = LearningState().model_dump()

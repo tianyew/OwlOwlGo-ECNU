@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import ReviewQueue from './ReviewQueue.vue';
+import type { ReviewItem, StageReport } from '../../shared/api/learning';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { AuthError } from '../../shared/api/auth';
 import { curriculumApi, type Diagnosis, type Topic } from '../../shared/api/curriculum';
@@ -21,7 +23,7 @@ const results = ref<Record<string, QuizResult>>({});
 const profile = ref<Profile>();
 const topicCompletion = ref<Record<string, boolean>>({});
 const analysis = ref<Analysis | null>(null);
-const view = ref<'home' | 'journey' | 'report' | 'profile'>(props.userId ? 'home' : 'journey');
+const view = ref<'home' | 'journey' | 'report' | 'profile' | 'review'>(props.userId ? 'home' : 'journey');
 const outcome = ref<'plan' | 'posttest' | 'final'>('plan');
 const openedUnit = ref(0);
 const topicDraft = ref('');
@@ -30,6 +32,55 @@ const quizViewKey = ref(0);
 const plan = computed(() => choices.value.find(topic => topic.id === state.value.topic));
 const assessment = computed(() => results.value.assessment);
 const postResult = computed(() => plan.value ? results.value[plan.value.posttest_id] : undefined);
+const stageReport = ref<StageReport>();
+const reportId = ref('');
+const reportError = ref('');
+const reportLoading = ref(false);
+const history = ref<Awaited<ReturnType<typeof learningApi.posttestHistory>>>();
+const historyError = ref('');
+const historyLoading = ref(false);
+const reviewOrigin = ref<'profile' | 'journey'>('profile');
+const previewItem = ref<ReviewItem>();
+const findCourse = (item: ReviewItem) => choices.value.find(topic => topic.id === item.topic_id)
+  ?.units.find(unit => unit.id === item.unit_id || unit.quiz_id === `unit-${item.unit_id}`);
+const previewCourse = computed(() => previewItem.value ? findCourse(previewItem.value) : undefined);
+let reportRequest = 0;
+
+async function openStageReport(id: string) {
+  const requestId = ++reportRequest;
+  reportId.value = id;
+  stageReport.value = undefined;
+  reportError.value = '';
+  reportLoading.value = true;
+  outcome.value = 'final';
+  view.value = 'journey';
+  try {
+    const report = await learningApi.report(id);
+    if (requestId === reportRequest && !disposed) stageReport.value = report;
+  } catch (reason) {
+    if (requestId === reportRequest && !disposed) {
+      reportError.value = reason instanceof Error ? reason.message : '报告加载失败。';
+    }
+  } finally {
+    if (requestId === reportRequest && !disposed) reportLoading.value = false;
+  }
+}
+async function loadPosttestHistory() {
+  historyLoading.value = true;
+  historyError.value = '';
+  try {
+    history.value = await learningApi.posttestHistory();
+  } catch (reason) {
+    historyError.value = reason instanceof Error ? reason.message : '历史后测加载失败。';
+  } finally {
+    historyLoading.value = false;
+  }
+}
+function openReview(origin: 'profile' | 'journey') {
+  reviewOrigin.value = origin;
+  previewItem.value = undefined;
+  view.value = 'review';
+}
 const diagnosis = computed<Diagnosis | undefined>(() => assessment.value ? {
   score: assessment.value.score, correct: assessment.value.correct,
   advice: assessment.value.score >= 80 ? '可结合主题例句继续巩固本次规则。' : '建议复习前测错题，再结合主题例句练习。',
@@ -257,14 +308,56 @@ onBeforeUnmount(() => { disposed = true; window.removeEventListener('beforeunloa
     <div v-if="saveFailed" class="save-status" role="alert">{{ saveMessage }} <button v-if="!conflict && dirty" class="secondary" @click="flushSave">重试保存</button><button class="secondary" @click="restore">重新加载已保存进度</button></div>
     <fieldset class="journey-controls" :disabled="grading" style="border: 0; padding: 0; margin: 0; min-width: 0">
     <HomeDashboard v-if="view === 'home'" :display-name="displayName" :topics="choices" :setup-complete="state.onboarding_complete" :assessment-done="Boolean(assessment)" :answers-count="state.drafts.assessment?.answers.length ?? 0" :plan="plan" :completed="state.completed[state.topic ?? ''] ?? []" :diagnosis="diagnosis" @setup="resumeLearning" @learn="openPlan" @plan="openPlan()" @analysis="view = 'report'" @profile="openProfile" @direction="changeTopic" @posttest="openPost" />
-    <section v-else-if="view === 'profile' && profile" class="journey-panel"><button class="text-button" @click="goHome">← 返回首页</button><h1>我的学习画像</h1><LearnerProfile :profile="profile" /></section>
+    <template v-else-if="view === 'review'">
+      <section v-if="previewCourse" class="journey-panel">
+        <button class="text-button" @click="previewItem = undefined">← 返回错题</button>
+        <h1>{{ previewCourse.title }}</h1>
+        <p>原课程预览 · 只读</p>
+        <p>{{ previewCourse.goal }}</p><p>{{ previewCourse.words }}</p><p>{{ previewCourse.grammar }}</p>
+        <p>{{ previewCourse.example }}</p><p v-for="line in previewCourse.dialogue" :key="line">{{ line }}</p>
+        <p>如需正式学习，请返回学习规划并确认学习方向。</p>
+      </section>
+      <ReviewQueue v-show="!previewCourse" :course-available="item => Boolean(findCourse(item))"
+        @back="view = reviewOrigin" @course="previewItem = $event" @assessment="view = 'report'" />
+    </template>
+    <section v-else-if="view === 'profile' && profile" class="journey-panel">
+      <button class="text-button" @click="goHome">← 返回首页</button>
+      <h1>我的学习画像</h1>
+      <LearnerProfile :profile="profile" @review="openReview('profile')" @assessment="resumeLearning" @continue="openPlan()" />
+      <h2>历史后测报告</h2>
+      <button class="secondary" :disabled="historyLoading" @click="loadPosttestHistory">{{ historyLoading ? '正在加载…' : '查询历史后测' }}</button>
+      <p v-if="historyError" role="alert">{{ historyError }}</p>
+      <p v-else-if="history && !history.length">暂无正式后测记录。</p>
+      <ul v-else-if="history">
+        <li v-for="item in history" :key="item.submission_id">
+          <button class="text-button" @click="openStageReport(item.submission_id)">
+            {{ choices.find(topic => topic.id === item.topic)?.title ?? '方向后测' }} · {{ item.score }} 分 ·
+            {{ item.created_at ? new Date(item.created_at).toLocaleString() : '时间未知' }}
+          </button>
+        </li>
+      </ul>
+    </section>
     <section v-else-if="view === 'report'" class="journey-panel"><button class="text-button" @click="goHome">← 返回首页</button><h1>本次前测报告</h1><p>前测得分 {{ assessment?.score ?? '—' }} / 100 · 拼音与声调文字辨识</p><LearningAnalysis :analysis="analysis" :assessment="assessment" :analyzing="analyzing" :error="analysisError" :signed-in="signedIn" :waiting="blocked" @retry="runAnalysis" /></section>
     <template v-else>
       <button v-if="signedIn" class="text-button back-home" @click="goHome">← 返回首页</button>
       <nav class="journey-steps" aria-label="学习流程"><span :aria-current="state.stage === 'assessment' ? 'step' : undefined">01 前测与诊断</span><span :aria-current="state.stage === 'topics' ? 'step' : undefined">02 选择方向</span><span :aria-current="state.stage === 'plan' && outcome === 'plan' ? 'step' : undefined">03 学习规划</span><span :aria-current="outcome === 'posttest' ? 'step' : undefined">04 后测</span><span :aria-current="outcome === 'final' ? 'step' : undefined">05 学习报告</span></nav>
-      <PhoneticsDemo v-if="state.stage === 'assessment'" :key="restoredKey" :signed-in="signedIn" :disabled="blocked" :draft="state.drafts.assessment" :result="assessment" :submit="submitQuiz" @draft="updateDraft" @context="updateCompanionQuiz" @complete="selectTopic" @restart="restart" @browse="selectTopic"><template #analysis><LearningAnalysis :analysis="analysis" :assessment="assessment" :analyzing="analyzing" :error="analysisError" :signed-in="signedIn" :waiting="blocked" @retry="runAnalysis" /></template></PhoneticsDemo>
-      <section v-else-if="outcome === 'final' && plan && postResult && profile" class="journey-panel"><FinalReport :topic="plan.title" :result="postResult" :assessment="assessment" :completed="(state.completed[plan.id] ?? []).length" :topic-complete="topicCompletion[plan.id] ?? false" :profile="profile" @plan="openPlan()" @retry="retryPost" /></section>
-      <section v-else-if="outcome === 'posttest' && plan" class="journey-panel"><h1 ref="heading" tabindex="-1">{{ plan.title }} · 后测</h1><p>回顾五个单元的词句理解与情境辨识，完成 10 道题后提交。</p><ServerUnitQuiz :key="plan.posttest_id + restoredKey + quizViewKey" :quiz-id="plan.posttest_id" :signed-in="signedIn" :disabled="blocked" :draft="state.drafts[plan.posttest_id]" :submit="submitQuiz" @draft="updateDraft" @context="updateCompanionQuiz" /><div class="question-actions"><button class="secondary" @click="openPlan()">返回学习规划</button><button v-if="postResult && !state.drafts[plan.posttest_id]" class="primary" @click="outcome = 'final'">查看学习报告 →</button></div></section>
+      <PhoneticsDemo v-if="state.stage === 'assessment' && outcome !== 'final'" :key="restoredKey" :signed-in="signedIn" :disabled="blocked" :draft="state.drafts.assessment" :result="assessment" :submit="submitQuiz" @draft="updateDraft" @context="updateCompanionQuiz" @complete="selectTopic" @restart="restart" @browse="selectTopic"><template #analysis><LearningAnalysis :analysis="analysis" :assessment="assessment" :analyzing="analyzing" :error="analysisError" :signed-in="signedIn" :waiting="blocked" @retry="runAnalysis" /></template></PhoneticsDemo>
+      <section v-else-if="outcome === 'final'" class="journey-panel">
+        <p v-if="reportLoading" role="status">正在加载本次后测报告…</p>
+        <div v-else-if="reportError" role="alert">
+          {{ reportError }}
+          <button class="secondary" @click="openStageReport(reportId)">重试</button>
+          <button class="secondary" @click="openPost">返回后测</button>
+        </div>
+        <FinalReport v-else-if="stageReport"
+          :topic="choices.find(topic => topic.id === stageReport?.result.topic)?.title ?? '方向后测'"
+          :result="stageReport.result" :assessment="assessment" :completed="stageReport.completed_units"
+          :topic-complete="stageReport.topic_completion" :profile="stageReport.profile"
+          :can-retry="stageReport.result.topic === plan?.id"
+          @plan="openPlan()" @retry="retryPost" @review="openReview('journey')" />
+        <button v-else class="secondary" @click="openPost">请先完成后测</button>
+      </section>
+      <section v-else-if="outcome === 'posttest' && plan" class="journey-panel"><h1 ref="heading" tabindex="-1">{{ plan.title }} · 后测</h1><p>回顾五个单元的词句理解与情境辨识，完成 10 道题后提交。</p><ServerUnitQuiz :key="plan.posttest_id + restoredKey + quizViewKey" :quiz-id="plan.posttest_id" :signed-in="signedIn" :disabled="blocked" :draft="state.drafts[plan.posttest_id]" :submit="submitQuiz" @draft="updateDraft" @context="updateCompanionQuiz" /><div class="question-actions"><button class="secondary" @click="openPlan()">返回学习规划</button><button v-if="postResult && !state.drafts[plan.posttest_id]" class="primary" @click="openStageReport(postResult.submission_id)">查看学习报告 →</button></div></section>
       <section v-else class="journey-panel">
         <div class="section-heading"><div><h1 ref="heading" tabindex="-1">{{ state.stage === 'topics' ? '想用汉语探索什么？' : plan?.title + ' · 学习规划' }}</h1></div></div>
         <aside v-if="diagnosis" class="diagnosis-summary"><strong>本次前测 {{ diagnosis.score }} / 100</strong><p>{{ diagnosis.advice }}</p></aside>
