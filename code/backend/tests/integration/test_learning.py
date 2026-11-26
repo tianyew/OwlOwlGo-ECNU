@@ -11,16 +11,7 @@ from app.integrations.llm.deepseek import AnalysisUnavailable, DeepSeekClient
 from app.main import create_app
 from app.schemas.learning import KEY, PROMPT_VERSION, LearningState, evidence, fingerprint
 from app.services.agents.assessment import AnalysisContent, AssessmentAgent
-from tests.helpers import choose_topic, submit_quiz
-
-
-def login(client):
-    assert (
-        client.post(
-            "/api/v1/auth/login", json={"username": "admin", "password": "admin"}
-        ).status_code
-        == 200
-    )
+from tests.helpers import choose_topic, login, submit_quiz
 
 
 def finished():

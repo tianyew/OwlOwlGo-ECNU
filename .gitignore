@@ -228,6 +228,7 @@ code/backend/.venv/
 Thumbs.db
 
 # Local application data
+logs/
 uploads/
 local-data/
 *.sqlite3

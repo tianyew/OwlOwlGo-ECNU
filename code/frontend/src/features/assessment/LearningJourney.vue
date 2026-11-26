@@ -230,7 +230,7 @@ function retryPost() {
 function finishSetup() { state.value.onboarding_complete = true; goHome(); }
 function beforeUnload(event: BeforeUnloadEvent) { if (dirty.value || saving.value || grading.value) { event.preventDefault(); event.returnValue = ''; } }
 onMounted(() => { void restore(); window.addEventListener('beforeunload', beforeUnload); });
-onBeforeUnmount(() => { disposed = true; window.removeEventListener('beforeunload', beforeUnload); });
+onBeforeUnmount(() => { disposed = true; emit('savingChange', false); window.removeEventListener('beforeunload', beforeUnload); });
 </script>
 <template>
   <div v-if="loading" class="workspace-loading" role="status"><span class="loading-orbit" aria-hidden="true"></span><h2>正在准备你的学习空间</h2><p>正在加载学习内容与进度…</p><div class="skeleton-lines" aria-hidden="true"><i></i><i></i><i></i></div></div>

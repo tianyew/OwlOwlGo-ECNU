@@ -7,10 +7,10 @@
 先在仓库根目录复制配置模板（macOS / Linux 使用 `cp .env.example .env`，Windows PowerShell 使用 `Copy-Item .env.example .env`），按本机环境修改后执行：
 
 ```bash
-docker compose -f infrastructure/compose.yaml up --build
+docker compose --env-file .env -f infrastructure/compose.yaml up --build
 ```
 
-网关计划访问地址为 `http://localhost:8080`。容器配置属于工程骨架，首次正式部署前仍需完成依赖锁定、健康检查和生产配置评审。
+网关地址为 `http://localhost:8080`。数据库健康检查通过后，`database-init` 服务执行账号建表迁移，API 随后启动。本地 Docker 数据库已验证；全容器应用部署需单独验收。只启动数据库与旧账号导入见[账号说明](software/accounts.md)。
 
 ## 配置说明
 
@@ -30,7 +30,7 @@ docker compose -f infrastructure/compose.yaml up --build
 
 不得把真实 API Key、Token、密码、真实学习数据或个人配置提交到 Git。
 
-上表保留根目录环境模板的规划字段，不能视为已接入能力。当前 DeepSeek 实际读取 `code/backend/.env` 中的 `DEEPSEEK_API_KEY`、`DEEPSEEK_MODEL`、`DEEPSEEK_TIMEOUT`；本地后端不会自动读取根目录 `.env`。账号 `OWL_*` 参数通过进程环境设置。Docker Compose 使用 `env_file` 注入配置；业务存储仍为 JSON。
+上表保留根目录环境模板的规划字段，不能视为已接入能力。当前 DeepSeek 实际读取 `code/backend/.env` 中的 `DEEPSEEK_API_KEY`、`DEEPSEEK_MODEL`、`DEEPSEEK_TIMEOUT`；本地后端不会自动读取根目录 `.env`。账号 `DATABASE_URL`、`OWL_*` 也统一读取后端 `.env`，进程环境优先。Compose 通过 `--env-file .env` 读取 `POSTGRES_PASSWORD`、`POSTGRES_PORT`，并将容器内数据库主机设为 `database`。账号与会话存 PostgreSQL，学习记录仍为 JSON。
 
 ## 开发与测试
 
@@ -50,6 +50,7 @@ npm run test      # 执行测试
 cd code/backend
 python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 python -m pytest
+python -m pytest --postgres  # 验证实际 PostgreSQL，使用随机隔离 schema
 python -m ruff check .
 python -m ruff format --check .
 ```
@@ -62,6 +63,6 @@ python -m ruff format --check .
 - 端到端测试：测评、关卡、失败、提示、迁移题和报告；
 - AI 评测：答案正确性、格式、难度、提示泄露和内容安全。
 
-前端使用 package-lock.json 锁定依赖，CI 执行 npm ci 和 npm run build；后端检查 Python 语法。现有后端与前端业务测试需用上述命令手动运行，CI 尚未配置 pytest 和 Vitest 门禁。
+前端使用 package-lock.json 锁定依赖，CI 执行 npm ci 和 npm run build；后端检查 Python 语法并在独立 PostgreSQL 服务上运行 pytest。前端 Vitest 仍需本地运行。
 
 当前已包含前后端可执行测试；根目录跨系统测试目录主要保留规划说明，ESLint 配置尚未建立。协作流程见[贡献指南](../CONTRIBUTING.md)，跨系统测试职责见[测试说明](../tests/README.md)。

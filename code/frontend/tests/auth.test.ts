@@ -2,7 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp, nextTick, type App } from 'vue';
 import AccountGate from '../src/features/auth/AccountGate.vue';
-import { authApi, AuthError } from '../src/shared/api/auth';
+import { AUTH_EXPIRED_EVENT, authApi, AuthError } from '../src/shared/api/auth';
 vi.mock('../src/shared/api/auth', async (original) => {
   const module = await original<typeof import('../src/shared/api/auth')>();
   return { ...module, authApi: { me: vi.fn(), login: vi.fn(), register: vi.fn(), logout: vi.fn() } };
@@ -58,5 +58,83 @@ describe('account flow', () => {
     await click('先以游客体验'); expect(host.querySelector('form')).toBeNull();
     await click('登录 / 注册'); expect(host.querySelector('form')).not.toBeNull();
     expect((host.querySelector('input[type="password"]') as HTMLInputElement).value).toBe('');
+  });
+  it('returns to login on session expiry and accepts a fresh login', async () => {
+    vi.mocked(authApi.me).mockResolvedValue(user);
+    vi.mocked(authApi.login).mockResolvedValue(user);
+    await mount();
+    window.dispatchEvent(new Event(AUTH_EXPIRED_EVENT)); await settle();
+    expect(host.textContent).toContain('登录已过期');
+    expect(host.textContent).not.toContain('@alice');
+    expect(host.querySelector('form')).not.toBeNull();
+    await fill(['alice', 'password-123']); await submit();
+    expect(host.textContent).toContain('@alice');
+    expect(host.textContent).not.toContain('登录已过期');
+  });
+  it('retries a failed session check without submitting credentials', async () => {
+    vi.mocked(authApi.me).mockRejectedValueOnce(new AuthError('连接超时', 0)).mockResolvedValue(user);
+    await mount(); expect(host.textContent).toContain('连接超时');
+    await click('重新检查登录状态');
+    expect(host.textContent).toContain('@alice');
+    expect(authApi.login).not.toHaveBeenCalled();
+  });
+  it('explains every registration field and focuses the first missing value', async () => {
+    await mount(); await click('去注册');
+    expect(host.querySelectorAll('.account-field small')).toHaveLength(4);
+    expect(host.querySelectorAll('[aria-invalid="true"]')).toHaveLength(0);
+    await submit();
+    expect(host.querySelectorAll('[aria-invalid="true"]')).toHaveLength(4);
+    expect(document.activeElement?.id).toBe('account-display-name');
+    expect(authApi.register).not.toHaveBeenCalled();
+    const input = host.querySelector('#account-display-name')!;
+    expect(input.getAttribute('aria-describedby')).toContain('displayName-error');
+    expect(host.textContent).toContain('请输入昵称');
+  });
+  it('validates on blur, clears corrected errors and trims names before registration', async () => {
+    vi.mocked(authApi.register).mockResolvedValue(user);
+    await mount(); await click('去注册');
+    await fill(['   ', '用户 名', 'short', 'short']);
+    expect(host.querySelectorAll('[aria-invalid="true"]')).toHaveLength(0);
+    host.querySelector('#account-username')!.dispatchEvent(new Event('blur')); await settle();
+    expect(host.querySelector('#username-error')?.textContent).toContain('不能包含中文或空格');
+    await submit();
+    expect(host.querySelector('#displayName-error')?.textContent).toContain('请输入昵称');
+    expect(host.querySelector('#password-error')?.textContent).toContain('至少需要 8');
+    expect(authApi.register).not.toHaveBeenCalled();
+    await fill([' 安娜 ', ' ALICE ', 'password-123', 'password-123']);
+    expect(host.querySelectorAll('[aria-invalid="true"]')).toHaveLength(0);
+    await submit();
+    expect(authApi.register).toHaveBeenCalledWith({ display_name: '安娜', username: 'alice', password: 'password-123' });
+  });
+  it('places duplicate-account errors at the username and clears them when it changes', async () => {
+    vi.mocked(authApi.register).mockRejectedValueOnce(new AuthError('账号已存在', 409)).mockResolvedValue(user);
+    await mount(); await click('去注册');
+    await fill(['安娜', 'alice', 'password-123', 'password-123']); await submit();
+    expect(host.querySelector('#username-error')?.textContent).toContain('该账号已被注册');
+    expect(document.activeElement?.id).toBe('account-username');
+    await fill(['安娜', 'alice_2', 'password-123', 'password-123']);
+    expect(host.querySelector('#username-error')).toBeNull();
+    await submit(); expect(authApi.register).toHaveBeenCalledTimes(2);
+  });
+  it('revalidates confirmation after password edits and resets errors when switching modes', async () => {
+    vi.mocked(authApi.login).mockResolvedValue(user);
+    await mount(); await click('去注册');
+    await fill(['安娜', 'alice', 'password-123', 'password-123']);
+    host.querySelector('#account-confirmation')!.dispatchEvent(new Event('blur')); await settle();
+    await fill(['安娜', 'alice', 'password-456', 'password-123']);
+    expect(host.querySelector('#confirmation-error')?.textContent).toContain('两次输入的密码不一致');
+    await click('已有账号？去登录');
+    expect(host.querySelectorAll('[aria-invalid="true"]')).toHaveLength(0);
+    await fill(['alice', 'admin']); await submit();
+    expect(authApi.login).toHaveBeenCalledWith({ username: 'alice', password: 'admin' });
+  });
+  it('rejects overlong input without silently truncating passwords', async () => {
+    await mount(); await click('去注册');
+    await fill(['名'.repeat(41), 'a'.repeat(33), 'p'.repeat(129), 'p'.repeat(129)]); await submit();
+    expect(host.querySelector('#displayName-error')?.textContent).toContain('不能超过 40');
+    expect(host.querySelector('#username-error')?.textContent).toContain('3–32');
+    expect(host.querySelector('#password-error')?.textContent).toContain('不能超过 128');
+    expect((host.querySelector('#account-password') as HTMLInputElement).value).toHaveLength(129);
+    expect(authApi.register).not.toHaveBeenCalled();
   });
 });

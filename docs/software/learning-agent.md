@@ -4,7 +4,7 @@
 
 ## 运行和配置
 
-账号服务与学习服务共用 FastAPI。前端仍执行 `npm run dev`，后端执行 `python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000`。默认演示账号为 `admin / admin`。
+账号服务与学习服务共用 FastAPI。前端仍执行 `npm run dev`，后端执行 `python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000`。默认请通过注册表单创建账号；演示账号需显式开启，见[账号说明](accounts.md)。
 
 DeepSeek 配置文件位于 **`code/backend/.env`**，新环境需从同目录 `.env.example` 创建；已有配置保留原值。填入自己的 Key 后重启后端：
 
@@ -14,7 +14,7 @@ DEEPSEEK_MODEL=deepseek-flash
 DEEPSEEK_TIMEOUT=45
 ```
 
-配置由后端 `Settings` 读取，路径不随启动工作目录变化，进程环境变量优先。不要使用 `VITE_` 前缀放置密钥。`.env` 被 Git 忽略；API Key 不进入前端、JSON 学习记录、请求提示或错误响应。上述文件配置目前用于 DeepSeek；原有 `OWL_*` 账号参数仍通过进程环境变量设置。
+配置由后端 `Settings` 读取，路径不随启动工作目录变化，进程环境变量优先。不要使用 `VITE_` 前缀放置密钥。`.env` 被 Git 忽略；API Key 不进入前端、JSON 学习记录、请求提示或错误响应。同一配置文件也读取 `DATABASE_URL` 与 `OWL_*` 账号参数。
 
 默认模型按 2026-11-02 查阅的 [DeepSeek 模型文档](https://api-docs.deepseek.com/quick_start/pricing/) 采用 `deepseek-flash`，可在配置文件中修改。请求使用官方 `https://api.deepseek.com/chat/completions`，按 [JSON Output 文档](https://api-docs.deepseek.com/guides/json_mode/) 指定 JSON 模式、格式示例和输出上限。没有 Key 时不会调用模型。
 
@@ -22,7 +22,7 @@ DEEPSEEK_TIMEOUT=45
 
 ## 保存什么
 
-登录用户的以下内容保存在账号 JSON 文件同目录的 `learning.json`：
+登录用户的以下内容暂时保存在 `local-data/learning.json`（可通过 `OWL_LEARNING_FILE` 单独配置）；账号迁入 PostgreSQL 后通过保留的用户 UUID 关联：
 
 - 当前流程阶段与题目位置；已提交答案、当前选择及提交状态。
 - 前测结果由答案重算，浏览器不能向分析接口指定任意成绩。

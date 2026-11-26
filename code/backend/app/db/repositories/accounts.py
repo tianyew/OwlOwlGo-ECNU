@@ -16,9 +16,10 @@ class DuplicateUsername(Exception):
 class AccountRepository(Protocol):
     def create_user(self, user: dict) -> None: ...
     def find_user(self, username: str) -> dict | None: ...
-    def save_session(self, session: dict, now: int) -> None: ...
+    def save_session(self, session: dict, now: int, replace: str | None = None) -> None: ...
     def session_user(self, token_hash: str, now: int) -> dict | None: ...
     def delete_session(self, token_hash: str) -> None: ...
+    def consume_auth_attempt(self, limits: dict[str, int], now: int, window: int) -> int: ...
 
 
 class JsonAccountRepository:
@@ -67,10 +68,12 @@ class JsonAccountRepository:
         with self.lock:
             return next((u for u in self._read()["users"] if u["username"] == username), None)
 
-    def save_session(self, session: dict, now: int) -> None:
+    def save_session(self, session: dict, now: int, replace: str | None = None) -> None:
         with self.lock:
             data = self._read()
-            data["sessions"] = [s for s in data["sessions"] if s["expires_at"] > now]
+            data["sessions"] = [
+                s for s in data["sessions"] if s["expires_at"] > now and s["_id"] != replace
+            ]
             data["sessions"].append(session)
             self._write(data)
 
@@ -90,3 +93,29 @@ class JsonAccountRepository:
             data = self._read()
             data["sessions"] = [s for s in data["sessions"] if s["_id"] != token_hash]
             self._write(data)
+
+    def consume_auth_attempt(self, limits: dict[str, int], now: int, window: int) -> int:
+        """Reserve an attempt before hashing; shared across workers and restarts.
+
+        Fixed windows include successful attempts. Denied requests never extend
+        a window. Keys are digests, so raw IPs/usernames are not stored here.
+        """
+        with self.lock:
+            data = self._read()
+            attempts = {
+                key: value for key, value in data.get("auth_attempts", {}).items()
+                if value["expires_at"] > now
+            }
+            retry_after = max(
+                (attempts[key]["expires_at"] - now for key, limit in limits.items()
+                 if key in attempts and attempts[key]["count"] >= limit),
+                default=0,
+            )
+            if retry_after:
+                return retry_after
+            for key in limits:
+                attempt = attempts.setdefault(key, {"count": 0, "expires_at": now + window})
+                attempt["count"] += 1
+            data["auth_attempts"] = attempts
+            self._write(data)
+            return 0

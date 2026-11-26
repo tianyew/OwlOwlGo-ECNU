@@ -11,7 +11,7 @@ from app.core.config import Settings
 from app.domain.content.catalog import QUIZZES, TOPIC_IDS, get_quiz, grade
 from app.main import create_app
 from app.schemas.learning import KEY, LearningState
-from tests.helpers import choose_topic, submission_body, submit_quiz
+from tests.helpers import choose_topic, login, submission_body, submit_quiz
 
 PROGRESS = "/api/v1/learning/progress"
 
@@ -22,7 +22,7 @@ def flow(tmp_path):
     settings = Settings(_env_file=None, deepseek_api_key="")
     app = create_app(path, settings)
     client = TestClient(app)
-    client.post("/api/v1/auth/login", json={"username": "admin", "password": "admin"})
+    login(client)
     return client, app, path, settings
 
 

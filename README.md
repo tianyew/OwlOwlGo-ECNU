@@ -5,7 +5,7 @@
 
 OwlOwlGo 是面向成年汉语学习者的 AI 游戏化汉语学习 H5 应用，目标是根据作答表现调整任务难度，并在合适时机提供渐进提示与讲解。项目采用 Vue 3 + TypeScript 前端和 Python + FastAPI 后端。
 
-**当前状态：已实现服务端判分的学习原型。** 支持账号与会话、8 题拼音声调前测、4 个方向共 20 个单元、每个方向 10 题后测，以及基于真实作答的七维 × 六层证据画像。题库与课程由后端统一提供，登录用户的草稿、判分、完成记录和分析保存在 JSON 文件中。DeepSeek 可选用于前测建议，配置见[学习分析说明](docs/software/learning-agent.md)。操作与验收见[完整学习链路](docs/software/server-unit-demo.md)。PostgreSQL、RAG、LangGraph 和动态课程生成仍待实现。
+**当前状态：已实现服务端判分的学习原型。** 支持账号与会话、8 题拼音声调前测、4 个方向共 20 个单元、每个方向 10 题后测，以及基于真实作答的七维 × 六层证据画像。题库与课程由后端统一提供，登录用户的草稿、判分、完成记录和分析保存在 JSON 文件中。DeepSeek 可选用于前测建议，配置见[学习分析说明](docs/software/learning-agent.md)。操作与验收见[完整学习链路](docs/software/server-unit-demo.md)。账号、会话和限流已接入 PostgreSQL；RAG、LangGraph 和动态课程生成仍待实现。
 
 ## 快速开始
 
@@ -14,7 +14,7 @@ OwlOwlGo 是面向成年汉语学习者的 AI 游戏化汉语学习 H5 应用，
 - Node.js 22+、npm 10+；
 - Python 3.12+。
 
-账号注册和登录使用 FastAPI + 本地 JSON 文件，不依赖外部数据库或 LLM 服务；课程与题目浏览也需要启动后端，游客可预览，登录后可提交测验。账号运行与迁移说明见 [账号体系](docs/software/accounts.md)。后续业务开发规划使用 PostgreSQL 17；Docker Compose 与环境变量说明见[开发与配置指南](docs/development.md)。
+账号注册和登录使用 FastAPI + PostgreSQL 17，不依赖 LLM 服务。先按[账号体系](docs/software/accounts.md)启动 Docker 数据库并配置后端 `DATABASE_URL`；旧 JSON 账号可保留 ID 导入。课程与题目浏览也需要启动后端，游客可预览，登录后可提交测验。学习记录暂时仍保存在 JSON 文件中。
 
 ### 1. 获取代码
 
@@ -44,10 +44,11 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-然后安装依赖并启动：
+先按[账号说明](docs/software/accounts.md#本地启动docker-数据库--本机后端)准备 PostgreSQL 和 `.env`，然后安装依赖、建表并启动：
 
 ```bash
 python -m pip install -e ".[dev]"
+python -m app.db.manage init
 python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 

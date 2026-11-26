@@ -1,4 +1,4 @@
-import { AuthError } from './auth';
+import { AuthError, notifyAuthExpired } from './auth';
 export interface QuizState {
   stage: 'intro' | 'quiz' | 'result'; current: number; selected: number | null;
   submitted: boolean; answers: number[];
@@ -63,6 +63,7 @@ export async function request<T>(path: string, method = 'GET', body?: object): P
       body: body ? JSON.stringify(body) : undefined });
   } catch { throw new AuthError('无法连接服务，本次操作尚未确认。请重试。', 0); }
   const result = await response.json().catch(() => null);
+  if (response.status === 401) notifyAuthExpired();
   if (!response.ok) throw new AuthError(typeof result?.detail === 'string' ? result.detail : '服务暂不可用，请重试。', response.status);
   return result;
 }

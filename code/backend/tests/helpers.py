@@ -5,6 +5,19 @@ from uuid import uuid4
 from app.domain.content.catalog import get_quiz
 
 
+def login(client):
+    """Create a real test account, or sign back into its persisted record."""
+    credentials = {"username": "admin", "password": "test-password-42"}
+    result = client.post(
+        "/api/v1/auth/register", json={**credentials, "display_name": "测试账号"}
+    )
+    if result.status_code == 409:
+        result = client.post("/api/v1/auth/login", json=credentials)
+        assert result.status_code == 200, result.text
+    else:
+        assert result.status_code == 201, result.text
+
+
 def submission_body(client, quiz_id, answers=None):
     questions = get_quiz(quiz_id)["questions"]
     if answers is None:

@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 
 from app.core.config import Settings
 from app.main import create_app
-from tests.helpers import choose_topic, submit_quiz
+from tests.helpers import choose_topic, login, submit_quiz
 
 QUIZ = "/api/v1/learning/units/travel/0/quiz"
 SUBMIT = "/api/v1/learning/units/travel/0/submissions"
@@ -23,7 +23,7 @@ def unit(tmp_path):
     settings = Settings(_env_file=None, deepseek_api_key="")
     app = create_app(path, settings)
     client = TestClient(app)
-    client.post("/api/v1/auth/login", json={"username": "admin", "password": "admin"})
+    login(client)
     submit_quiz(client)
     choose_topic(client)
     return client, app, path, settings

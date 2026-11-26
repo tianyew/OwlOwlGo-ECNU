@@ -11,18 +11,42 @@ services:
       context: ..
       dockerfile: infrastructure/docker/backend.Dockerfile
     env_file:
-      - ../.env
-      - ../code/backend/.env
+      - path: ../.env
+        required: false
+      - path: ../code/backend/.env
+        required: false
+    environment:
+      DATABASE_URL: postgresql+psycopg://owlowlgo:${POSTGRES_PASSWORD:-owlowlgo}@database:5432/owlowlgo
+    depends_on:
+      database-init:
+        condition: service_completed_successfully
     volumes:
       - account_data:/app/local-data
 
+  database-init:
+    build:
+      context: ..
+      dockerfile: infrastructure/docker/backend.Dockerfile
+    environment:
+      DATABASE_URL: postgresql+psycopg://owlowlgo:${POSTGRES_PASSWORD:-owlowlgo}@database:5432/owlowlgo
+    command: ["python", "-m", "app.db.manage", "init"]
+    depends_on:
+      database:
+        condition: service_healthy
+
   database:
-    profiles: ["database"]
     image: postgres:17-alpine
     environment:
       POSTGRES_DB: owlowlgo
       POSTGRES_USER: owlowlgo
-      POSTGRES_PASSWORD: owlowlgo
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-owlowlgo}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U owlowlgo -d owlowlgo"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
