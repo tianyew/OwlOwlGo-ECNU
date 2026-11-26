@@ -4,7 +4,7 @@ import { createApp, type App } from 'vue';
 import LearningJourney from '../src/features/assessment/LearningJourney.vue';
 import RootApp from '../src/App.vue';
 import { authApi, AuthError } from '../src/shared/api/auth';
-import { learningApi, type Analysis } from '../src/shared/api/learning';
+import { learningApi, type Analysis, type SavedProgress } from '../src/shared/api/learning';
 import { installLearning, withAssessment, settle, click, answerQuiz } from './learning-fixtures';
 let app: App;
 let host: HTMLDivElement;
@@ -206,4 +206,32 @@ it('announces saving, failure and recovery without claiming unsaved answers are 
   await click(host, '重试保存');
   expect(host.querySelector('.sync-indicator')?.textContent).toContain('进度已保存');
   expect(store.saved.state.drafts.assessment.answers).toHaveLength(1);
+});
+
+it('serializes saves and retains newer answers while an earlier save is in flight', async () => {
+  await mount(); await click(host, '开始测评');
+  const save = vi.mocked(learningApi.save);
+  save.mockClear();
+  let finishSave!: () => void;
+  save.mockImplementationOnce((state, revision) => new Promise<SavedProgress>(resolve => {
+    const snapshot = structuredClone(state);
+    finishSave = () => {
+      store.saved = { ...store.saved, state: snapshot, revision: revision + 1 };
+      resolve(structuredClone(store.saved));
+    };
+  }));
+  (host.querySelectorAll('.practice-question input')[0] as HTMLInputElement).click();
+  await settle();
+  (host.querySelectorAll('.practice-question input')[1] as HTMLInputElement).click();
+  await settle();
+  expect(save).toHaveBeenCalledOnce();
+  expect(host.querySelector('.sync-indicator')?.textContent).toContain('正在保存进度');
+  const firstRevision = save.mock.calls[0][1];
+  finishSave(); await settle();
+  expect(save).toHaveBeenCalledTimes(2);
+  expect(save.mock.calls[1][1]).toBe(firstRevision + 1);
+  expect(store.saved.state.drafts.assessment.answers[0].selected_index).toBe(1);
+  expect(host.querySelector('.sync-indicator')?.textContent).toContain('进度已保存');
+  unmount(); await mount();
+  expect((host.querySelectorAll('.practice-question input')[1] as HTMLInputElement).checked).toBe(true);
 });

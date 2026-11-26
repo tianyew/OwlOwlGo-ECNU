@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { AuthError } from '../../shared/api/auth';
-import { curriculumApi, type Diagnosis, type Topic } from '../../shared/api/curriculum';
-import { learningApi, emptyState, type LearningState, type SavedProgress, type QuizSubmission, type QuizDraft, type Analysis, type LearnerProfile as Profile, type QuizResult } from '../../shared/api/learning';
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
+import type { Diagnosis } from '../../shared/api/curriculum';
+import { useLearningProgress } from './useLearningProgress';
 import PhoneticsDemo from '../phonetics/PhoneticsDemo.vue';
 import HomeDashboard from '../home/HomeDashboard.vue';
 import ServerUnitQuiz from './ServerUnitQuiz.vue';
@@ -15,37 +14,23 @@ import type { CompanionContext, CompanionQuizContext } from '../companion/demo';
 const props = defineProps<{ userId?: string; displayName?: string }>();
 const emit = defineEmits<{ savingChange: [value: boolean] }>();
 const signedIn = computed(() => Boolean(props.userId));
-const state = ref<LearningState>(emptyState());
-const choices = ref<Topic[]>([]);
-const results = ref<Record<string, QuizResult>>({});
-const profile = ref<Profile>();
-const topicCompletion = ref<Record<string, boolean>>({});
-const analysis = ref<Analysis | null>(null);
+const {
+  state, choices, results, profile, topicCompletion, analysis, assessment,
+  loading, loadError, saving, grading, dirty, saveFailed, conflict, saveMessage,
+  analyzing, analysisError, blocked, busy, restoredKey,
+  restore, flushSave, submitQuiz, updateDraft, resetAssessment, runAnalysis,
+} = useLearningProgress(() => props.userId);
 const view = ref<'home' | 'journey' | 'report' | 'profile'>(props.userId ? 'home' : 'journey');
 const outcome = ref<'plan' | 'posttest' | 'final'>('plan');
 const openedUnit = ref(0);
 const topicDraft = ref('');
-const restoredKey = ref(0);
 const quizViewKey = ref(0);
 const plan = computed(() => choices.value.find(topic => topic.id === state.value.topic));
-const assessment = computed(() => results.value.assessment);
 const postResult = computed(() => plan.value ? results.value[plan.value.posttest_id] : undefined);
 const diagnosis = computed<Diagnosis | undefined>(() => assessment.value ? {
   score: assessment.value.score, correct: assessment.value.correct,
   advice: assessment.value.score >= 80 ? '可结合主题例句继续巩固本次规则。' : '建议复习前测错题，再结合主题例句练习。',
 } : undefined);
-const loading = ref(true);
-const loadError = ref('');
-const saving = ref(false);
-const grading = ref(false);
-const dirty = ref(false);
-const saveFailed = ref(false);
-const conflict = ref(false);
-const saveMessage = ref('');
-const revision = ref(0);
-const analyzing = ref(false);
-const analysisError = ref('');
-const blocked = computed(() => dirty.value || saving.value || grading.value || conflict.value);
 const heading = ref<HTMLElement>();
 const workspace = ref<HTMLElement>();
 const navActive = computed(() => view.value === 'home' ? 'home' : view.value === 'profile' || view.value === 'report' ? 'profile' : state.value.stage === 'topics' ? 'topics' : 'learn');
@@ -102,111 +87,13 @@ function goLearning() {
 }
 function openProfile() { view.value = 'profile'; void focusHeading(); }
 watch([view, () => state.value.stage, outcome], () => { void focusHeading(); });
-let pending: LearningState | null = null;
-let applying = false;
-let disposed = false;
-let lastAnalysis = '';
-function snapshot(): LearningState { return JSON.parse(JSON.stringify(state.value)); }
-async function apply(saved: SavedProgress, preserveLocal = false) {
-  if (disposed) return;
-  applying = true;
-  const local = snapshot();
-  const sameAssessment = results.value.assessment?.submission_id === saved.results.assessment?.submission_id;
-  state.value = { ...emptyState(), ...saved.state };
-  if (preserveLocal) {
-    state.value.drafts = local.drafts;
-    if (saved.state.quiz.stage === 'result') {
-      state.value.stage = local.stage; state.value.topic = local.topic;
-      state.value.onboarding_complete = local.onboarding_complete;
-    }
-  }
-  revision.value = saved.revision; results.value = saved.results;
-  profile.value = saved.profile; topicCompletion.value = saved.topic_completion;
-  analysis.value = saved.analysis ?? (sameAssessment ? analysis.value : null);
-  await nextTick(); applying = false;
-}
-async function restore() {
-  loading.value = true; loadError.value = '';
-  try {
-    const [catalog, saved] = await Promise.all([curriculumApi.load(), props.userId ? learningApi.load() : Promise.resolve(null)]);
-    if (disposed) return;
-    choices.value = catalog.topics; pending = null;
-    if (saved) await apply(saved);
-    topicDraft.value = state.value.topic ?? '';
-    restoredKey.value++; dirty.value = false; saveFailed.value = false; conflict.value = false;
-  } catch (reason) { loadError.value = reason instanceof Error ? reason.message : '学习内容加载失败，请重试。'; }
-  finally { loading.value = false; }
-}
-async function flushSave() {
-  if (!props.userId || saving.value || grading.value || conflict.value || disposed) return;
-  saving.value = true; saveFailed.value = false;
-  try {
-    while (pending) {
-      const value = pending; pending = null;
-      try {
-        const saved = await learningApi.save(value, revision.value);
-        await apply(saved, Boolean(pending));
-      } catch (reason) {
-        pending = pending ?? value; saveFailed.value = true;
-        conflict.value = reason instanceof AuthError && reason.status === 409;
-        saveMessage.value = reason instanceof Error ? reason.message : '保存失败，请重试。';
-        return;
-      }
-    }
-    dirty.value = false;
-  } finally { saving.value = false; }
-}
-function mutationError(reason: unknown) {
-  if (reason instanceof AuthError && reason.status === 409) {
-    conflict.value = true; saveFailed.value = true; saveMessage.value = reason.message;
-  }
-}
-async function submitQuiz(id: string, body: QuizSubmission) {
-  if (blocked.value) throw new Error('请先保存或重新加载学习进度。');
-  grading.value = true;
-  try {
-    const response = await learningApi.submit(id, body, revision.value);
-    await apply(response.progress, Boolean(pending));
-    return response;
-  } catch (reason) { mutationError(reason); throw reason; }
-  finally { grading.value = false; if (pending) void flushSave(); }
-}
-function updateDraft(id: string, draft: QuizDraft) {
-  state.value.drafts = { ...state.value.drafts, [id]: draft };
-}
+watch(restoredKey, () => { topicDraft.value = state.value.topic ?? ''; });
+watch(busy, value => emit('savingChange', value));
 async function restart() {
-  if (blocked.value) return;
-  grading.value = true;
-  try {
-    if (props.userId) await apply(await learningApi.reset(revision.value));
-    else state.value = emptyState();
-    topicDraft.value = ''; view.value = 'journey'; outcome.value = 'plan'; restoredKey.value++;
-    analysisError.value = ''; lastAnalysis = '';
-  } catch (reason) {
-    mutationError(reason); saveFailed.value = true;
-    saveMessage.value = reason instanceof Error ? reason.message : '重新测评失败，请重试。';
-  } finally { grading.value = false; }
+  if (await resetAssessment()) {
+    topicDraft.value = ''; view.value = 'journey'; outcome.value = 'plan';
+  }
 }
-async function runAnalysis() {
-  if (!props.userId || !assessment.value || loading.value || blocked.value || analyzing.value) return;
-  const context = assessment.value.submission_id;
-  lastAnalysis = context; analyzing.value = true; analysisError.value = '';
-  try {
-    const value = await learningApi.analyze();
-    if (!disposed && assessment.value?.submission_id === context) analysis.value = value;
-  } catch (reason) {
-    if (!disposed && assessment.value?.submission_id === context) analysisError.value = reason instanceof Error ? reason.message : '分析失败，请重试。';
-  } finally { analyzing.value = false; }
-}
-watch(state, () => {
-  if (loading.value || applying || loadError.value || !props.userId) return;
-  pending = snapshot(); dirty.value = true; void flushSave();
-}, { deep: true, flush: 'post' });
-watch([loading, blocked, analyzing, assessment, analysis], () => {
-  if (!assessment.value) { lastAnalysis = ''; return; }
-  if (!analysis.value && lastAnalysis !== assessment.value.submission_id) void runAnalysis();
-}, { flush: 'post' });
-watch([dirty, saving, grading], () => emit('savingChange', dirty.value || saving.value || grading.value));
 async function focusHeading() { await nextTick(); (heading.value ?? workspace.value)?.focus(); window.scrollTo({ top: 0 }); }
 function selectTopic() { outcome.value = 'plan'; state.value.stage = 'topics'; view.value = 'journey'; void focusHeading(); }
 function confirm() {
@@ -228,9 +115,7 @@ function retryPost() {
   quizViewKey.value++; openPost();
 }
 function finishSetup() { state.value.onboarding_complete = true; goHome(); }
-function beforeUnload(event: BeforeUnloadEvent) { if (dirty.value || saving.value || grading.value) { event.preventDefault(); event.returnValue = ''; } }
-onMounted(() => { void restore(); window.addEventListener('beforeunload', beforeUnload); });
-onBeforeUnmount(() => { disposed = true; emit('savingChange', false); window.removeEventListener('beforeunload', beforeUnload); });
+onBeforeUnmount(() => emit('savingChange', false));
 </script>
 <template>
   <div v-if="loading" class="workspace-loading" role="status"><span class="loading-orbit" aria-hidden="true"></span><h2>正在准备你的学习空间</h2><p>正在加载学习内容与进度…</p><div class="skeleton-lines" aria-hidden="true"><i></i><i></i><i></i></div></div>

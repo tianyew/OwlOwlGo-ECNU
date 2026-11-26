@@ -75,8 +75,8 @@
 
 ## 4. 核对证据
 
-- S1：[账号接口](../../code/backend/app/api/v1/endpoints/auth.py)、[密码处理](../../code/backend/app/core/security.py)。
-- S2：[学习接口](../../code/backend/app/api/v1/endpoints/learning.py)。
+- S1：[账号接口](../../code/backend/app/api/endpoints/auth.py)、[密码处理](../../code/backend/app/core/security.py)。
+- S2：[学习接口](../../code/backend/app/api/endpoints/learning.py)。
 - S3：[题库与判分](../../code/backend/app/domain/content/catalog.py)、[课程数据](../../code/backend/app/domain/content/curriculum.json)。
 - S4：[学习仓储](../../code/backend/app/db/repositories/learning.py)。
 - S5：[进度契约](../../code/backend/app/schemas/learning.py)、[前测页面](../../code/frontend/src/features/phonetics/PhoneticsDemo.vue)。

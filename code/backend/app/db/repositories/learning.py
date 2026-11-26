@@ -4,10 +4,12 @@ import json
 from copy import deepcopy
 from datetime import UTC, datetime
 
-from app.db.repositories.accounts import JsonAccountRepository
+from app.db.json_store import JsonFileStore
 from app.domain.content.catalog import CONTENT_VERSION, TOPIC_IDS, get_quiz, grade, validate_answers
+from app.domain.learner.evidence import fingerprint
 from app.domain.learner.profile import build_profile
-from app.schemas.learning import PROMPT_VERSION, LearningState, fingerprint
+from app.integrations.llm.prompts.assessment import PROMPT_VERSION
+from app.schemas.learning import LearningState
 
 
 class ProgressConflict(Exception):
@@ -30,10 +32,10 @@ def latest_results(record):
 def analysis_source(record):
     assessment = latest_results(record).get("assessment", {})
     identity = f"{assessment.get('submission_id')}:{record['assessment_epoch']}"
-    return f"{identity}:{fingerprint(record['state'])}"
+    return f"{identity}:{fingerprint(record['state'], PROMPT_VERSION)}"
 
 
-class JsonLearningRepository(JsonAccountRepository):
+class JsonLearningRepository(JsonFileStore):
     @staticmethod
     def migrate(record):
         if record.get("authority_version") == 2:
@@ -220,11 +222,11 @@ class JsonLearningRepository(JsonAccountRepository):
                 created_at=datetime.now(UTC).isoformat(),
                 provenance="server",
             )
-            previous_fingerprint = fingerprint(state)
+            previous_fingerprint = fingerprint(state, PROMPT_VERSION)
             submissions[submission_id] = result
             state["drafts"].pop(quiz_id, None)
             self.normalize(record)
-            if fingerprint(state) != previous_fingerprint:
+            if fingerprint(state, PROMPT_VERSION) != previous_fingerprint:
                 record["analysis"] = None
             record["revision"] += 1
             record["updated_at"] = result["created_at"]

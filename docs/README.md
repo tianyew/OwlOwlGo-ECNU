@@ -16,6 +16,7 @@
 | 算法设计 | [算法文档说明](algorithm/README.md) | 调研、策略与参数文档的维护要求 |
 | 算法设计 | [RockStartIT AI Tutor 论文调研](algorithm/research.md) | 课程知识库、教学控制、用户评价、研究局限与项目启示 |
 | 软件设计 | [系统架构与技术方案调研报告](software/architecture.md) | 正式学习流程、核心技术选型、上下文/记忆/恢复实现、历史自学提案 |
+| 软件设计 | [当前代码架构](software/code-architecture.md) | 实际模块、调用关系、结构调整及后续维护边界 |
 | 软件设计 | [页面与功能设计](software/product-design.md) | 页面结构、用户旅程、功能优先级 |
 | 软件设计 | [数据模型](software/data-model.md) | 方向、诊断、计划修订、汉语内容、学习事件与复习关系 |
 | 软件设计 | [API 边界](software/api-contract.md) | 前测、方向、计划生成/修订与学习接口及一致性约束 |

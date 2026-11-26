@@ -177,7 +177,7 @@ ID缺失则返回后测提示先提交；不存在/非本人404；类型不为�
 **现有代码位置**
 
 - [FinalReport.vue](../../../code/frontend/src/features/assessment/FinalReport.vue)
-- [learning.py](../../../code/backend/app/api/v1/endpoints/learning.py)
+- [learning.py](../../../code/backend/app/api/endpoints/learning.py)
 
 交付：代码变更、接口样例、测试结果、修改后的真实页面截图；按[共同完成标准](README.md#done)签收。
 

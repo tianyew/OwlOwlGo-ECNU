@@ -79,7 +79,7 @@ Agent 之间通过业务服务传递结构化产物，不互相任意调用，�
 - `app/integrations/llm/deepseek.py`：共享模型客户端，处理配置、超时、HTTP 和完整响应检查；不再包含前测专属提示词和输出契约。
 - `app/services/agents/assessment.py`：AssessmentAgent，负责前测提示词、输出结构、逐题证据校验和来源元信息。
 - `app/services/agents/dispatcher.py`：显式注册和事件路由，只允许已实现的前测任务。未支持事件报错，不回退到通用分析。
-- `app/api/v1/endpoints/learning.py`：仍负责身份、是否完成前测、缓存与过期结果保护，再调用调度器。
+- `app/api/endpoints/learning.py`：仍负责身份、是否完成前测、缓存与过期结果保护，再调用调度器。
 - `app/integrations/llm/prompts/assessment.py`：独立的前测提示词。
 
 前端行为保持阶段化：前测完成自动请求，诊断/报告页展示，方向和规划页不显示这份报告。现有接口无需让前端指定任意 Agent ID，路由由服务端决定。

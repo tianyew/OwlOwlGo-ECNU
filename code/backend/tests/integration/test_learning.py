@@ -7,9 +7,11 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.core.config import Settings
+from app.domain.learner.evidence import KEY, evidence, fingerprint
 from app.integrations.llm.deepseek import AnalysisUnavailable, DeepSeekClient
+from app.integrations.llm.prompts.assessment import PROMPT_VERSION
 from app.main import create_app
-from app.schemas.learning import KEY, PROMPT_VERSION, LearningState, evidence, fingerprint
+from app.schemas.learning import LearningState
 from app.services.agents.assessment import AnalysisContent, AssessmentAgent
 from tests.helpers import choose_topic, login, submit_quiz
 
@@ -218,12 +220,14 @@ def test_deepseek_transport_and_output_validation(monkeypatch, mode):
     )
     if mode == "valid":
         assert (
-            AssessmentAgent(DeepSeekClient(settings)).analyze(evidence(finished()))["provider"]
+            AssessmentAgent(DeepSeekClient(settings)).analyze(
+                evidence(finished(), PROMPT_VERSION)
+            )["provider"]
             == "deepseek"
         )
     else:
         with pytest.raises(AnalysisUnavailable) as error:
-            AssessmentAgent(DeepSeekClient(settings)).analyze(evidence(finished()))
+            AssessmentAgent(DeepSeekClient(settings)).analyze(evidence(finished(), PROMPT_VERSION))
         assert "test-only-key" not in str(error.value)
         assert "secret" not in str(error.value)
 
@@ -274,10 +278,13 @@ def test_per_question_evidence_changes_cache_even_at_same_score():
     second = deepcopy(finished())
     first["quiz"]["answers"][0] = 1
     second["quiz"]["answers"][1] = 1
-    assert evidence(first)["score"] == evidence(second)["score"]
-    assert evidence(first)["dimensions"] == evidence(second)["dimensions"]
-    assert fingerprint(first) != fingerprint(second)
-    item = evidence(first)["items"][0]
+    assert evidence(first, PROMPT_VERSION)["score"] == evidence(second, PROMPT_VERSION)["score"]
+    assert (
+        evidence(first, PROMPT_VERSION)["dimensions"]
+        == evidence(second, PROMPT_VERSION)["dimensions"]
+    )
+    assert fingerprint(first, PROMPT_VERSION) != fingerprint(second, PROMPT_VERSION)
+    item = evidence(first, PROMPT_VERSION)["items"][0]
     assert item["selected_answer"] == "a"
     assert item["correct_answer"] == "m"
     assert not item["is_correct"]
@@ -306,17 +313,19 @@ def test_analysis_requires_grounded_wrong_answer_feedback():
         ]
         * 2,
     }
-    AnalysisContent.model_validate(data).check_evidence(evidence(state))
+    AnalysisContent.model_validate(data).check_evidence(evidence(state, PROMPT_VERSION))
     for key, value in [
         ("question_feedback", []),
         ("question_feedback", data["question_feedback"] * 2),
         ("practice_tasks", [{**data["practice_tasks"][0], "question_ids": ["invented"]}] * 2),
     ]:
         with pytest.raises(ValueError):
-            AnalysisContent.model_validate({**data, key: value}).check_evidence(evidence(state))
+            AnalysisContent.model_validate({**data, key: value}).check_evidence(
+                evidence(state, PROMPT_VERSION)
+            )
     with pytest.raises(ValueError):
         AnalysisContent.model_validate({**data, "question_feedback": []}).check_evidence(
-            evidence(finished())
+            evidence(finished(), PROMPT_VERSION)
         )
 
 
@@ -326,7 +335,7 @@ def test_dispatcher_routes_only_registered_assessment_events():
     agent = Mock(agent_id="assessment_review", prompt_version="test")
     agent.analyze.return_value = {"agent_id": "assessment_review"}
     dispatcher = AgentDispatcher([agent])
-    payload = evidence(finished())
+    payload = evidence(finished(), PROMPT_VERSION)
     assert dispatcher.run("assessment.completed", payload) == agent.analyze.return_value
     agent.analyze.assert_called_once_with(payload)
     with pytest.raises(ValueError):

@@ -151,7 +151,7 @@ def test_demo_seed_disabled_by_default(tmp_path):
 
 def test_account_throttle_persists_and_expires(tmp_path, monkeypatch):
     now = 1000
-    monkeypatch.setattr("app.api.v1.endpoints.auth.time", SimpleNamespace(time=lambda: now))
+    monkeypatch.setattr("app.api.endpoints.auth.time", SimpleNamespace(time=lambda: now))
     settings = Settings(_env_file=None, owl_login_account_limit=2, owl_auth_window_seconds=60)
     path = tmp_path / "accounts.json"
     client = TestClient(create_app(path, settings))
@@ -161,7 +161,7 @@ def test_account_throttle_persists_and_expires(tmp_path, monkeypatch):
         assert client.post("/api/v1/auth/login", json=wrong).status_code == 401
     restarted = TestClient(create_app(path, settings), client=("another-ip", 5000))
     valid = {"username": "alice_1", "password": ACCOUNT["password"]}
-    with patch("app.api.v1.endpoints.auth.verify_password") as verify:
+    with patch("app.api.endpoints.auth.verify_password") as verify:
         response = restarted.post("/api/v1/auth/login", json=valid)
         assert response.status_code == 429
         assert response.headers["retry-after"] == "60"

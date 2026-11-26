@@ -12,8 +12,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.api.v1.endpoints.auth import router
-from app.api.v1.endpoints.learning import router as learning_router
+from app.api.router import router
 from app.core.config import Settings
 from app.core.logging import configure_logging, request_route
 from app.core.security import hash_password
@@ -68,7 +67,6 @@ def create_app(data_path: Path | None = None, settings: Settings | None = None) 
         [AssessmentAgent(DeepSeekClient(settings))]
     )
     application.include_router(router)
-    application.include_router(learning_router)
 
     @application.exception_handler(SQLAlchemyError)
     async def database_error(request, exc):

@@ -1,10 +1,8 @@
 """Content, authoritative assessment submissions, profiles and AI feedback."""
 
-from typing import Annotated
-
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from app.api.v1.endpoints.auth import PublicUser, me, repository, same_origin
+from app.api.dependencies import OptionalUser, User, same_origin
 from app.db.repositories.learning import (
     ProgressConflict,
     UnitSubmissionConflict,
@@ -12,24 +10,13 @@ from app.db.repositories.learning import (
     latest_results,
 )
 from app.domain.content.catalog import CONTENT_VERSION, get_quiz, public_catalog, public_questions
+from app.domain.learner.evidence import evidence
 from app.integrations.llm.deepseek import AnalysisUnavailable
-from app.schemas.learning import SaveProgress, evidence
+from app.integrations.llm.prompts.assessment import PROMPT_VERSION
+from app.schemas.learning import SaveProgress
 from app.schemas.unit_quiz import ResetAssessment, SubmitUnitQuiz
 
 router = APIRouter(prefix="/api/v1/learning", tags=["learning"])
-User = Annotated[PublicUser, Depends(me)]
-
-
-def optional_user(request: Request):
-    try:
-        return me(request, repository(request))
-    except HTTPException as exc:
-        if exc.status_code != 401:
-            raise
-        return None
-
-
-OptionalUser = Annotated[PublicUser | None, Depends(optional_user)]
 
 
 def conflict(exc):
@@ -139,7 +126,7 @@ def analyze(request: Request, user: User):
         return record["analysis"]
     try:
         result = request.app.state.agents.run(
-            "assessment.report_requested", evidence(record["state"])
+            "assessment.report_requested", evidence(record["state"], PROMPT_VERSION)
         )
         return repo.save_analysis(user.id, analysis_source(record), result)
     except AnalysisUnavailable as exc:

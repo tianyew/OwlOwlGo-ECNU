@@ -1,5 +1,7 @@
 ﻿# Feature modules
 
-汉语学习业务按 profile、assessment、phonetics、characters、scenarios、culture、review、progress 拆分。各目录 README 定义职责，当前均为占位。
+当前可执行模块包括 `auth`（账号）、`home`（首页）、`assessment`（学习旅程、测验与画像）、`phonetics`（前测入口）和 `companion`（伴学界面）。
+`profile`、`characters`、`scenarios`、`culture`、`review`、`progress` 仍是预留目录；画像目前实现在 `assessment` 内。
 
-模块不互相读取内部状态；跨模块数据通过应用编排和共享接口连接。具体页面、课程和交互在后续阶段实现。设计依据见 docs/software/product-design.md 与 architecture.md。
+业务状态优先放在 feature 的 composable 中；组件通过 props 和事件连接，HTTP 调用集中于 `shared/api`。
+当前代码架构见仓库 `docs/software/code-architecture.md`，长期设计见 `docs/software/architecture.md`。

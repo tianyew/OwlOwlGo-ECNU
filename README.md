@@ -116,6 +116,7 @@ OwlOwlGo-ECNU/
 | [工程问题定义](docs/requirements/problem_definition.md) | 背景、目标用户与 MVP 边界 |
 | [功能规格](docs/requirements/functional_spec.md) / [非功能需求](docs/requirements/nonfunctional_spec.md) | 详细需求与验收标准 |
 | [系统架构](docs/software/architecture.md) | 技术栈、模块关系与设计约束 |
+| [当前代码架构](docs/software/code-architecture.md) | 已实现模块、调用关系、结构评估与维护边界 |
 | [开发与配置指南](docs/development.md) | 环境配置、容器启动与开发检查 |
 | [项目计划](docs/mgmt/project-plan.md) | 17 周安排、完成度与风险 |
 | [贡献指南](CONTRIBUTING.md) | 分支、提交、Issue 与 PR 流程 |

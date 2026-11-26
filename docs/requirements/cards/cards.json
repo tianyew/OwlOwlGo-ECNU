@@ -14,7 +14,7 @@
     "files": [
       "code/frontend/src/features/auth/AccountGate.vue",
       "code/frontend/src/shared/api/auth.ts",
-      "code/backend/app/api/v1/endpoints/auth.py"
+      "code/backend/app/api/endpoints/auth.py"
     ],
     "current": "账号页和Cookie认证已存在；缺口是SQL迁移后的行为一致性与换账号隔离，不重做整个登录界面。",
     "steps": [
@@ -583,7 +583,7 @@
     "files": [
       "code/frontend/src/features/assessment/ServerUnitQuiz.vue",
       "code/frontend/src/shared/api/learning.ts",
-      "code/backend/app/api/v1/endpoints/learning.py"
+      "code/backend/app/api/endpoints/learning.py"
     ],
     "current": "服务端判分、retry ID和草稿已经存在；保留这些行为，修改共用控件必须回归前测/后测。",
     "steps": [
@@ -796,7 +796,7 @@
     "api": "N07、K05（仅不得误调用）",
     "files": [
       "code/frontend/src/features/assessment/FinalReport.vue",
-      "code/backend/app/api/v1/endpoints/learning.py"
+      "code/backend/app/api/endpoints/learning.py"
     ],
     "current": "当前报告靠内存中的最近后测结果；本轮按指定submission_id读取，避免跳转/重新测验后显示错结果。",
     "steps": [

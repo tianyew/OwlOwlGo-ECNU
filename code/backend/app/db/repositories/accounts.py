@@ -1,12 +1,9 @@
 """Document-oriented account storage. Replace this adapter when choosing a database."""
 
 import json
-import os
-import tempfile
-from pathlib import Path
 from typing import Protocol
 
-from filelock import FileLock
+from app.db.json_store import JsonFileStore
 
 
 class DuplicateUsername(Exception):
@@ -22,17 +19,12 @@ class AccountRepository(Protocol):
     def consume_auth_attempt(self, limits: dict[str, int], now: int, window: int) -> int: ...
 
 
-class JsonAccountRepository:
+class JsonAccountRepository(JsonFileStore):
     """One local file; interprocess lock and atomic replacement prevent lost writes.
 
     Appropriate for a small, single-machine prototype, not a distributed database.
     A malformed existing file raises an error and is never silently overwritten.
     """
-
-    def __init__(self, path: Path):
-        self.path = path
-        path.parent.mkdir(parents=True, exist_ok=True)
-        self.lock = FileLock(str(path) + ".lock", timeout=10)
 
     def _read(self) -> dict:
         if not self.path.exists():
@@ -43,18 +35,6 @@ class JsonAccountRepository:
         if not isinstance(data.get("users"), list) or not isinstance(data.get("sessions"), list):
             raise ValueError("Invalid account collections")
         return data
-
-    def _write(self, data: dict) -> None:
-        fd, name = tempfile.mkstemp(dir=self.path.parent, prefix=".accounts-", suffix=".tmp")
-        try:
-            with os.fdopen(fd, "w", encoding="utf-8") as stream:
-                json.dump(data, stream, ensure_ascii=False, indent=2)
-                stream.flush()
-                os.fsync(stream.fileno())
-            os.replace(name, self.path)
-        finally:
-            if os.path.exists(name):
-                os.unlink(name)
 
     def create_user(self, user: dict) -> None:
         with self.lock:

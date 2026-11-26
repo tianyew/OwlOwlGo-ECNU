@@ -83,7 +83,7 @@
 
 - [AccountGate.vue](../../../code/frontend/src/features/auth/AccountGate.vue)
 - [auth.ts](../../../code/frontend/src/shared/api/auth.ts)
-- [auth.py](../../../code/backend/app/api/v1/endpoints/auth.py)
+- [auth.py](../../../code/backend/app/api/endpoints/auth.py)
 
 交付：代码变更、接口样例、测试结果、修改后的真实页面截图；按[共同完成标准](README.md#done)签收。
 

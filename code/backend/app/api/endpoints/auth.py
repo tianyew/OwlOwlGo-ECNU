@@ -3,82 +3,18 @@
 import secrets
 import time
 from datetime import UTC, datetime
-from typing import Annotated
-from urllib.parse import urlsplit
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
-from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from app.api.dependencies import COOKIE, Repository, User, same_origin
 from app.core.security import hash_password, token_digest, verify_password
 from app.db.repositories.accounts import AccountRepository, DuplicateUsername
+from app.schemas.auth import Credentials, PublicUser, Registration, public_user
 
-COOKIE = "owl_session"
 # Missing-user logins still perform a password verification.
 DUMMY_HASH = hash_password(secrets.token_urlsafe(32))
 router = APIRouter(prefix="/api/v1/auth", tags=["accounts"])
-
-
-class Credentials(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    username: str = Field(min_length=3, max_length=32, pattern=r"^[a-z0-9_]+$")
-    password: str = Field(min_length=1, max_length=128)
-
-    @field_validator("username", mode="before")
-    @classmethod
-    def normalize_username(cls, value):
-        return value.strip().lower() if isinstance(value, str) else value
-
-
-class Registration(Credentials):
-    password: str = Field(min_length=8, max_length=128)
-    display_name: str = Field(min_length=1, max_length=40)
-
-    @field_validator("display_name", mode="before")
-    @classmethod
-    def normalize_name(cls, value):
-        return value.strip() if isinstance(value, str) else value
-
-
-class PublicUser(BaseModel):
-    id: str
-    username: str
-    display_name: str
-
-
-def public_user(user: dict) -> PublicUser:
-    return PublicUser(id=user["_id"], username=user["username"], display_name=user["display_name"])
-
-
-def repository(request: Request) -> AccountRepository:
-    return request.app.state.accounts
-
-
-Repository = Annotated[AccountRepository, Depends(repository)]
-
-
-def same_origin(request: Request):
-    origin = request.headers.get("origin")
-    # Browser requests without Origin still expose fetch metadata.
-    if request.headers.get("sec-fetch-site") == "cross-site":
-        raise HTTPException(403, "请求来源无效，请从本站操作。")
-    if origin:
-        try:
-            source = urlsplit(origin)
-            target = urlsplit(str(request.base_url))
-            valid = (
-                source.scheme in {"http", "https"}
-                and source.scheme == target.scheme
-                and source.hostname == target.hostname
-                and (source.port or (443 if source.scheme == "https" else 80))
-                == (target.port or (443 if target.scheme == "https" else 80))
-                and not source.username and not source.password
-                and not source.path and not source.query and not source.fragment
-            )
-        except ValueError:
-            valid = False
-        if not valid:
-            raise HTTPException(403, "请求来源无效，请从本站操作。")
 
 
 def throttle(request: Request, repo: AccountRepository, action: str, username: str = ""):
@@ -158,12 +94,8 @@ def login(body: Credentials, request: Request, response: Response, repo: Reposit
 
 
 @router.get("/me", response_model=PublicUser)
-def me(request: Request, repo: Repository):
-    token = request.cookies.get(COOKIE)
-    user = repo.session_user(token_digest(token), int(time.time())) if token else None
-    if user is None:
-        raise HTTPException(401, "请先登录。")
-    return public_user(user)
+def me(user: User):
+    return user
 
 
 @router.post("/logout", status_code=204, dependencies=[Depends(same_origin)])

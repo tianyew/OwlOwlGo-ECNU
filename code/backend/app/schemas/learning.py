@@ -1,14 +1,10 @@
 """Versioned progress contract; scores are derived on the server."""
 
-import hashlib
-import json
-from pathlib import Path
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.domain.content.catalog import get_quiz, validate_answers
-from app.integrations.llm.prompts.assessment import PROMPT_VERSION
 from app.schemas.unit_quiz import UnitAnswer
 
 Topic = Literal["travel", "daily", "campus", "poetry"]
@@ -115,54 +111,3 @@ class SaveProgress(BaseModel):
     model_config = ConfigDict(extra="forbid")
     revision: int = Field(ge=0)
     state: LearningState
-
-
-# Same fixed demo question order as frontend/features/phonetics/questions.ts.
-ITEMS = json.loads(
-    (Path(__file__).resolve().parents[1] / "domain/learner/assessment_items.json").read_text(
-        encoding="utf-8"
-    )
-)
-KEY = [item["answer"] for item in ITEMS]
-CATEGORIES = [("拼音基础", [0, 1]), ("四声辨识", [2, 3, 4]), ("基础变调", [5, 6, 7])]
-TOPICS = {"travel": "旅游出行", "daily": "日常生活", "campus": "校园交流", "poetry": "古诗入门"}
-
-
-def evidence(state: dict) -> dict:
-    answers = state["quiz"]["answers"]
-    return {
-        "prompt_version": PROMPT_VERSION,
-        "items": [
-            {
-                "question_id": q["id"],
-                "knowledge_point": q["category"],
-                "prompt": q["prompt"],
-                "example": q["example"],
-                "options": q["options"],
-                "selected_index": answers[i],
-                "selected_answer": q["options"][answers[i]],
-                "correct_index": q["answer"],
-                "correct_answer": q["options"][q["answer"]],
-                "is_correct": answers[i] == q["answer"],
-                "explanation": q["explanation"],
-            }
-            for i, q in enumerate(ITEMS)
-            if i < len(answers)
-        ],
-        "score": int(sum(a == KEY[i] for i, a in enumerate(answers)) / len(KEY) * 100 + 0.5),
-        "scope": "固定8题拼音与声调文字辨识，不代表正式汉语等级或口语水平",
-        "answered": len(answers),
-        "correct": sum(a == KEY[i] for i, a in enumerate(answers)),
-        "dimensions": [
-            {
-                "name": name,
-                "total": len(indices),
-                "correct": sum(i < len(answers) and answers[i] == KEY[i] for i in indices),
-            }
-            for name, indices in CATEGORIES
-        ],
-    }
-
-
-def fingerprint(state: dict) -> str:
-    return hashlib.sha256(json.dumps(evidence(state), sort_keys=True).encode()).hexdigest()

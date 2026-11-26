@@ -31,16 +31,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          # npm cache requires a lockfile. Enable it after package-lock.json is committed.
-      - name: Install dependencies when lockfile exists
-        if: ${{ hashFiles('code/frontend/package-lock.json') != '' }}
+          cache: npm
+          cache-dependency-path: code/frontend/package-lock.json
+      - name: Install frontend dependencies
         run: npm ci
+      - name: Test frontend
+        run: npm test
       - name: Build frontend
-        if: ${{ hashFiles('code/frontend/package-lock.json') != '' }}
         run: npm run build
-      - name: Check placeholder project
-        if: ${{ hashFiles('code/frontend/package-lock.json') == '' }}
-        run: echo "Frontend dependencies have not been locked yet."
 
   backend:
     runs-on: ubuntu-latest

@@ -1,5 +1,7 @@
 # OwlOwlGo 汉语学习网页：AI Agent 技术方案调研报告
 
+> 当前可执行代码的目录、调用关系及 2026-11-26 结构调整见[当前代码架构](code-architecture.md)。本文保留长期目标方案与历史调研，不作为功能完成清单。
+
 > 版本：v1.6 · 补充 Node.js 前端开发与构建职责：2026-11-04
 >
 > 状态：**正式系统目标方案；LangGraph 局部引入已确认，新增能力待实现与验证**
@@ -120,7 +122,7 @@ OwlOwlGo 采用的目标技术组合为 **Vue 3 H5 + FastAPI 模块化单体 + P
 
 ### 2.1 已读材料及代码证据
 
-下表为原始调研基线 `df31445` 的观察，不代表当前仓库仍只有骨架。2026-11-04 对照 `d6f0aeb`：已存在[学习进度与分析接口](../../code/backend/app/api/v1/endpoints/learning.py)、[JSON 学习记录仓储](../../code/backend/app/db/repositories/learning.py)、[八题作答证据契约](../../code/backend/app/schemas/learning.py)及 [DeepSeek 前测分析 Agent](../../code/backend/app/services/agents/assessment.py)。这些是代码接入情况，本次未运行验证；尚未发现本节新增的七维 × 六层画像数据结构及更新函数，也未发现所述 700 篇题库的完整导入与标注产物。不能将外部画像文档中的实现声明直接作为本仓库完成状态。
+下表为原始调研基线 `df31445` 的观察，不代表当前仓库仍只有骨架。2026-11-04 对照 `d6f0aeb`：已存在[学习进度与分析接口](../../code/backend/app/api/endpoints/learning.py)、[JSON 学习记录仓储](../../code/backend/app/db/repositories/learning.py)、[八题作答证据契约](../../code/backend/app/schemas/learning.py)及 [DeepSeek 前测分析 Agent](../../code/backend/app/services/agents/assessment.py)。这些是代码接入情况，本次未运行验证；尚未发现本节新增的七维 × 六层画像数据结构及更新函数，也未发现所述 700 篇题库的完整导入与标注产物。不能将外部画像文档中的实现声明直接作为本仓库完成状态。
 
 | 证据 | 当前观察 | 对选型的影响 |
 | --- | --- | --- |
@@ -239,7 +241,7 @@ flowchart TB
 
 | 层 | 目录 | 允许的依赖与职责 |
 | --- | --- | --- |
-| 接口 | `app/api/v1/`、`app/schemas/` | 校验请求、身份、序列化；调用 services |
+| 接口 | `app/api/`、`app/schemas/` | 校验请求、身份、序列化；调用 services |
 | 应用 | `app/services/`，拟新增 `app/services/workflows/` | LangGraph 编排计划与候选题；普通服务处理单次分析；控制事务和幂等 |
 | 领域 | `app/domain/` | 纯领域模型与规则；不依赖 FastAPI、LangGraph、数据库或供应商 SDK |
 | 基础设施 | `app/db/`、`app/integrations/` | 持久化、外部模型、音频与字形资源适配 |

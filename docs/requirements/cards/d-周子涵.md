@@ -119,7 +119,7 @@
 
 - [ServerUnitQuiz.vue](../../../code/frontend/src/features/assessment/ServerUnitQuiz.vue)
 - [learning.ts](../../../code/frontend/src/shared/api/learning.ts)
-- [learning.py](../../../code/backend/app/api/v1/endpoints/learning.py)
+- [learning.py](../../../code/backend/app/api/endpoints/learning.py)
 
 交付：代码变更、接口样例、测试结果、修改后的真实页面截图；按[共同完成标准](README.md#done)签收。
 

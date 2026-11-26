@@ -9,8 +9,9 @@ from fastapi.testclient import TestClient
 
 from app.core.config import Settings
 from app.domain.content.catalog import QUIZZES, TOPIC_IDS, get_quiz, grade
+from app.domain.learner.evidence import KEY
 from app.main import create_app
-from app.schemas.learning import KEY, LearningState
+from app.schemas.learning import LearningState
 from tests.helpers import choose_topic, login, submission_body, submit_quiz
 
 PROGRESS = "/api/v1/learning/progress"

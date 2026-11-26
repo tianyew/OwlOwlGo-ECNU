@@ -15,6 +15,11 @@ OwlOwlGo 后端使用 FastAPI 和 Pydantic。账号、会话和认证限流通�
 - `app/integrations/`：LLM 等外部服务适配；
 - `tests/`：后端自动化测试。
 
+公共身份与同源校验位于 `api/dependencies.py`，账号数据结构位于 `schemas/auth.py`，
+路由由 `api/router.py` 聚合。JSON 仓储共用 `db/json_store.py` 的锁和原子写入，
+账号与学习仓储互不继承。分析证据和指纹位于 `domain/learner/evidence.py`。
+实际调用关系、现存边界和后续调整顺序见[当前代码架构](../../docs/software/code-architecture.md)。
+
 ## 日志
 
 启动后端后，应用日志同时输出到控制台和 `code/backend/logs/app.log`，目录自动创建。
