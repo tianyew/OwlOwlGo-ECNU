@@ -19,6 +19,7 @@
 | 软件设计 | [当前代码架构](software/code-architecture.md) | 实际模块、调用关系、结构调整及后续维护边界 |
 | 软件设计 | [页面与功能设计](software/product-design.md) | 页面结构、用户旅程、功能优先级 |
 | 软件设计 | [数据模型](software/data-model.md) | 方向、诊断、计划修订、汉语内容、学习事件与复习关系 |
+| 接口调用 | [RAG 接口与调用方法](software/rag-api.md) | 入库授权、自动切片入库、检索参数、curl/Python/前端调用与联调验收 |
 | 软件设计 | [API 边界](software/api-contract.md) | 前测、方向、计划生成/修订与学习接口及一致性约束 |
 | 软件设计 | [架构决策记录](adr/README.md) | 决策的背景、选择与影响 |
 | 开发与部署 | [PostgreSQL接入计划](software/postgresql-integration-plan.md) | 当前缺口、表职责、事务、历史迁移、对账与回退 |
@@ -51,3 +52,5 @@
 
 会议纪要、FAQ、学习资料和过程讨论使用 GitHub Wiki。文档协作规则见[贡献指南](../CONTRIBUTING.md)。
 
+
+- [RAG 基础模块与调用指南](software/rag.md)：资料入库、pgvector 初始化、共享检索服务和接口契约。

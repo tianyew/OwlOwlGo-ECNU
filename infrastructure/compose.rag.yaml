@@ -1,0 +1,5 @@
+# Opt-in replacement: same PostgreSQL major version, includes pgvector.
+# Back up an existing database before switching images. Never run down -v to switch.
+services:
+  database:
+    image: pgvector/pgvector:0.8.2-pg17

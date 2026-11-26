@@ -9,6 +9,7 @@ from fastapi import Depends, HTTPException, Request
 from app.core.security import token_digest
 from app.db.repositories.accounts import AccountRepository
 from app.schemas.auth import PublicUser, public_user
+from app.services.retrieval import IngestionService, RetrievalService
 
 COOKIE = "owl_session"
 
@@ -60,3 +61,27 @@ def current_user(user: OptionalUser) -> PublicUser:
 
 
 User = Annotated[PublicUser, Depends(current_user)]
+
+
+def knowledge_editor(request: Request, user: User) -> PublicUser:
+    allowed = request.app.state.settings.rag_ingest_user_ids
+    if user.id not in {str(user_id) for user_id in allowed}:
+        raise HTTPException(403, "当前账号没有知识库入库权限。")
+    return user
+
+
+KnowledgeEditor = Annotated[PublicUser, Depends(knowledge_editor)]
+
+
+def ingestion_service(request: Request) -> IngestionService:
+    service = request.app.state.ingestion
+    if service is None:
+        raise HTTPException(503, "知识库入库尚未启用。")
+    return service
+
+
+def retrieval_service(request: Request) -> RetrievalService:
+    service = request.app.state.retrieval
+    if service is None:
+        raise HTTPException(503, "知识检索尚未启用。")
+    return service
