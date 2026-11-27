@@ -1,0 +1,15 @@
+{
+  "document_id": "tone-sandhi-intro",
+  "title": "第三声变调示例",
+  "text": "# 两个第三声相连\n\n在普通话中，两个第三声音节相连时，前一个通常读作第二声。例如“你好”，词典标注为 nǐ hǎo，实际连读接近 ní hǎo。\n\n练习时，先分别读两个音节，再连起来读。词典里的本调标注和实际语流中的读法需要区分。",
+  "source": "OwlOwlGo 团队自编示例；正式使用前需教学审核",
+  "license": "项目内部示例，仅供开发验证",
+  "content_version": 1,
+  "review_status": "approved",
+  "visibility": "public",
+  "answer_visibility": "teaching",
+  "language": "zh",
+  "knowledge_point_ids": ["tone_sandhi_3"],
+  "direction_ids": ["daily"],
+  "difficulty": 1
+}

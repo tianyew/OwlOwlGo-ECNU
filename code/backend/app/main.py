@@ -17,12 +17,15 @@ from app.core.config import Settings
 from app.core.logging import configure_logging, request_route
 from app.core.security import hash_password
 from app.db.repositories.accounts import DuplicateUsername, JsonAccountRepository
+from app.db.repositories.knowledge import PostgresKnowledgeRepository
 from app.db.repositories.learning import JsonLearningRepository
 from app.db.repositories.postgres_accounts import PostgresAccountRepository
 from app.db.session import check_schema, database_engine
+from app.integrations.embedding.client import CompatibleEmbedder
 from app.integrations.llm.deepseek import DeepSeekClient
 from app.services.agents.assessment import AssessmentAgent
 from app.services.agents.dispatcher import AgentDispatcher
+from app.services.retrieval import IngestionService, RetrievalService
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +55,15 @@ def create_app(data_path: Path | None = None, settings: Settings | None = None) 
 
     application = FastAPI(title="OwlOwlGo API", version="0.1.0", lifespan=lifespan)
     application.state.settings = settings
+    application.state.retrieval = None
+    application.state.ingestion = None
+    if settings.rag_enabled:
+        if engine is None:
+            raise ValueError("RAG_ENABLED requires PostgreSQL DATABASE_URL")
+        knowledge_repository = PostgresKnowledgeRepository(engine)
+        embedder = CompatibleEmbedder(settings)
+        application.state.retrieval = RetrievalService(knowledge_repository, embedder)
+        application.state.ingestion = IngestionService(knowledge_repository, embedder)
     application.state.accounts = (
         PostgresAccountRepository(engine) if engine is not None
         else JsonAccountRepository(data_path or settings.owl_account_file)
@@ -78,6 +90,8 @@ def create_app(data_path: Path | None = None, settings: Settings | None = None) 
 
     @application.exception_handler(RequestValidationError)
     async def validation_error(request, exc):
+        if request.url.path.startswith("/api/v1/knowledge/"):
+            return JSONResponse(status_code=422, content={"detail": "知识库请求格式不正确。"})
         # Never echo submitted password values in validation errors.
         if request.url.path.startswith("/api/v1/learning/"):
             return JSONResponse(

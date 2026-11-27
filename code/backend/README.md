@@ -43,3 +43,9 @@ logger = logging.getLogger(__name__)
 logger.info("assessment_completed")
 ```
 
+
+## RAG 教学知识检索
+
+已实现独立的入库/检索服务、OpenAI 兼容 Embedding 适配器和 pgvector 存储。默认关闭，需显式初始化和配置。HTTP 提供 `POST /api/v1/knowledge/search` 检索及 `POST /api/v1/knowledge/documents` 入库；入库账号须在 `RAG_INGEST_USER_IDS` 中授权，两者复用登录鉴权。后台同学也可直接调用 `RetrievalService` 或 `IngestionService`。完整部署、CLI 与代码示例见 [RAG 指南](../../docs/software/rag.md)。
+
+调用已部署服务请看 [RAG 接口与调用方法](../../docs/software/rag-api.md)，包含完整字段、Cookie 登录、curl/Python/前端示例与错误处理。

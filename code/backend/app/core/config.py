@@ -2,6 +2,7 @@
 
 from pathlib import Path
 from typing import Literal
+from uuid import UUID
 
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -17,6 +18,15 @@ class Settings(BaseSettings):
     deepseek_model: str = "deepseek-flash"
     deepseek_timeout: float = Field(default=45, ge=1, le=120)
     database_url: SecretStr = SecretStr("")
+    rag_enabled: bool = False
+    rag_ingest_user_ids: list[UUID] = Field(default_factory=list)
+    rag_embedding_base_url: str = ""
+    rag_embedding_api_key: SecretStr = SecretStr("")
+    rag_embedding_model: str = "text-embedding-v4"
+    rag_embedding_revision: str = "1"
+    rag_embedding_dimensions: int = Field(default=1024, ge=1, le=16000)
+    rag_embedding_batch_size: int = Field(default=10, ge=1, le=10)
+    rag_embedding_timeout: float = Field(default=15, ge=1, le=60)
     owl_log_file: Path = BACKEND_ROOT / "logs" / "app.log"
     owl_log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     owl_log_max_bytes: int = Field(default=10 * 1024 * 1024, ge=1)

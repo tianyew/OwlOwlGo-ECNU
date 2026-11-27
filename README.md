@@ -5,7 +5,7 @@
 
 OwlOwlGo 是面向成年汉语学习者的 AI 游戏化汉语学习 H5 应用，目标是根据作答表现调整任务难度，并在合适时机提供渐进提示与讲解。项目采用 Vue 3 + TypeScript 前端和 Python + FastAPI 后端。
 
-**当前状态：已实现服务端判分的学习原型。** 支持账号与会话、8 题拼音声调前测、4 个方向共 20 个单元、每个方向 10 题后测，以及基于真实作答的七维 × 六层证据画像。题库与课程由后端统一提供，登录用户的草稿、判分、完成记录和分析保存在 JSON 文件中。DeepSeek 可选用于前测建议，配置见[学习分析说明](docs/software/learning-agent.md)。操作与验收见[完整学习链路](docs/software/server-unit-demo.md)。账号、会话和限流已接入 PostgreSQL；RAG、LangGraph 和动态课程生成仍待实现。
+**当前状态：已实现服务端判分的学习原型。** 支持账号与会话、8 题拼音声调前测、4 个方向共 20 个单元、每个方向 10 题后测，以及基于真实作答的七维 × 六层证据画像。题库与课程由后端统一提供，登录用户的草稿、判分、完成记录和分析保存在 JSON 文件中。DeepSeek 可选用于前测建议，配置见[学习分析说明](docs/software/learning-agent.md)。操作与验收见[完整学习链路](docs/software/server-unit-demo.md)。账号、会话和限流已接入 PostgreSQL；RAG 基础检索模块已实现、默认关闭；LangGraph 和动态课程生成仍待实现。
 
 ## 快速开始
 
@@ -134,3 +134,5 @@ OwlOwlGo-ECNU/
 - [系统架构与模块职责](docs/software/architecture.md)
 - [数据模型草案](docs/software/data-model.md)
 - [API 边界草案](docs/software/api-contract.md)
+
+RAG 入库、检索与团队调用见[基础模块指南](docs/software/rag.md)。
